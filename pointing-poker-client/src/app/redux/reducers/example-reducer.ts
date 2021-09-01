@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "../store";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import type { RootState } from '../store';
 
 interface ExampleState {
   value: number;
@@ -10,7 +10,7 @@ const initialState: ExampleState = {
 };
 
 export const exampleSlice = createSlice({
-  name: "example",
+  name: 'example',
   initialState,
   reducers: {
     increment: (state) => {
@@ -27,6 +27,7 @@ export const exampleSlice = createSlice({
 
 export const { increment, decrement, incrementByAmount } = exampleSlice.actions;
 
-export const selectExampleValue = (state: RootState) => state.example.value;
+export const selectExampleValue = (state: RootState): number =>
+  state.example.value;
 
 export default exampleSlice.reducer;

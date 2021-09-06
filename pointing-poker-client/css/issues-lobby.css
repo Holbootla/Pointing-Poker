@@ -6,4 +6,12 @@
       -ms-flex-pack: start;
           justify-content: flex-start;
 }
+
+.issue-icon {
+  width: 35px;
+  height: 35px;
+  background-size: contain;
+  background-position: center;
+  cursor: pointer;
+}
 /*# sourceMappingURL=issues-lobby.css.map */

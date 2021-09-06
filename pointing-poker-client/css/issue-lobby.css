@@ -11,29 +11,29 @@
   font-weight: 700;
 }
 
-.issue-actions-wrap {
+.issue-icons-wrap {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-}
-
-.issue-actions-wrap :first-child {
-  margin-right: 10px;
-}
-
-.issue-actions {
-  width: 35px;
-  height: 35px;
   -webkit-box-pack: end;
       -ms-flex-pack: end;
           justify-content: flex-end;
 }
 
-.issue-edit {
-  background-image: url("../../../../assets/icons/pen.svg");
+.issue-icons-wrap :first-child {
+  margin-right: 10px;
+}
+
+.issue-icon {
+  width: 35px;
+  height: 35px;
   background-size: contain;
   background-position: center;
   cursor: pointer;
+}
+
+.issue-edit {
+  background-image: url("../../../../assets/icons/pen.svg");
 }
 
 .issue-edit:hover {
@@ -43,9 +43,6 @@
 
 .issue-delete {
   background-image: url("../../../../assets/icons/trash.svg");
-  background-size: contain;
-  background-position: center;
-  cursor: pointer;
 }
 
 .issue-delete:hover {

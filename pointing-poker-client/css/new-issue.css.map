@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAAA,eAAe,CAAC;EACd,cAAc,EAAE,UAAU;CAC3B;;AACD,AAAA,UAAU,CAAC;EACT,KAAK,EAAE,IAAI;EACX,MAAM,EAAE,IAAI;EACb,gBAAgB,EAAE,wCAAwC;EACzD,eAAe,EAAE,OAAO;EACxB,mBAAmB,EAAE,MAAM;EAC3B,MAAM,EAAE,OAAO;CAIhB;;AAVD,AAOE,UAPQ,AAOP,MAAM,CAAA;EACP,SAAS,EAAE,UAAU;CACpB",
+    "sources": [
+        "../src/app/components/scram/new-issue/new-issue.scss"
+    ],
+    "names": [],
+    "file": "new-issue.css"
+}

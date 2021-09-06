@@ -1,0 +1,48 @@
+
+.member-item{
+	justify-content: flex-start;
+}
+.member-avatar-wrap {
+  width: 40px;
+  height: 40px;
+  margin-right: 20px;
+  border-radius: 50%;
+  box-shadow: 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24);
+  background-color: rgba(96, 218, 191, 1);
+}
+.member-avatar{
+  border-radius: 50%;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  color: #ffffff;
+  box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+  text-transform: uppercase;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.member-avatar-pic{
+  background: no-repeat center;
+  background-size: cover;
+}
+.member-data{
+  width: calc(100% - (40px + 35px + 20px));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.kick-icon {
+  width: 35px;
+  height: 35px;
+  justify-content: flex-end;
+  background-image: url('../../../../assets/icons/kick.svg');
+  background-size: contain;
+  background-position: center;
+  cursor: pointer;
+  &:hover{
+    box-shadow: 0px 0px 4px 4px rgba(255, 196, 130, 1);
+    border-radius: 50%;
+  }
+}

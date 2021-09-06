@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAAA,iBAAiB,CAAA;EACf,OAAO,EAAE,IAAI;EACb,eAAe,EAAE,UAAU;CAC5B",
+    "sources": [
+        "../src/app/components/scram/issues-lobby/issues-lobby.scss"
+    ],
+    "names": [],
+    "file": "issues-lobby.css"
+}

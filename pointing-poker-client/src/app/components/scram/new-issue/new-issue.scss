@@ -1,0 +1,14 @@
+.new-issue-name {
+  text-transform: capitalize;
+}
+.issue-add {
+  width: 35px;
+  height: 35px;
+	background-image: url('../../../../assets/icons/plus.svg');
+  background-size: contain;
+  background-position: center;
+  cursor: pointer;
+  &:hover{
+		transform: scale(1.1);
+  }
+}

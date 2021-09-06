@@ -1,0 +1,24 @@
+.item-issue{
+justify-content: space-between;
+}
+
+.issue-icons-wrap {
+	display: flex;	
+	justify-content: flex-end;
+	:first-child {
+		margin-right: 10px;
+	}
+}
+
+.issue-edit {
+	background-image: url('../../../../assets/icons/pen.svg');
+   &:hover{
+		transform: scale(1.1);
+  }
+}
+.issue-delete {
+	background-image: url('../../../../assets/icons/trash.svg');
+  &:hover{
+		transform: scale(1.1);
+  }
+}

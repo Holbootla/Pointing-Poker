@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAAA,aAAa,CAAC;EACb,aAAa,EAAE,CAAC;EAChB,cAAc,EAAE,SAAS;EACzB,SAAS,EAAE,MAAM;EACjB,WAAW,EAAE,GAAG;CAChB;;AAED,AAAA,kBAAkB,CAAA;EACjB,gBAAgB,EAAE,yCAAyC;CAI3D;;AALD,AAEG,kBAFe,AAEd,MAAM,CAAA;EACR,SAAS,EAAE,UAAU;CACpB",
+    "sources": [
+        "../src/app/components/shared/issue-game/issue-game.scss"
+    ],
+    "names": [],
+    "file": "issue-game.css"
+}

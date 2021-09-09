@@ -10,15 +10,14 @@ justify-content: space-between;
 	}
 }
 
-.issue-edit {
+.issue-edit,
+.issue-delete {
 	background-image: url('../../../../assets/icons/pen.svg');
+	transition: all 0.3s ease-in-out;
    &:hover{
-		transform: scale(1.1);
+		transform: scale(1.2);
   }
 }
 .issue-delete {
 	background-image: url('../../../../assets/icons/trash.svg');
-  &:hover{
-		transform: scale(1.1);
-  }
 }

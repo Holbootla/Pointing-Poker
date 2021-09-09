@@ -1,36 +1,32 @@
-import { Badge, Button, Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import CardFace from '../../components/shared/cards/card-face';
+import GameName from '../../components/shared/game-name/game-name';
 import IssueGame from '../../components/shared/issue-game/issue-game';
 import Member from '../../components/shared/member/member';
+import ScrumMasterMember from '../../components/shared/scrum-master/scrum-master-member';
 
 function Game(): JSX.Element {
   const { gameID } = useParams<{ gameID: string }>();
   return (
     <div className="container">
+      <GameName />
+      <div>Room #{gameID}</div>
       <Container>
         <Row>
-          <Col sm>
+          <Col xl={7}>
             <Container>
               <Row>
-                <Col sm>
-                  <h2>
-                    Room name <Badge bg="secondary">GAME# {gameID}</Badge>
-                  </h2>
+                <Col>
+                  <ScrumMasterMember />
                 </Col>
-              </Row>
-              <Row>
-                <Col sm>
-                  Scrum master:
-                  <Member />
-                </Col>
-                <Col sm>
+                <Col>
                   <h4>2:00</h4>
                   <Button variant="success" className="m-1">
                     Start round
                   </Button>
                 </Col>
-                <Col sm>
+                <Col>
                   <Button variant="danger" className="m-1">
                     Stop game
                   </Button>
@@ -40,91 +36,46 @@ function Game(): JSX.Element {
                 </Col>
               </Row>
               <Row>
-                <Col sm>
+                <Col>
                   <h3>Issues</h3>
-                  <IssueGame />
-                  <IssueGame />
-                  <IssueGame />
-                  <IssueGame />
-                  <IssueGame />
+                  {[1, 2, 3, 4, 5, 6, 7].map(() => (
+                    <IssueGame />
+                  ))}
                 </Col>
-                <Col sm>
+                <Col>
                   <h3>Statistics</h3>
                   <Row>
-                    <Col sm>
-                      <CardFace />
-                      100%
-                    </Col>
-                    <Col sm>
-                      <CardFace />
-                      100%
-                    </Col>
-                    <Col sm>
-                      <CardFace />
-                      100%
-                    </Col>
+                    {[1, 2, 3].map(() => (
+                      <Col>
+                        <CardFace />
+                        100%
+                      </Col>
+                    ))}
                   </Row>
                 </Col>
               </Row>
-              <Row>
-                <Col sm>
-                  <CardFace />
-                </Col>
-                <Col sm>
-                  <CardFace />
-                </Col>
-                <Col sm>
-                  <CardFace />
-                </Col>
-                <Col sm>
-                  <CardFace />
-                </Col>
-                <Col sm>
-                  <CardFace />
-                </Col>
-              </Row>
             </Container>
           </Col>
-          <Col sm>
+          <Col xl={5}>
             <Container>
-              <Row className="justify-content-md-center">
-                <Col xs>
-                  <Member />
-                </Col>
-                <Col md="auto">RESULT</Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Member />
-                </Col>
-                <Col md="auto">RESULT</Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Member />
-                </Col>
-                <Col md="auto">RESULT</Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Member />
-                </Col>
-                <Col md="auto">RESULT</Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Member />
-                </Col>
-                <Col md="auto">RESULT</Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Member />
-                </Col>
-                <Col md="auto">RESULT</Col>
-              </Row>
+              <h2>Players:</h2>
+              {[1, 2, 3].map(() => (
+                <Row>
+                  <Col>
+                    <Member />
+                  </Col>
+                  <Col>RESULT</Col>
+                </Row>
+              ))}
             </Container>
           </Col>
+        </Row>
+        <Row>
+          {[1, 2, 3, 4, 5, 6, 7].map(() => (
+            <Col>
+              <CardFace />
+            </Col>
+          ))}
         </Row>
       </Container>
     </div>

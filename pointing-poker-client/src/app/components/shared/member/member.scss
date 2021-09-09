@@ -2,14 +2,16 @@
 .member-item{
 	justify-content: flex-start;
 }
+
 .member-avatar-wrap {
   width: 40px;
   height: 40px;
   margin-right: 20px;
   border-radius: 50%;
   box-shadow: 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24);
-  background-color: rgba(96, 218, 191, 1);
+  background-color: #60DABF;
 }
+
 .member-avatar{
   border-radius: 50%;
   font-size: 1.5rem;
@@ -25,6 +27,7 @@
   background: no-repeat center;
   background-size: cover;
 }
+
 .member-data{
   width: calc(100% - (40px + 35px + 20px));
   display: flex;
@@ -40,6 +43,8 @@
   background-image: url('../../../../assets/icons/kick.svg');
   background-size: contain;
   background-position: center;
+	background-repeat: no-repeat;
+	transition: all 0.2s ease-in-out;
   cursor: pointer;
   &:hover{
     box-shadow: 0px 0px 4px 4px rgba(255, 196, 130, 1);

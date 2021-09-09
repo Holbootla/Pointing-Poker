@@ -13,9 +13,9 @@ function Members(): JSX.Element {
     <section className="section-wrap">
       <div className="section-title">members:</div>
       <div className="members-container">
-        <ul className="members-list">
+        <div className="members-list">
 					<Member />
-          <li className="item member-item">
+          <div className="item member-item">
             <div className="member-avatar-wrap">
               <img src="" className="member-avatar-pic hidden" alt=""/>
               <div className="member-avatar">{`${avatarText('Name', 'Surname')}`}</div>
@@ -25,8 +25,8 @@ function Members(): JSX.Element {
               <p className="member-position">position</p>
             </div>
             <div className="kick-icon" />
-          </li>
-          <li className="item member-item">
+          </div>
+          <div className="item member-item">
             <div className="member-avatar-wrap">
               <img src="" className="member-avatar-pic hidden" alt=""/>
               <div className="member-avatar">{`${avatarText('Konstantin', 'Djakov')}`}</div>
@@ -36,8 +36,8 @@ function Members(): JSX.Element {
               <p className="member-position">position</p>
             </div>
             <div className="kick-icon" />
-          </li>
-          <li className="item member-item">
+          </div>
+          <div className="item member-item">
             <div className="member-avatar-wrap">
               <img src="" className="member-avatar-pic hidden" alt=""/>
               <div className="member-avatar">{`${avatarText('Nikita', 'Lashch')}`}</div>
@@ -47,8 +47,8 @@ function Members(): JSX.Element {
               <p className="member-position">position</p>
             </div>
             <div className="kick-icon" />
-          </li>
-          <li className="item member-item">
+          </div>
+          <div className="item member-item">
             <div className="member-avatar-wrap">
               <img src="" className="member-avatar-pic hidden" alt=""/>
               <div className="member-avatar">{`${avatarText('Svetlana', 'Leshukova')}`}</div>
@@ -58,19 +58,8 @@ function Members(): JSX.Element {
               <p className="member-position">position</p>
             </div>
             <div className="kick-icon" />
-          </li>
-          <li className="item member-item">
-            <div className="member-avatar-wrap">
-              <img src="" className="member-avatar-pic hidden" alt=""/>
-              <div className="member-avatar">{`${avatarText('Name', 'Surname')}`}</div>
-            </div>
-            <div className="member-data">
-              <p className="member-name">Name Surname</p>
-              <p className="member-position">position</p>
-            </div>
-            <div className="kick-icon" />
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
     </section>
   );

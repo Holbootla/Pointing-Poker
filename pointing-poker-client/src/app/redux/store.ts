@@ -1,6 +1,7 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import { authPopupSlice } from './reducers/auth-reducer';
 import { exampleSlice } from './reducers/example-reducer';
+import { issuePopupSlice } from './reducers/issue-reducer';
 import { kickPopupSlice } from './reducers/kick-reducer';
 
 export const store = configureStore({
@@ -8,6 +9,7 @@ export const store = configureStore({
     example: exampleSlice.reducer,
     authPopup: authPopupSlice.reducer,
     kickPopup: kickPopupSlice.reducer,
+    issuePopup: issuePopupSlice.reducer,
   },
 });
 

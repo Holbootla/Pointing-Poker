@@ -15,7 +15,7 @@ const KickPopup = (): JSX.Element => {
       show={kickPopupVisible}
       onHide={closeKickPopup}
       aria-labelledby="kick-popup"
-      size="xl"
+      size="lg"
       centered
     >
       <Modal.Header className="kick-popup__header">

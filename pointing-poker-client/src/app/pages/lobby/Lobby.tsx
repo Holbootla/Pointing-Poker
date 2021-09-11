@@ -5,6 +5,7 @@ import GameSettings from '../../components/scrum/game-settings/game-settings';
 import ScrumMasterMember from '../../components/shared/scrum-master/scrum-master-member';
 import './lobby.scss'
 import GameName from '../../components/shared/game-name/game-name';
+import EditName from './EditNamePopup';
 
 function Lobby(): JSX.Element {
   return (
@@ -19,12 +20,13 @@ function Lobby(): JSX.Element {
         </div>
         <div className="game-control-btn-block">
         <Button variant="primary" className="m-1">Start Game</Button>
-        <Button variant="danger" className="m-1">Cancel game</Button>
+        <Button variant="outline-primery" className="m-1">Cancel game</Button>
         </div>
       </section>
       <Members />
       <IssuesLobby />
       <GameSettings />
+			<EditName />
     </div>
   );
 }

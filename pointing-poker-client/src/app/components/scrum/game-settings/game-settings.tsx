@@ -45,28 +45,24 @@ function GameSettings (): JSX.Element {
           />
         </Form.Group>
         <div className="select-timer-block">
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-          <Form.Label className="settings-label">Scope type:</Form.Label>
+          <Form.Label htmlFor="scopeType" className="settings-label">Scope type:</Form.Label>
           <Form.Select aria-label="Scope type" 
             name="scopeType"
             value=""
             onChange={handelScopeType}>
-              <option>Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?, Pass )</option>
-              <option>Story point ( 0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100, ?, Pass )</option>
-              <option>Powers of 2 ( 0, 1, 2, 4, 8, 16, 32, 64, ?, Pass )</option>
+              <option value="FB">Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?, Pass )</option>
+              <option value="SP">Story point ( 0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100, ?, Pass )</option>
+              <option value="P2">Powers of 2 ( 0, 1, 2, 4, 8, 16, 32, 64, ?, Pass )</option>
           </Form.Select>
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label className="settings-label">Scope type(Short):</Form.Label>
           <Form.Select aria-label="Scope type(Short)" 
             name="scopeType"
             value=""
             onChange={handelShortType}>
-              <option>FB</option>
-              <option>SP</option>
-              <option>P2</option>
+              <option value="FB">FB</option>
+              <option value="SP">SP</option>
+              <option value="P2">P2</option>
           </Form.Select>
-          </Form.Group>
           <div className="timer-settings-block">
             <Form.Label className="settings-label">Round time: </Form.Label>
             <div className="timer-settings">
@@ -77,12 +73,12 @@ function GameSettings (): JSX.Element {
                   name="scopeType"
                   value=""
                   onChange={handelMinutes}>
-                    <option>00 :</option>
-                    <option>01 :</option>
-                    <option>02 :</option>
-                    <option>03 :</option>
-                    <option>04 :</option>
-                    <option>05 :</option>
+                    <option value="00">00 :</option>
+                    <option value="01">01 :</option>
+                    <option value="02">02 :</option>
+                    <option value="03">03 :</option>
+                    <option value="04">04 :</option>
+                    <option value="05">05 :</option>
                   </Form.Select>
                 </div>
               </div>
@@ -93,12 +89,12 @@ function GameSettings (): JSX.Element {
                   name="scopeType"
                   value=""
                   onChange={handelSeconds}>
-                    <option>00</option>
-                    <option>10</option>
-                    <option>20</option>
-                    <option>30</option>
-                    <option>40</option>
-                    <option>50</option>
+                    <option value="00">00</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
                   </Form.Select>
                 </div>
               </div>

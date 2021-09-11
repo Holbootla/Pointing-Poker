@@ -1,7 +1,6 @@
 import Issue from '../issue-lobby/issue-lobby';
 import NewIssue from '../new-issue/new-issue';
 import './issues-lobby.scss';
-// import '../../../index.scss'
 
 function IssuesLobby(): JSX.Element {
 

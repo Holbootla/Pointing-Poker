@@ -28,7 +28,6 @@ function Members(): JSX.Element {
       <div className="section-title">members:</div>
       <div className="members-container">
         <div className="members-list">
-					<Member />
           {members.map((member) => (
             <div className="item member-item" key={member.id}>
               <div className="member-avatar-wrap">

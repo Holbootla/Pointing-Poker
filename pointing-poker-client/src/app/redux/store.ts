@@ -1,4 +1,5 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { addCardValuesSlice } from './reducers/add-card-reducer';
 import { authPopupSlice } from './reducers/auth-reducer';
 import { customCoverSlice } from './reducers/custom-cover-reducer';
 import { exampleSlice } from './reducers/example-reducer';
@@ -16,6 +17,7 @@ export const store = configureStore({
 		issuePopup: issuePopupSlice.reducer,
 		gameSettings: gameSettingsSlice.reducer,
 		customCover: customCoverSlice.reducer,
+		addCardValues: addCardValuesSlice.reducer,
 	},
 });
 

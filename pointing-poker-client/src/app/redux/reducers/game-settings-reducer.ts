@@ -8,7 +8,7 @@ interface GameSettingsState {
 	timerMinutes: string;
 	timerSeconds: string;
 	cardCover: string,
-	cardValues: string[];
+	cardValuesFinalSet: string[];
 }
 
 const initialState: GameSettingsState = {
@@ -19,7 +19,7 @@ const initialState: GameSettingsState = {
 	timerMinutes: '00',
 	timerSeconds: '00',
 	cardCover: '#E42B77',
-	cardValues: ['pass', 'break', '0', '1'],
+	cardValuesFinalSet: ['0', '1', '2', '3', '5', '8', '13', '21', '34', '55', '89', '?', 'Pass', 'Break'],
 };
 
 export const gameSettingsSlice = createSlice({
@@ -48,14 +48,13 @@ export const gameSettingsSlice = createSlice({
 		},
 		saveCardCoverAction: (state, action: PayloadAction<string>) => {
 			state.cardCover = action.payload
-
+		},
+		setCardValuesFinalSetAction: (state, action: PayloadAction<Array<string>>) => {
+			state.cardValuesFinalSet = action.payload;
 		}
-		// saveNewGameNameAction: (state, action: PayloadAction<string>) => {
-		// 	state.gameName = action.payload;
-		// }
 	},
 });
 
-export const { cardChangeAction, timerOnAction, scoreTypeAction, scoreTypeShortAction, timerMinutesAction, timerSecondsAction, saveCardCoverAction } = gameSettingsSlice.actions;
+export const { cardChangeAction, timerOnAction, scoreTypeAction, scoreTypeShortAction, timerMinutesAction, timerSecondsAction, saveCardCoverAction, setCardValuesFinalSetAction } = gameSettingsSlice.actions;
 
 export default gameSettingsSlice.reducer;

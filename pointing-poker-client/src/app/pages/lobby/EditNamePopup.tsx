@@ -1,4 +1,3 @@
-
 import { ChangeEvent } from "react";
 import { Form, Modal, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
@@ -7,15 +6,8 @@ import { closeEditNamePopupAction, saveNewGameNameAction } from "../../redux/red
 function EditName(): JSX.Element {
   const dispatch = useAppDispatch();
 
-  const editNamePopupVisible = useAppSelector(
-    (state) => state.editNamePopup.editNamePopupVisible
-  );
-
-  const gameName = useAppSelector(
-    (state) => state.editNamePopup.gameName
-  );
-  const prevGameName = useAppSelector(
-    (state) => state.editNamePopup.prevGameName
+  const { editNamePopupVisible,  gameName, prevGameName } = useAppSelector(
+    (state) => state.editNamePopup
   );
 
   const closeEditNamePopup = () => {
@@ -44,7 +36,6 @@ const handelChangeNameInput = (e: ChangeEvent<HTMLInputElement>) => {
           <Form.Control
             type="text"
             value={gameName}
-            // maxLength={100}
             onChange={handelChangeNameInput} />
         </Form.Group>
       </Modal.Body>

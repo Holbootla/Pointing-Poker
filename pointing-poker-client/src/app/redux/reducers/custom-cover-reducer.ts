@@ -23,7 +23,7 @@ const initialState: CustomCoverPopupState = {
 };
 
 export const customCoverSlice = createSlice({
-	name: 'customCoverPopup',
+	name: 'customCover',
 	initialState,
 	reducers: {
 		showCustomCoverPopupAction: (state) => {
@@ -34,14 +34,9 @@ export const customCoverSlice = createSlice({
 		},
 		savePrevCardCoverAction: (state, action: PayloadAction<string>,) => {
 			state.prevCardCover = action.payload;
-
 		},
 		addNewCardCoverAction: (state, action: PayloadAction<Cover>) => {
 			state.covers.push(action.payload);
-			state.selectedCoverId = action.payload.id;
-		},
-		setCardCoverAction: (state, action: PayloadAction<Cover>) => {
-			state.selectedCoverId = action.payload.id;
 		},
 		setSelectedCardCoverAction: (state, action: PayloadAction<number>) => {
 			state.selectedCoverId = action.payload
@@ -49,6 +44,6 @@ export const customCoverSlice = createSlice({
 	}
 });
 
-export const { showCustomCoverPopupAction, closeCustomCoverPopupAction, savePrevCardCoverAction, addNewCardCoverAction, setSelectedCardCoverAction } = customCoverSlice.actions;
+export const { showCustomCoverPopupAction, closeCustomCoverPopupAction, savePrevCardCoverAction, setSelectedCardCoverAction, addNewCardCoverAction } = customCoverSlice.actions;
 
 export default customCoverSlice.reducer;

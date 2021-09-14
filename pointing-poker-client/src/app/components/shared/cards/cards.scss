@@ -1,6 +1,8 @@
 .card-face {
   width: 7.6rem;
   height: 11.6rem;
+	margin-right: 10px;
+	margin-bottom: 1rem;
   padding: 1%;
   border-radius: 15px;
   border: 3px solid transparent;
@@ -8,7 +10,7 @@
   background: #eeeeee;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 15px;
-  margin-right: 10px;
+
 }
 .card-data-block {
   display: flex;

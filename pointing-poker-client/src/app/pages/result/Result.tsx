@@ -1,4 +1,4 @@
-import CardFace from "../../components/shared/cards/card-face";
+// import CardFace from "../../components/shared/cards/card-face";
 import GameName from "../../components/shared/game-name/game-name";
 import IssueGame from "../../components/shared/issue-game/issue-game";
 import "./result.scss";
@@ -22,7 +22,7 @@ const Result = () : JSX.Element => {
             <div className="result__cards">
               {issue.cards.map((card) => 
                 <div className="result__card" key={card.value}>
-                  <CardFace />
+                  {/* <CardFace /> */}
                   <div className="result__votes">{card.votes}%</div>
                 </div>
               )}

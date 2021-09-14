@@ -47,7 +47,7 @@ function Game(): JSX.Element {
                   <Row>
                     {[1, 2, 3].map(() => (
                       <Col>
-                        <CardFace />
+                        {/* <CardFace /> */}
                         100%
                       </Col>
                     ))}
@@ -73,7 +73,7 @@ function Game(): JSX.Element {
         <Row>
           {[1, 2, 3, 4, 5, 6, 7].map(() => (
             <Col>
-              <CardFace />
+              {/* <CardFace /> */}
             </Col>
           ))}
         </Row>

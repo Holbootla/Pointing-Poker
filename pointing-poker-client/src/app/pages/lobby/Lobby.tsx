@@ -6,7 +6,9 @@ import ScrumMasterMember from '../../components/shared/scrum-master/scrum-master
 import './lobby.scss'
 import GameName from '../../components/shared/game-name/game-name';
 import EditName from './EditNamePopup';
-import CustomCoverPopup from '../../components/scrum/setCustomCoverPopup/customCoverPopup';
+import CustomCoverPopup from './CustomCoverPopup';
+import CardValuePopup from './AddCardValuePopup';
+
 
 function Lobby(): JSX.Element {
   return (
@@ -28,7 +30,8 @@ function Lobby(): JSX.Element {
       <IssuesLobby />
       <GameSettings />
 			<EditName />
-			<CustomCoverPopup />
+			<CustomCoverPopup/>
+			<CardValuePopup />
     </div>
   );
 }

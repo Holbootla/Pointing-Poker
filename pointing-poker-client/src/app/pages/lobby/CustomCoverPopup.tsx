@@ -1,9 +1,9 @@
 
 import { SyntheticEvent } from "react";
 import { Form, Modal, Button } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { addNewCardCoverAction, closeCustomCoverPopupAction, setSelectedCardCoverAction } from "../../../redux/reducers/custom-cover-reducer";
-import { saveCardCoverAction } from "../../../redux/reducers/game-settings-reducer";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { addNewCardCoverAction, closeCustomCoverPopupAction, setSelectedCardCoverAction } from "../../redux/reducers/custom-cover-reducer";
+import { saveCardCoverAction } from "../../redux/reducers/game-settings-reducer";
 
 
 
@@ -16,12 +16,7 @@ function CustomCoverPopup(): JSX.Element {
   const covers = useAppSelector((state) => state.customCover.covers)
 
   const cardCover = useAppSelector ((state) => state.gameSettings.cardCover)
-  // const gameName = useAppSelector(
-  //   (state) => state.editNamePopup.gameName
-  // );
-  // const prevGameName = useAppSelector(
-  //   (state) => state.editNamePopup.prevGameName
-  // );
+ 
 
   const closeCustomCoverPopup = () => {
     dispatch(saveCardCoverAction(prevCover))

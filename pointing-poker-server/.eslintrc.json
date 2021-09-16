@@ -1,44 +1,54 @@
 {
-    "env": {
-      "browser": true,
-      "es2021": true,
-      "node": true
-    },
-    "extends": [
-      "airbnb-typescript",
-      "plugin:import/errors",
-      "plugin:import/warnings",
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:prettier/recommended",
-      "prettier"
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "airbnb-typescript",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+    // "project": "./tsconfig.json"
+  },
+  "plugins": ["@typescript-eslint", "react", "prettier"],
+  "rules": {
+    "no-plusplus": "off",
+    "no-console": "warn",
+    "react/jsx-filename-extension": [
+      2,
+      { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
     ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": 12,
-      "sourceType": "module",
-      "project": "./tsconfig.json"
-    },
-    "plugins": [
-      "@typescript-eslint",
-      "react",
-      "prettier"
+    "max-len": ["warn", { "code": 120 }],
+    "indent": [
+      "warn",
+      2,
+      {
+        "SwitchCase": 1
+      }
     ],
-    "rules": {
-      "no-plusplus": "off",
-      "no-console": "warn",
-      "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }],
-      "max-len": ["warn", { "code": 120 }],
-      "indent": ["warn", 2, {
+    "@typescript-eslint/indent": [
+      "warn",
+      2,
+      {
         "SwitchCase": 1
-      }],
-      "@typescript-eslint/indent": ["warn", 2, {
-        "SwitchCase": 1
-      }],
-      "prettier/prettier": ["error"],
-      "import/prefer-default-export": "off",
-      "no-param-reassign": ["error", {
+      }
+    ],
+    "prettier/prettier": ["error"],
+    "import/prefer-default-export": "off",
+    "no-param-reassign": [
+      "error",
+      {
         "props": false
-      }]
-    }
+      }
+    ]
+  }
 }

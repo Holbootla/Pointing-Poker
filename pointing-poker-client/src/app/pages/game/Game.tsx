@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import CardFace from '../../components/shared/cards/card-face';
 import GameName from '../../components/shared/game-name/game-name';
 import IssueGame from '../../components/shared/issue-game/issue-game';
+import KickPopup from '../../components/scrum/kick-popup/KickPopup';
 import Member from '../../components/shared/member/member';
 import ScrumMasterMember from '../../components/shared/scrum-master/scrum-master-member';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
@@ -155,6 +156,7 @@ function Game(): JSX.Element {
           ))}
         </Row>
       </Container>
+      <KickPopup />
     </div>
   );
 }

@@ -4,13 +4,6 @@
           justify-content: space-between;
 }
 
-.issue-status {
-  margin-bottom: 0;
-  text-transform: uppercase;
-  font-size: 0.5rem;
-  font-weight: 700;
-}
-
 .issue-icons-wrap {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -24,29 +17,27 @@
   margin-right: 10px;
 }
 
-.issue-icon {
-  width: 35px;
-  height: 35px;
-  background-size: contain;
-  background-position: center;
-  cursor: pointer;
-}
-
-.issue-edit {
+.issue-edit,
+.issue-delete {
   background-image: url("../../../../assets/icons/pen.svg");
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
-.issue-edit:hover {
-  -webkit-transform: scale(1.1);
-          transform: scale(1.1);
+.issue-edit:hover,
+.issue-delete:hover {
+  -webkit-transform: scale(1.2);
+          transform: scale(1.2);
 }
 
 .issue-delete {
   background-image: url("../../../../assets/icons/trash.svg");
 }
 
-.issue-delete:hover {
-  -webkit-transform: scale(1.1);
-          transform: scale(1.1);
+.issue-name-text {
+  width: 165px;
+  padding-right: 3px;
+  margin-right: 0.5rem;
+  overflow: hidden;
 }
 /*# sourceMappingURL=issue-lobby.css.map */

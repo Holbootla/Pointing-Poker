@@ -1,8 +1,8 @@
 {
     "version": 3,
-    "mappings": "AAAA,AAAA,iBAAiB,CAAA;EACf,OAAO,EAAE,IAAI;EACb,eAAe,EAAE,UAAU;CAC5B;;AACD,AAAA,WAAW,CAAC;EACX,KAAK,EAAE,IAAI;EACV,MAAM,EAAE,IAAI;EACb,eAAe,EAAE,OAAO;EACvB,mBAAmB,EAAE,MAAM;EAC3B,MAAM,EAAE,OAAO;CAChB",
+    "mappings": "AAAA,AAAA,iBAAiB,CAAA;EACf,OAAO,EAAE,IAAI;EACb,eAAe,EAAE,UAAU;CAC5B",
     "sources": [
-        "../src/app/components/scram/issues-lobby/issues-lobby.scss"
+        "../src/app/components/scrum/issues-lobby/issues-lobby.scss"
     ],
     "names": [],
     "file": "issues-lobby.css"

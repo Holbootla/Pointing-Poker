@@ -1,0 +1,56 @@
+.lobby-link-block,
+.game-control-btn-block {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.lobby-link-title {
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  font-style: italic;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.lobby-link-text {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 300px;
+  height: 2.4rem;
+  overflow: hidden;
+  margin-bottom: 0;
+  padding-left: 10px;
+  line-height: 2rem;
+  border: 1px solid #24a6ac;
+  font-size: 0.8rem;
+}
+
+.game-control-btn-block {
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.game-control-btn-block .btn-outline-danger {
+  border-color: #6c757d;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.game-control-btn-block .btn-primary {
+  border-color: #6c757d;
+  font-weight: bold;
+  font-size: 24px;
+}
+/*# sourceMappingURL=lobby.css.map */

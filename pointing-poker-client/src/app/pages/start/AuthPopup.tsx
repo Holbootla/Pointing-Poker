@@ -1,6 +1,7 @@
-import { ChangeEvent, FormEvent } from 'react';
+import { ChangeEvent, FormEvent, useContext } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
+import { SocketContext } from '../../socket/socket-context';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
   closeAuthPopupAction,
@@ -11,6 +12,8 @@ import {
 } from '../../redux/reducers/auth-reducer';
 
 function AuthPopup(): JSX.Element {
+  const socket = useContext(SocketContext);
+
   const dispatch = useAppDispatch();
 
   const { authPopupVisible, gameID, newGame, user } = useAppSelector(
@@ -43,27 +46,17 @@ function AuthPopup(): JSX.Element {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    if (newGame) {
-      // SENDING 'START GAME MESSAGE TO SERVER'
-      console.log({
-        message: 'Update',
+
+    socket.emit(
+      'UPDATE_SERVER',
+      {
         action: {
-          type: 'CREATE_GAME',
+          type: newGame ? 'CREATE_GAME' : 'CONNECT_GAME',
           payload: { gameID, user },
         },
-      });
-    } else {
-      // SENDING 'CONNECT GAME MESSAGE TO SERVER'
-      console.log({
-        message: 'Update',
-        action: {
-          type: 'CONNECT_GAME',
-          payload: { gameID, user },
-        },
-      });
-    }
-    // WAIT FOR ANSWER, THEN REDIRECT:
-    history.push(`/lobby/${gameID}`);
+      },
+      history.push(`/lobby/${gameID}`)
+    );
   };
 
   return (

@@ -4,18 +4,13 @@ import { showKickPopupAction } from '../../../redux/reducers/kick-reducer';
 import './member.scss';
 
 interface MemberProps {
-  position: string;
-  name: string;
-  surname: string;
+  id: number;
+  firstName: string;
+  lastName: string;
+  jobPosition: string;
 }
 
-export const Member: FC<MemberProps> = ({
-  name,
-  surname,
-  position,
-}: MemberProps) => {
-  const dispatch = useAppDispatch();
-
+function Member({ id, firstName, lastName, jobPosition}: MemberProps): JSX.Element {
   const avatarText = () => {
     if (surname.length < 1) {
       return name.slice(0, 1);
@@ -29,15 +24,13 @@ export const Member: FC<MemberProps> = ({
   return (
     <div className="item member-item">
       <div className="member-avatar-wrap">
-        <img src="" className="member-avatar-pic hidden" alt="" />
-        <div className="member-avatar">{`${avatarText()}`}</div>
+        <img src="" className="member-avatar-pic hidden" alt=""/>
+        <div className="member-avatar">{`${avatarText(firstName, lastName)}`}</div>
       </div>
       <div className="member-data">
-        <p className="current-status">It is you</p>
-        <p className="member-name">
-          {name} {surname}
-        </p>
-        <p className="member-position">{position}</p>
+        <p className="current-status">Member ID {id}</p>
+        <p className="member-name">{firstName} {lastName}</p>
+        <p className="member-position">{jobPosition}</p>
       </div>
       <div
         className="kick-icon"
@@ -45,7 +38,7 @@ export const Member: FC<MemberProps> = ({
         tabIndex={0}
         onKeyPress={() => showKickPopup()}
         onClick={() => showKickPopup()}
-      />
+       />
     </div>
   );
 };

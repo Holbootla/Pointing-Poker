@@ -4,9 +4,11 @@ import { authPopupSlice } from './reducers/auth-reducer';
 import { customCoverSlice } from './reducers/custom-cover-reducer';
 import { exampleSlice } from './reducers/example-reducer';
 import { editNamePopupSlice } from './reducers/game-name-reducer';
+import { gameSlice } from './reducers/game-reducer';
 import { gameSettingsSlice } from './reducers/game-settings-reducer';
 import { issuePopupSlice } from './reducers/issue-reducer';
 import { kickPopupSlice } from './reducers/kick-reducer';
+import { membersSlice } from './reducers/members-reducer';
 
 export const store = configureStore({
 	reducer: {
@@ -18,6 +20,8 @@ export const store = configureStore({
 		gameSettings: gameSettingsSlice.reducer,
 		customCover: customCoverSlice.reducer,
 		addCardValues: addCardValuesSlice.reducer,
+		members: membersSlice.reducer,
+		game: gameSlice.reducer,
 	},
 });
 

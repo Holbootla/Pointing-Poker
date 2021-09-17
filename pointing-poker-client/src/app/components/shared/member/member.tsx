@@ -1,6 +1,13 @@
 import './member.scss';
 
-function Member(): JSX.Element {
+interface MemberProps {
+  id: number;
+  firstName: string;
+  lastName: string;
+  jobPosition: string;
+}
+
+function Member({ id, firstName, lastName, jobPosition}: MemberProps): JSX.Element {
 
 	const avatarText = (name:string, surname: string) => {
     if (surname.length <1) {
@@ -12,12 +19,12 @@ function Member(): JSX.Element {
           <div className="item member-item">
             <div className="member-avatar-wrap">
               <img src="" className="member-avatar-pic hidden" alt=""/>
-              <div className="member-avatar">{`${avatarText('Peter', 'Ivanov')}`}</div>
+              <div className="member-avatar">{`${avatarText(firstName, lastName)}`}</div>
             </div>
             <div className="member-data">
-              <p className="current-status">It is you</p>
-              <p className="member-name">Peter Ivanov</p>
-              <p className="member-position">position</p>
+              <p className="current-status">Member ID {id}</p>
+              <p className="member-name">{firstName} {lastName}</p>
+              <p className="member-position">{jobPosition}</p>
             </div>
             <div className="kick-icon" />
           </div>

@@ -1,8 +1,8 @@
 .card-face {
   width: 7.6rem;
   height: 11.6rem;
-	margin-right: 10px;
-	margin-bottom: 1rem;
+  margin-right: 10px;
+  margin-bottom: 1rem;
   padding: 1%;
   border-radius: 15px;
   border: 3px solid transparent;
@@ -10,7 +10,6 @@
   background: #eeeeee;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 15px;
-
 }
 .card-data-block {
   display: flex;
@@ -18,24 +17,24 @@
   justify-content: space-between;
 }
 
-.card-front-up{
+.card-front-up {
   align-self: flex-start;
   font-size: 0.9rem;
   text-transform: uppercase;
   font-weight: 600;
 }
-.card-front-down{
+.card-front-down {
   align-self: flex-end;
   font-size: 0.9rem;
   text-transform: uppercase;
   font-weight: 600;
 }
 
-.card-front-center{
+.card-front-center {
   align-self: center;
 }
 
-.card-value-name{
+.card-value-name {
   font-size: 3rem;
   font-weight: 600;
 }
@@ -51,9 +50,8 @@
 .card-front-cup {
   width: 3rem;
   height: 4rem;
-  background-image: url('../../../../assets/icons/cup.svg') ;
+  background-image: url('../../../../assets/icons/cup.svg');
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
 }
-  

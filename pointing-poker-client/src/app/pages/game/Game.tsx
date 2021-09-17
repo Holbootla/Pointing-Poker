@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import CardFace from '../../components/shared/cards/card-face';
 import GameName from '../../components/shared/game-name/game-name';
 import IssueGame from '../../components/shared/issue-game/issue-game';
+import KickPopup from '../../components/scrum/kick-popup/KickPopup';
 import Member from '../../components/shared/member/member';
 import ScrumMasterMember from '../../components/shared/scrum-master/scrum-master-member';
 
@@ -61,9 +62,7 @@ function Game(): JSX.Element {
               <h2>Players:</h2>
               {[1, 2, 3].map(() => (
                 <Row>
-                  <Col>
-                    <Member />
-                  </Col>
+                  <Col>{/* <Member /> */}</Col>
                   <Col>RESULT</Col>
                 </Row>
               ))}
@@ -72,12 +71,11 @@ function Game(): JSX.Element {
         </Row>
         <Row>
           {[1, 2, 3, 4, 5, 6, 7].map(() => (
-            <Col>
-              {/* <CardFace /> */}
-            </Col>
+            <Col>{/* <CardFace /> */}</Col>
           ))}
         </Row>
       </Container>
+      <KickPopup />
     </div>
   );
 }

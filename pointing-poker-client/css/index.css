@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   -webkit-box-sizing: border-box;
-  box-sizing: border-box;
+          box-sizing: border-box;
   text-decoration: none;
 }
 
@@ -31,7 +31,8 @@ img {
 
 .container {
   margin: 0 auto;
-  width: 1440px;
+  max-width: 1440px;
+  padding-bottom: 5rem;
 }
 
 .section-wrap {
@@ -41,9 +42,10 @@ img {
 }
 
 .section-title {
-  line-height: 7.37rem;
+  margin-bottom: 1rem;
+  line-height: 5rem;
   text-align: center;
-  vertical-align: center;
+  vertical-align: middle;
   font-size: 1.5rem;
   font-weight: 600;
   text-transform: capitalize;
@@ -55,17 +57,17 @@ img {
 
 .item {
   width: 300px;
-  height: 75.5px;
+  height: 95px;
   margin-right: 13px;
   padding: 3%;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   -webkit-box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+          box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .member-name,
@@ -86,13 +88,13 @@ img {
   display: -ms-flexbox;
   display: flex;
   -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
+      flex-wrap: wrap;
   -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
   -webkit-box-pack: start;
-  -ms-flex-pack: start;
-  justify-content: flex-start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
   padding: 0;
 }
 
@@ -102,5 +104,13 @@ img {
   background-size: contain;
   background-position: center;
   cursor: pointer;
+}
+
+.current-status {
+  margin-bottom: 0;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #dc3545;
 }
 /*# sourceMappingURL=index.css.map */

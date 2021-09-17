@@ -1,6 +1,6 @@
 import { useAppDispatch } from '../../../redux/hooks';
-import { showIssuePopupAction } from '../../../redux/reducers/issue-reducer';
-import IssuePopup from '../../shared/issue-popup/Issue-popup';
+import { showIssuePopupAction } from '../../../redux/reducers/issues-reducer';
+import IssuePopup from '../issue-popup/Issue-popup';
 import './new-issue.scss';
 
 function NewIssue(): JSX.Element {

@@ -1,53 +1,34 @@
-// import CardFace from "../../components/shared/cards/card-face";
+import CardFace from '../../components/shared/cards/card-face';
 import GameName from '../../components/shared/game-name/game-name';
 import IssueGame from '../../components/shared/issue-game/issue-game';
+import { useAppSelector } from '../../redux/hooks';
+import { gameState } from '../../redux/reducers/game-reducer';
 import './result.scss';
 
 const Result = (): JSX.Element => {
-  const issues = [
-    {
-      title: 'issue111',
-      priority: 'Low',
-      cards: [
-        { value: 1, votes: 42.8 },
-        { value: 2, votes: 28.5 },
-        { value: 3, votes: 28.5 },
-      ],
-    },
-    {
-      title: 'issue123',
-      priority: 'Low',
-      cards: [
-        { value: 1, votes: 42.8 },
-        { value: 2, votes: 28.5 },
-        { value: 3, votes: 28.5 },
-      ],
-    },
-    {
-      title: 'issue324',
-      priority: 'Low',
-      cards: [
-        { value: 1, votes: 42.8 },
-        { value: 2, votes: 28.5 },
-        { value: 3, votes: 28.5 },
-      ],
-    },
-  ];
-
+  const { statistics } = useAppSelector(gameState);
+  const { scoreTypeShort } = useAppSelector((store) => store.gameSettings)
+  
   return (
     <div className="container">
       <GameName />
       <div className="result">
-        {issues.map((issue) => (
-          <div key={issue.title}>
+        {statistics.map((round) => (
+          <div key={round.issue.id}>
             <div className="result__issue">
-              <IssueGame />
+              <IssueGame
+                id={round.issue.id}
+                title={round.issue.title}
+                link={round.issue.link}
+                priority={round.issue.priority}
+                status={round.issue.status}
+              />
             </div>
             <div className="result__cards">
-              {issue.cards.map((card) => (
-                <div className="result__card" key={card.value}>
-                  {/* <CardFace /> */}
-                  <div className="result__votes">{card.votes}%</div>
+              {round.averageValues.map((averageValue) => (
+                <div className="result__card" key={averageValue.value}>
+                  <CardFace value={averageValue.value} type={scoreTypeShort} />
+                  <div className="result__votes">{averageValue.percents}%</div>
                 </div>
               ))}
             </div>

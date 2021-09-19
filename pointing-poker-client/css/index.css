@@ -98,10 +98,6 @@ img {
   padding: 0;
 }
 
-.member-scrum {
-  width: calc(100% - (35px + 20px));
-}
-
 .issue-icon {
   width: 35px;
   height: 35px;
@@ -118,12 +114,7 @@ img {
   color: #dc3545;
 }
 
-a.reset-link-styles {
-  text-decoration: none;
-  color: #dc3545;
-}
-
-a.reset-link-styles:hover {
-  color: #ffffff;
+.member-scrum {
+  width: 300px;
 }
 /*# sourceMappingURL=index.css.map */

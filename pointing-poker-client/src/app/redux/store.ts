@@ -16,15 +16,15 @@ export const store = configureStore({
 	reducer: {
 		example: exampleSlice.reducer,
 		authPopup: authPopupSlice.reducer,
-		editNamePopup: editNamePopupSlice.reducer,
+		gameName: editNamePopupSlice.reducer,
 		kickPopup: kickPopupSlice.reducer,
 		issues: issuesSlice.reducer,
 		gameSettings: gameSettingsSlice.reducer,
 		customCover: customCoverSlice.reducer,
 		addCardValues: addCardValuesSlice.reducer,
-    deleteIssuePopup: deleteIssuePopupSlice.reducer,
-    editIssuePopup: editIssuePopupSlice.reducer,
-    members: membersSlice.reducer,
+		deleteIssuePopup: deleteIssuePopupSlice.reducer,
+		editIssuePopup: editIssuePopupSlice.reducer,
+		members: membersSlice.reducer,
 		game: gameSlice.reducer,
 	},
 });
@@ -32,8 +32,8 @@ export const store = configureStore({
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
 export type AppThunk<ReturnType = void> = ThunkAction<
-  ReturnType,
-  RootState,
-  unknown,
-  Action<string>
+	ReturnType,
+	RootState,
+	unknown,
+	Action<string>
 >;

@@ -30,7 +30,7 @@
 .game-control-btn-block {
   justify-content: space-between;
   .btn-outline-danger {
-    border-color: #6c757d;
+    border-color: #dc3545;
     font-weight: bold;
     font-size: 24px;
   }
@@ -38,5 +38,24 @@
     border-color: #6c757d;
     font-weight: bold;
     font-size: 24px;
+    &:hover {
+      background-color: #ffffff;
+    }
+  }
+}
+
+.link-styles-cansel {
+  color: #dc3545;
+  text-decoration: none;
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+.link-styles-start {
+  color: #ffffff;
+  text-decoration: none;
+  &:hover {
+    color: #0d6efd;
   }
 }

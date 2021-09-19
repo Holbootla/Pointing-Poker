@@ -37,6 +37,7 @@ function GameSettings(): JSX.Element {
     timerMinutes,
     timerSeconds,
     cardCover,
+    isDefaultSettings,
   } = useAppSelector((state) => state.gameSettings);
 
   const cardCovers = useAppSelector((state) => state.customCover.covers);
@@ -52,6 +53,7 @@ function GameSettings(): JSX.Element {
   const timerOnCheckboxHandler = () => {
     dispatch(timerOnAction());
   };
+
   function findCardValues(type: string): string[] | null {
     const cardsValues = cardValues.find((card) => card.name === type);
     if (cardsValues) return cardsValues?.values;
@@ -64,6 +66,7 @@ function GameSettings(): JSX.Element {
     const values = findCardValues(event.target.value);
     if (!(values === null)) dispatch(setCardValuesFinalSetAction(values));
   };
+
   const handelShortType = (event: ChangeEvent<HTMLSelectElement>) => {
     dispatch(scoreTypeShortAction(event.target.value));
     dispatch(cleanCardsSelectedAction());
@@ -255,6 +258,7 @@ function GameSettings(): JSX.Element {
           type="checkbox"
           className="settings-label-default"
           label="Make these my default game settings"
+          checked={isDefaultSettings}
           onChange={handelDefaultSettings}
         />
       </Form>

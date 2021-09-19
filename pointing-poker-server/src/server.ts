@@ -3,7 +3,7 @@ import * as http from 'http';
 // import * as WebSocket from 'ws';
 import { Server, Socket } from 'socket.io';
 import { handleAction } from './socket-reducer';
-import { createMessage, getMessage, removeMessage } from './mongo';
+// import { createMessage, getMessage, removeMessage } from './mongo';
 
 const app = express();
 

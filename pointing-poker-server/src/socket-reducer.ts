@@ -6,37 +6,38 @@ export function handleAction(
   socket: Socket,
   action: { type: string; payload: any }
 ) {
+  const getStateIndex = () => {
+    return STATE.findIndex((el) => el.gameID === gameID);
+  };
+
   const gameID = action.payload.gameID.toString();
 
-  const stateInd = STATE.findIndex((el) => el.gameID === gameID);
+  if (action.type === 'game_created') {
+    const users = [];
+    users.push(action.payload.user);
+    socket.join(gameID);
+    STATE.push({ gameID, users });
 
-  switch (action.type) {
-    case 'game_created':
-      socket.join(gameID);
-      STATE.push({ gameID });
-      const stateInd = STATE.findIndex((el) => el.gameID === gameID);
-      io.to(gameID).emit('UPDATE_CLIENT', {
-        type: 'authPopup/closeAuthPopupAction',
-        payload: {
-          state: STATE[stateInd],
-        },
-      });
-      break;
+    // io.to(gameID).emit('UPDATE_CLIENT', {
+    //   type: 'slice-name/reducer-name',
+    //   payload: {
+    //     state: STATE[stateInd]
+    //   },
+    // });
+    console.log(STATE, STATE[getStateIndex()].users);
+  }
 
-    // EXAMPLE:
-    case 'user_connected':
-      socket.join(gameID);
-      // LOGIC OF ADDING NEW MEMBER IN MEMBERS_LIST:
-      // io.to(gameID).emit('UPDATE_CLIENT', {
-      //   type: 'slice-name/reducer-name',
-      //   payload: {
-      //     state: STATE[stateInd]
-      //   },
-      // });
-      break;
-
-    default:
-      break;
+  // EXAMPLE:
+  if (action.type === 'user_connected') {
+    socket.join(gameID);
+    STATE[getStateIndex()].users.push(action.payload.user);
+    // io.to(gameID).emit('UPDATE_CLIENT', {
+    //   type: 'slice-name/reducer-name',
+    //   payload: {
+    //     state: STATE[stateInd]
+    //   },
+    // });
+    console.log(STATE, STATE[getStateIndex()].users);
   }
 
   // ADD YOUR REDUCER:

@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { SocketContext } from './app/socket/socket-context';
 import Game from './app/pages/game/Game';
@@ -9,14 +9,17 @@ import Start from './app/pages/start/Start';
 
 function App(): JSX.Element {
   const socket = useContext(SocketContext);
-  socket.on('connect', () => {
-    console.log(socket.id);
-  });
-  socket.on('UPDATE_CLIENT', (action) => {
-    console.log('DISPATCH THIS:');
-    console.log('action.type: ', action.type);
-    console.log('action.payload: ', action.payload);
-  });
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log(socket.id);
+    });
+    socket.on('UPDATE_CLIENT', (action) => {
+      console.log('DISPATCH THIS:');
+      console.log('action.type: ', action.type);
+      console.log('action.payload: ', action.payload);
+    });
+  }, [socket]);
+
   return (
     <Router>
       <Switch>

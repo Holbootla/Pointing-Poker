@@ -50,10 +50,8 @@ function AuthPopup(): JSX.Element {
     socket.emit(
       'UPDATE_SERVER',
       {
-        action: {
-          type: newGame ? 'CREATE_GAME' : 'CONNECT_GAME',
-          payload: { gameID, user },
-        },
+        type: newGame ? 'CREATE_GAME' : 'CONNECT_GAME',
+        payload: { gameID, user },
       },
       history.push(`/lobby/${gameID}`)
     );

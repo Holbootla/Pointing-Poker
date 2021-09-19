@@ -3,12 +3,13 @@ import type { RootState } from '../store';
 
 interface AuthPopupState {
   authPopupVisible: boolean;
-  gameID: number | '';
+  gameID: '';
   newGame: boolean;
   user: {
-    firstName: string | undefined;
-    lastName: string | undefined;
-    jobPosition: string | undefined;
+    id: string;
+    firstName: string;
+    lastName: string;
+    jobPosition: string;
     isAdmin: boolean;
     role: 'observer' | 'player';
   };
@@ -19,9 +20,10 @@ const initialState: AuthPopupState = {
   gameID: '',
   newGame: false,
   user: {
-    firstName: undefined,
-    lastName: undefined,
-    jobPosition: undefined,
+    id: '',
+    firstName: '',
+    lastName: '',
+    jobPosition: '',
     isAdmin: false,
     role: 'player',
   },
@@ -38,9 +40,10 @@ export const authPopupSlice = createSlice({
       state.authPopupVisible = false;
       state.gameID = '';
       state.user = {
-        firstName: undefined,
-        lastName: undefined,
-        jobPosition: undefined,
+        id: '',
+        firstName: '',
+        lastName: '',
+        jobPosition: '',
         isAdmin: false,
         role: 'player',
       };
@@ -50,6 +53,9 @@ export const authPopupSlice = createSlice({
     },
     setNewGame: (state, action) => {
       state.newGame = action.payload;
+    },
+    setUserIDAction: (state, action) => {
+      state.user.id = action.payload;
     },
     setFirstNameAction: (state, action) => {
       state.user.firstName = action.payload;
@@ -74,9 +80,11 @@ export const {
   closeAuthPopupAction,
   setGameIDAction,
   setNewGame,
+  setUserIDAction,
   setFirstNameAction,
   setLastNameAction,
   setJobPositionAction,
+  setIsAdminAction,
   setRoleAction,
 } = authPopupSlice.actions;
 

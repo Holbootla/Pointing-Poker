@@ -20,12 +20,12 @@ function Start(): JSX.Element {
   const showAuthPopup = () => dispatch(showAuthPopupAction());
 
   const handleStartGameButton = () => {
-    dispatch(setGameIDAction(getRandomID(10000000, 99999999)));
+    dispatch(setGameIDAction(getRandomID(10000000, 99999999).toString()));
     dispatch(setNewGame(true));
   };
 
   const handleChangeConnectGameID = (e: ChangeEvent<HTMLInputElement>) => {
-    dispatch(setGameIDAction(e.target.value));
+    dispatch(setGameIDAction(e.target.value.toString()));
   };
 
   const handleConnectGameButton = (e: FormEvent<HTMLFormElement>) => {

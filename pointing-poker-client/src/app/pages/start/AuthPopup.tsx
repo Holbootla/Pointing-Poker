@@ -1,14 +1,16 @@
 import { ChangeEvent, FormEvent, useContext } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
-import { SocketContext } from '../../socket/socket-context';
+import { sendToServer, SocketContext } from '../../socket/socket-context';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
   closeAuthPopupAction,
   setFirstNameAction,
+  setIsAdminAction,
   setJobPositionAction,
   setLastNameAction,
   setRoleAction,
+  setUserIDAction,
 } from '../../redux/reducers/auth-reducer';
 
 function AuthPopup(): JSX.Element {
@@ -47,13 +49,15 @@ function AuthPopup(): JSX.Element {
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
-    socket.emit(
-      'UPDATE_SERVER',
-      {
-        type: newGame ? 'CREATE_GAME' : 'CONNECT_GAME',
-        payload: { gameID, user },
-      },
-      history.push(`/lobby/${gameID}`)
+    dispatch(setUserIDAction(socket.id));
+    dispatch(setIsAdminAction(newGame));
+
+    sendToServer(
+      newGame ? 'game_created' : 'user_connected',
+      { gameID, user },
+      () => {
+        history.push(`/lobby/${gameID}`);
+      }
     );
   };
 

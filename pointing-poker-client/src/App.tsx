@@ -6,16 +6,17 @@ import Lobby from './app/pages/lobby/Lobby';
 import NotFound from './app/pages/not-found/NotFound';
 import Result from './app/pages/result/Result';
 import Start from './app/pages/start/Start';
-import handleUpdate from './app/socket/socket-reducer';
+import { useAppDispatch } from './app/redux/hooks';
 
 function App(): JSX.Element {
+  const dispatch = useAppDispatch();
   const socket = useContext(SocketContext);
   useEffect(() => {
     socket.on('connect', () => {
       console.log(socket.id);
     });
     socket.on('UPDATE_CLIENT', (action) => {
-      handleUpdate(action);
+      dispatch(action);
     });
   }, [socket]);
 

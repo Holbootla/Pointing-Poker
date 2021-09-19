@@ -10,28 +10,33 @@ export function handleAction(
 
   const stateInd = STATE.findIndex((el) => el.gameID === gameID);
 
-  if (action.type === 'CREATE_GAME') {
-    socket.join(gameID);
-    STATE.push({ gameID });
-    const stateInd = STATE.findIndex((el) => el.gameID === gameID);
-    io.to(gameID).emit('UPDATE_CLIENT', {
-      type: 'GAME_CREATED',
-      payload: {
-        state: STATE[stateInd],
-        message: `game created with id: ${gameID}`,
-      },
-    });
-  }
+  switch (action.type) {
+    case 'game_created':
+      socket.join(gameID);
+      STATE.push({ gameID });
+      const stateInd = STATE.findIndex((el) => el.gameID === gameID);
+      io.to(gameID).emit('UPDATE_CLIENT', {
+        type: 'authPopup/closeAuthPopupAction',
+        payload: {
+          state: STATE[stateInd],
+        },
+      });
+      break;
 
-  if (action.type === 'CONNECT_GAME') {
-    socket.join(gameID);
-    io.to(gameID).emit('UPDATE_CLIENT', {
-      type: 'GAME_CONNECTED',
-      payload: {
-        state: STATE[stateInd],
-        message: `user connected to game ${gameID}`,
-      },
-    });
+    // EXAMPLE:
+    case 'user_connected':
+      socket.join(gameID);
+      // LOGIC OF ADDING NEW MEMBER IN MEMBERS_LIST:
+      // io.to(gameID).emit('UPDATE_CLIENT', {
+      //   type: 'slice-name/reducer-name',
+      //   payload: {
+      //     state: STATE[stateInd]
+      //   },
+      // });
+      break;
+
+    default:
+      break;
   }
 
   // ADD YOUR REDUCER:

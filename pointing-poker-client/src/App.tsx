@@ -6,6 +6,7 @@ import Lobby from './app/pages/lobby/Lobby';
 import NotFound from './app/pages/not-found/NotFound';
 import Result from './app/pages/result/Result';
 import Start from './app/pages/start/Start';
+import handleUpdate from './app/socket/socket-reducer';
 
 function App(): JSX.Element {
   const socket = useContext(SocketContext);
@@ -14,9 +15,7 @@ function App(): JSX.Element {
       console.log(socket.id);
     });
     socket.on('UPDATE_CLIENT', (action) => {
-      console.log('DISPATCH THIS:');
-      console.log('action.type: ', action.type);
-      console.log('action.payload: ', action.payload);
+      handleUpdate(action);
     });
   }, [socket]);
 

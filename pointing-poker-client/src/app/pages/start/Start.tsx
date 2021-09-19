@@ -3,9 +3,12 @@ import { Button, Form, FormControl, InputGroup } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
   setGameIDAction,
+  setIsAdminAction,
   setNewGame,
+  setUserIDAction,
   showAuthPopupAction,
 } from '../../redux/reducers/auth-reducer';
+import { socket } from '../../socket/socket-context';
 import AuthPopup from './AuthPopup';
 
 function Start(): JSX.Element {
@@ -22,6 +25,8 @@ function Start(): JSX.Element {
   const handleStartGameButton = () => {
     dispatch(setGameIDAction(getRandomID(10000000, 99999999).toString()));
     dispatch(setNewGame(true));
+    dispatch(setIsAdminAction(true));
+    dispatch(setUserIDAction(socket.id));
   };
 
   const handleChangeConnectGameID = (e: ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +36,8 @@ function Start(): JSX.Element {
   const handleConnectGameButton = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(setNewGame(false));
+    dispatch(setIsAdminAction(false));
+    dispatch(setUserIDAction(socket.id));
   };
 
   return (

@@ -6,16 +6,12 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
   closeAuthPopupAction,
   setFirstNameAction,
-  setIsAdminAction,
   setJobPositionAction,
   setLastNameAction,
   setRoleAction,
-  setUserIDAction,
 } from '../../redux/reducers/auth-reducer';
 
 function AuthPopup(): JSX.Element {
-  const socket = useContext(SocketContext);
-
   const dispatch = useAppDispatch();
 
   const { authPopupVisible, gameID, newGame, user } = useAppSelector(
@@ -48,9 +44,6 @@ function AuthPopup(): JSX.Element {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-
-    dispatch(setUserIDAction(socket.id));
-    dispatch(setIsAdminAction(newGame));
 
     sendToServer(
       newGame ? 'game_created' : 'user_connected',

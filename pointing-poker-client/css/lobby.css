@@ -22,6 +22,10 @@
   font-weight: 700;
 }
 
+.lobby-link-title:focus {
+  background-color: yellow;
+}
+
 .lobby-link-text {
   display: -webkit-box;
   display: -ms-flexbox;

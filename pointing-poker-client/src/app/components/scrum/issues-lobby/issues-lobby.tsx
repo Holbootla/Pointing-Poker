@@ -6,18 +6,23 @@ import IssueLobby from '../issue-lobby/issue-lobby';
 import NewIssue from '../new-issue/new-issue';
 import './issues-lobby.scss';
 
-const  IssuesLobby: FC = () => {
-
-  const { issues } = useAppSelector((state) => state.issues)
+const IssuesLobby: FC = () => {
+  const { issues } = useAppSelector((state) => state.issues);
   return (
     <section className="section-wrap">
       <div className="section-title">issues:</div>
       <div className="issues-container">
         <ul className="issues-list">
           {issues.map((issue) => (
-            <IssueLobby key={issue.id} id={issue.id} title={issue.title} priority={issue.priority} link={issue.link} status={issue.status}/>
-          ))
-          }
+            <IssueLobby
+              key={issue.id}
+              id={issue.id}
+              title={issue.title}
+              priority={issue.priority}
+              link={issue.link}
+              status={issue.status}
+            />
+          ))}
           <NewIssue />
         </ul>
       </div>
@@ -25,6 +30,6 @@ const  IssuesLobby: FC = () => {
       <EditIssuePopup />
     </section>
   );
-}
+};
 
 export default IssuesLobby;

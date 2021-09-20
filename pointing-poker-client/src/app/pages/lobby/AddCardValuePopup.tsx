@@ -57,7 +57,7 @@ function CardValuePopup(): JSX.Element {
           {cardValues.map((card) =>
             card.name === scoreTypeShort
               ? card.values.map((value) => (
-                  <option value={value} key={Math.random() * Date.now()}>
+                  <option value={value} key={value}>
                     {value}
                   </option>
                 ))

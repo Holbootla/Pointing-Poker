@@ -215,7 +215,7 @@ function GameSettings(): JSX.Element {
                     ? 'card-cover card-cover-selected'
                     : 'card-cover'
                 }`}
-                key={cover.id * Date.now()}
+                key={cover.id}
                 role="button"
                 style={{ backgroundColor: `${cover.cover}` }}
                 tabIndex={0}

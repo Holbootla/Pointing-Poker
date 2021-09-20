@@ -22,7 +22,7 @@ const initialState: MembersState = {
       firstName: 'Name',
       lastName: 'Surname',
       jobPosition: "front-end developer",
-      isAdmin: true,
+      isAdmin: false,
       role: 'player',
       voteResult: '-'
     },
@@ -31,7 +31,7 @@ const initialState: MembersState = {
       firstName: 'Konstantin',
       lastName: 'Djakov',
       jobPosition: "front-end developer",
-      isAdmin: false,
+      isAdmin: true,
       role: 'player',
       voteResult: '-'
     },
@@ -73,13 +73,13 @@ export const membersSlice = createSlice({
     setVoteResultAction: (state, action) => {
       state.members = state.members.map((member) => {
         if (member.id === action.payload.memberId) {
-          return { ...member, voteResult: action.payload.voteResult};
+          return { ...member, voteResult: action.payload.voteResult };
         }
         return member;
       })
     },
     setAllVoteResultsAction: (state, action) => {
-      state.members = state.members.map((member) => ({ ...member, voteResult: action.payload.voteResult}));
+      state.members = state.members.map((member) => ({ ...member, voteResult: action.payload.voteResult }));
     },
   },
 });

@@ -10,7 +10,7 @@ function EditName(): JSX.Element {
   const dispatch = useAppDispatch();
 
   const { editNamePopupVisible, gameName, prevGameName } = useAppSelector(
-    (state) => state.editNamePopup
+    (state) => state.gameName
   );
 
   const closeEditNamePopup = () => {

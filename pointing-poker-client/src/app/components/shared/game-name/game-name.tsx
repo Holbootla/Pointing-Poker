@@ -7,7 +7,7 @@ import './game-name.scss';
 
 function GameName(): JSX.Element {
   const dispatch = useAppDispatch();
-  const gameName = useAppSelector((state) => state.editNamePopup.gameName);
+  const { gameName } = useAppSelector((state) => state.gameName);
 
   const showEditNamePopup = () => {
     dispatch(showEditNamePopupAction());

@@ -22,10 +22,6 @@
   font-weight: 700;
 }
 
-.lobby-link-title:focus {
-  background-color: yellow;
-}
-
 .lobby-link-text {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -47,7 +43,7 @@
 }
 
 .game-control-btn-block .btn-outline-danger {
-  border-color: #6c757d;
+  border-color: #dc3545;
   font-weight: bold;
   font-size: 24px;
 }
@@ -56,5 +52,27 @@
   border-color: #6c757d;
   font-weight: bold;
   font-size: 24px;
+}
+
+.game-control-btn-block .btn-primary:hover {
+  background-color: #ffffff;
+}
+
+.link-styles-cansel {
+  color: #dc3545;
+  text-decoration: none;
+}
+
+.link-styles-cansel:hover {
+  color: #ffffff;
+}
+
+.link-styles-start {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.link-styles-start:hover {
+  color: #0d6efd;
 }
 /*# sourceMappingURL=lobby.css.map */

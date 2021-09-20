@@ -17,6 +17,7 @@ import {
   scoreTypeAction,
   scoreTypeShortAction,
   setCardValuesFinalSetAction,
+  setDefaultSettings,
   timerMinutesAction,
   timerOnAction,
   timerSecondsAction,
@@ -37,6 +38,7 @@ function GameSettings(): JSX.Element {
     timerMinutes,
     timerSeconds,
     cardCover,
+    isDefaultSettings,
   } = useAppSelector((state) => state.gameSettings);
 
   const cardCovers = useAppSelector((state) => state.customCover.covers);
@@ -52,6 +54,7 @@ function GameSettings(): JSX.Element {
   const timerOnCheckboxHandler = () => {
     dispatch(timerOnAction());
   };
+
   function findCardValues(type: string): string[] | null {
     const cardsValues = cardValues.find((card) => card.name === type);
     if (cardsValues) return cardsValues?.values;
@@ -64,6 +67,7 @@ function GameSettings(): JSX.Element {
     const values = findCardValues(event.target.value);
     if (!(values === null)) dispatch(setCardValuesFinalSetAction(values));
   };
+
   const handelShortType = (event: ChangeEvent<HTMLSelectElement>) => {
     dispatch(scoreTypeShortAction(event.target.value));
     dispatch(cleanCardsSelectedAction());
@@ -91,7 +95,7 @@ function GameSettings(): JSX.Element {
     dispatch(showAddCardValuePopupAction());
   };
 
-  const handelDefaultSettings = () => true;
+  const handelDefaultSettings = () => dispatch(setDefaultSettings());
 
   return (
     <section className="section-wrap">
@@ -116,7 +120,7 @@ function GameSettings(): JSX.Element {
         <div className="select-timer-block">
           <Form.Group className="mb-3">
             <Form.Label htmlFor="scopeType" className="settings-label">
-              Scope type:
+              Score type:
             </Form.Label>
             <Form.Select
               aria-label="scoreType"
@@ -125,16 +129,16 @@ function GameSettings(): JSX.Element {
               onChange={handelScopeType}
             >
               <option value="FB">
-                Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?, Pass,
-                Breack )
+                Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?, Pass, Break
+                )
               </option>
               <option value="SP">
                 Story point ( 0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100, ?, Pass,
-                Breack )
+                Break )
               </option>
               <option value="P2">
                 Powers of 2 ( 0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, ?, Pass,
-                Breack )
+                Break )
               </option>
             </Form.Select>
           </Form.Group>
@@ -211,7 +215,7 @@ function GameSettings(): JSX.Element {
                     ? 'card-cover card-cover-selected'
                     : 'card-cover'
                 }`}
-                key={cover.id * Date.now()}
+                key={cover.id}
                 role="button"
                 style={{ backgroundColor: `${cover.cover}` }}
                 tabIndex={0}
@@ -229,19 +233,17 @@ function GameSettings(): JSX.Element {
           </div>
         </div>
         <div className="cards-add-values-block">
-          <Form.Label className="settings-label">Add card values:</Form.Label>
+          <Form.Label className="settings-label">
+            Add card values from the selected score type:
+          </Form.Label>
           <div className="cards-container" role="button" tabIndex={0}>
-            {cardsSelected.map((card) =>
-              card === 'Break' ? (
-                <CardBreak key={Math.random() * Date.now()} />
-              ) : (
-                <CardFace
-                  value={card}
-                  type={scoreType}
-                  key={Math.random() * Date.now()}
-                />
-              )
-            )}
+            {cardsSelected.map((card, i) => {
+              const partId = i;
+              if (card === 'Break') {
+                return <CardBreak key="cardBreack" />;
+              }
+              return <CardFace value={card} type={scoreType} key={partId} />;
+            })}
             <div
               className="card-cover option-add"
               role="button"
@@ -255,6 +257,7 @@ function GameSettings(): JSX.Element {
           type="checkbox"
           className="settings-label-default"
           label="Make these my default game settings"
+          checked={isDefaultSettings}
           onChange={handelDefaultSettings}
         />
       </Form>

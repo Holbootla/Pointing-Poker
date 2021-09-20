@@ -17,6 +17,7 @@ import {
   scoreTypeAction,
   scoreTypeShortAction,
   setCardValuesFinalSetAction,
+  setDefaultSettings,
   timerMinutesAction,
   timerOnAction,
   timerSecondsAction,
@@ -94,7 +95,7 @@ function GameSettings(): JSX.Element {
     dispatch(showAddCardValuePopupAction());
   };
 
-  const handelDefaultSettings = () => true;
+  const handelDefaultSettings = () => dispatch(setDefaultSettings());
 
   return (
     <section className="section-wrap">
@@ -128,16 +129,16 @@ function GameSettings(): JSX.Element {
               onChange={handelScopeType}
             >
               <option value="FB">
-                Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?, Pass,
-                Breack )
+                Fibonacci ( 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ?, Pass, Break
+                )
               </option>
               <option value="SP">
                 Story point ( 0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100, ?, Pass,
-                Breack )
+                Break )
               </option>
               <option value="P2">
                 Powers of 2 ( 0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, ?, Pass,
-                Breack )
+                Break )
               </option>
             </Form.Select>
           </Form.Group>
@@ -232,7 +233,9 @@ function GameSettings(): JSX.Element {
           </div>
         </div>
         <div className="cards-add-values-block">
-          <Form.Label className="settings-label">Add card values from the selected score type:</Form.Label>
+          <Form.Label className="settings-label">
+            Add card values from the selected score type:
+          </Form.Label>
           <div className="cards-container" role="button" tabIndex={0}>
             {cardsSelected.map((card, i) => {
               const partId = i;

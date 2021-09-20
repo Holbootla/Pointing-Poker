@@ -18,26 +18,47 @@ export function handleAction(
     socket.join(gameID);
     STATE.push({ gameID, users });
 
-    // io.to(gameID).emit('UPDATE_CLIENT', {
-    //   type: 'slice-name/reducer-name',
-    //   payload: {
-    //     state: STATE[stateInd]
-    //   },
-    // });
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'members/setMembersAction',
+      payload: {
+        members: STATE[getStateIndex()].users,
+      },
+    });
     console.log(STATE, STATE[getStateIndex()].users);
   }
 
-  // EXAMPLE:
   if (action.type === 'user_connected') {
     socket.join(gameID);
     STATE[getStateIndex()].users.push(action.payload.user);
-    // io.to(gameID).emit('UPDATE_CLIENT', {
-    //   type: 'slice-name/reducer-name',
-    //   payload: {
-    //     state: STATE[stateInd]
-    //   },
-    // });
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'members/setMembersAction',
+      payload: {
+        members: STATE[getStateIndex()].users,
+      },
+    });
     console.log(STATE, STATE[getStateIndex()].users);
+  }
+
+  if (action.type === 'user_kicked') {
+    const kickedUserIndex = STATE[getStateIndex()].users.findIndex((user) => {
+      user.id === action.payload.user.id;
+    });
+    STATE[getStateIndex()].users.splice(kickedUserIndex);
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'members/setMembersAction',
+      payload: {
+        members: STATE[getStateIndex()].users,
+      },
+    });
+    console.log(STATE, STATE[getStateIndex()].users);
+  }
+
+  if (action.type === 'game_name_changed') {
+    STATE[getStateIndex()].gameName = action.payload;
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'gameName/saveNewGameNameAction',
+      payload: STATE[getStateIndex()].gameName,
+    });
   }
 
   // ADD YOUR REDUCER:

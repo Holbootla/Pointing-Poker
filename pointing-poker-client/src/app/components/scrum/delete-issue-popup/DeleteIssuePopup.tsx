@@ -4,11 +4,14 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { setIssuesAction } from '../../../redux/reducers/issues-reducer';
 import { closeDeleteIssuePopupAction } from '../../../redux/reducers/delete-issue-reducer';
 import './delete-issue-popup.scss';
+import { sendToServer } from '../../../socket/socket-context';
 
 const DeleteIssuePopup: FC = () => {
   const dispatch = useAppDispatch();
 
   const { issues } = useAppSelector((state) => state.issues);
+  const { gameID } = useAppSelector((state) => state.authPopup);
+
   const { deleteIssuePopupVisible, idIssueToDelete } = useAppSelector(
     (state) => state.deleteIssuePopup
   );
@@ -22,6 +25,7 @@ const DeleteIssuePopup: FC = () => {
     );
     dispatch(setIssuesAction(deleteIssueIndex));
     dispatch(closeDeleteIssuePopupAction());
+    sendToServer('ISSUES_UPDATED', { gameID, issues });
   };
 
   return (

@@ -5,11 +5,13 @@ interface IUser {
   jobPosition: string;
   isAdmin: boolean;
   role: 'observer' | 'player';
+  voteResult?: string;
 }
 
 interface IServerState {
   gameID: string;
   users: IUser[];
+  gameName?: string;
   additionalKeys?: string;
 }
 

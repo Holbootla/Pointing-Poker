@@ -7,6 +7,7 @@ interface MemberProps {
   firstName: string;
   lastName: string;
   jobPosition: string;
+  isAdmin: boolean;
 }
 
 function Member({
@@ -14,6 +15,7 @@ function Member({
   firstName,
   lastName,
   jobPosition,
+  isAdmin,
 }: MemberProps): JSX.Element {
   const dispatch = useAppDispatch();
   const avatarText = () => {
@@ -23,10 +25,7 @@ function Member({
     return firstName.slice(0, 1) + lastName.slice(0, 1);
   };
 
-  const showKickPopup = () =>
-    dispatch(
-      showKickPopupAction({ kickedName: firstName, kickedSurname: lastName })
-    );
+  const showKickPopup = () => dispatch(showKickPopupAction(String(id)));
 
   return (
     <div className="item member-item">
@@ -36,18 +35,20 @@ function Member({
       </div>
       <div className="member-data">
         <p className="current-status">Member ID {id}</p>
-        <p className="member-name">
-          {firstName} {lastName}
-        </p>
+        <p className="member-name">{`${firstName} ${lastName}`}</p>
         <p className="member-position">{jobPosition}</p>
       </div>
-      <div
-        className="kick-icon"
-        role="button"
-        tabIndex={0}
-        onKeyPress={() => showKickPopup()}
-        onClick={() => showKickPopup()}
-      />
+      {isAdmin ? (
+        <div className="scrum-card">scrum</div>
+      ) : (
+        <div
+          className="kick-icon"
+          role="button"
+          tabIndex={0}
+          onKeyPress={() => showKickPopup()}
+          onClick={() => showKickPopup()}
+        />
+      )}
     </div>
   );
 }

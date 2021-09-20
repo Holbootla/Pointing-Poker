@@ -119,7 +119,7 @@ function GameSettings(): JSX.Element {
         <div className="select-timer-block">
           <Form.Group className="mb-3">
             <Form.Label htmlFor="scopeType" className="settings-label">
-              Scope type:
+              Score type:
             </Form.Label>
             <Form.Select
               aria-label="scoreType"
@@ -232,19 +232,15 @@ function GameSettings(): JSX.Element {
           </div>
         </div>
         <div className="cards-add-values-block">
-          <Form.Label className="settings-label">Add card values:</Form.Label>
+          <Form.Label className="settings-label">Add card values from the selected score type:</Form.Label>
           <div className="cards-container" role="button" tabIndex={0}>
-            {cardsSelected.map((card) =>
-              card === 'Break' ? (
-                <CardBreak key={Math.random() * Date.now()} />
-              ) : (
-                <CardFace
-                  value={card}
-                  type={scoreType}
-                  key={Math.random() * Date.now()}
-                />
-              )
-            )}
+            {cardsSelected.map((card, i) => {
+              const partId = i;
+              if (card === 'Break') {
+                return <CardBreak key="cardBreack" />;
+              }
+              return <CardFace value={card} type={scoreType} key={partId} />;
+            })}
             <div
               className="card-cover option-add"
               role="button"

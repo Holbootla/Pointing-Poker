@@ -1,13 +1,31 @@
+import { FC } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { closeKickPopupAction } from '../../../redux/reducers/kick-reducer';
-import './kickPopup.scss'
+import { kickMemberAction } from '../../../redux/reducers/members-reducer';
+import './kickPopup.scss';
 
-const KickPopup = (): JSX.Element => {
+const KickPopup: FC = () => {
   const dispatch = useAppDispatch();
 
-  const { kickPopupVisible, kickedName, kickedSurname } = useAppSelector((state) => state.kickPopup);
-  const closeKickPopup = () => dispatch(closeKickPopupAction());
+  const { members } = useAppSelector((state) => state.members);
+
+  const { kickPopupVisible, kickedMemberId } = useAppSelector(
+    (state) => state.kickPopup
+  );
+
+  const kickedMember = members.find(
+    (member) => member.id === Number(kickedMemberId)
+  );
+
+  const closeKickPopup = () => {
+    dispatch(closeKickPopupAction());
+  };
+
+  const handelKickMemberClick = () => {
+    dispatch(kickMemberAction(kickedMember));
+    dispatch(closeKickPopupAction());
+  };
 
   return (
     <Modal
@@ -19,18 +37,21 @@ const KickPopup = (): JSX.Element => {
       centered
     >
       <Modal.Header className="kick-popup__header">
-        <Modal.Title className="kick-popup__header-title">Kick player?</Modal.Title>
+        <Modal.Title className="kick-popup__header-title">
+          Kick player?
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body className="kick-popup__body">
-        Are you really want to remove player {kickedName} {kickedSurname} from game session?
+        Are you really want to remove player {kickedMember?.firstName}
+        {kickedMember?.lastName} from game session?
       </Modal.Body>
       <Modal.Footer>
         <div className="kick-popup__footer">
           <Button
             className="kick-popup__footer-button"
             variant="primary"
-            onClick={closeKickPopup}
-            onKeyPress={closeKickPopup}
+            onClick={handelKickMemberClick}
+            onKeyPress={handelKickMemberClick}
           >
             Yes
           </Button>

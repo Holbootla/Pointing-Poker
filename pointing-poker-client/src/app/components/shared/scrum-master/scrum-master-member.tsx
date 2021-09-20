@@ -21,7 +21,7 @@ function ScrumMasterMember(): JSX.Element {
             {scrum ? avatarText(scrum.firstName, scrum.lastName) : null}
           </div>
         </div>
-        <div className="member-data">
+        <div className="member-data member-data-nokick">
           <p className="current-status">user id = member.id </p>
           <p className="member-name">
             {scrum ? `${scrum.firstName} ${scrum.lastName}` : null}

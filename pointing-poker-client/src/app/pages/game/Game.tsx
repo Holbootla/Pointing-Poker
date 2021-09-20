@@ -1,6 +1,7 @@
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import CardFace from '../../components/shared/cards/card-face';
+import CardBreak from '../../components/shared/cards/card-break';
 import GameName from '../../components/shared/game-name/game-name';
 import IssueGame from '../../components/shared/issue-game/issue-game';
 import KickPopup from '../../components/scrum/kick-popup/KickPopup';
@@ -154,6 +155,7 @@ function Game(): JSX.Element {
                       firstName={member.firstName}
                       lastName={member.lastName}
                       jobPosition={member.jobPosition}
+											isAdmin={member.isAdmin}
                     />
                   </Col>
                   <Col>{member.voteResult}</Col>
@@ -170,8 +172,11 @@ function Game(): JSX.Element {
                 tabIndex={0}
                 onClick={() => cardClickHandler(cardValue)}
                 onKeyPress={() => cardClickHandler(cardValue)}
-              >
-                <CardFace value={cardValue} type={scoreTypeShort} />
+              >{cardValue === 'Break' ? (
+                  <CardBreak key="cardBreack" />
+                ) : (
+                  <CardFace value={cardValue} type={scoreTypeShort} />
+                )}
               </div>
             </Col>
           ))}

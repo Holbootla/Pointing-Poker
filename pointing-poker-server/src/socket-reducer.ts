@@ -44,7 +44,7 @@ export function handleAction(
     const kickedUserIndex = STATE[getStateIndex()].users.findIndex((user) => {
       user.id === action.payload.user.id;
     });
-    STATE[getStateIndex()].users.splice(kickedUserIndex);
+    STATE[getStateIndex()].users.splice(kickedUserIndex, 1);
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
       payload: {
@@ -61,6 +61,7 @@ export function handleAction(
       payload: STATE[getStateIndex()].gameName,
     });
   }
+
   if (action.type === 'issue_created') {
     STATE[getStateIndex()].issues.push(action.payload.issue);
     io.to(gameID).emit('UPDATE_CLIENT', {
@@ -78,7 +79,9 @@ export function handleAction(
   }
 
   if (action.type === 'issue_edited') {
-    const editedIssueInd = STATE[getStateIndex()].issues.findIndex((item) => item.id === action.payload.issue.id);
+    const editedIssueInd = STATE[getStateIndex()].issues.findIndex(
+      (item) => item.id === action.payload.issue.id
+    );
     STATE[getStateIndex()].issues[editedIssueInd] = action.payload.issue;
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'issues/updateIssuesAction',
@@ -86,6 +89,17 @@ export function handleAction(
     });
   }
 
+  if (action.type === 'settings_changed') {
+    STATE[getStateIndex()].gameSettings = action.payload.gameSettings;
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'gameSettings/setGameSettings',
+      payload: STATE[getStateIndex()].gameSettings,
+    });
+  }
+
+  if (action.type === 'game_started') {
+    io.to(gameID).emit('GAME_STARTED');
+  }
 
   // ADD YOUR REDUCER:
 }

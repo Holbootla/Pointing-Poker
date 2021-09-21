@@ -3,11 +3,12 @@ import { Modal, Button } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { closeKickPopupAction } from '../../../redux/reducers/kick-reducer';
 import { kickMemberAction } from '../../../redux/reducers/members-reducer';
+import { sendToServer } from '../../../socket/socket-context';
 import './kickPopup.scss';
 
 const KickPopup: FC = () => {
   const dispatch = useAppDispatch();
-
+  const { gameID } = useAppSelector((state) => state.authPopup);
   const { members } = useAppSelector((state) => state.members);
 
   const { kickPopupVisible, kickedMemberId } = useAppSelector(
@@ -23,7 +24,8 @@ const KickPopup: FC = () => {
   };
 
   const handelKickMemberClick = () => {
-    dispatch(kickMemberAction(kickedMember));
+    sendToServer('user_kicked', { gameID, user: { id: kickedMemberId } });
+    // dispatch(kickMemberAction(kickedMember));
     dispatch(closeKickPopupAction());
   };
 
@@ -42,8 +44,8 @@ const KickPopup: FC = () => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="kick-popup__body">
-        Are you really want to remove player {kickedMember?.firstName}
-        {kickedMember?.lastName} from game session?
+        {` Are you really want to remove player ${kickedMember?.firstName} 
+        ${kickedMember?.lastName} from game session?`}
       </Modal.Body>
       <Modal.Footer>
         <div className="kick-popup__footer">

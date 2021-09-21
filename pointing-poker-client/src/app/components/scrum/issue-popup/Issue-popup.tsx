@@ -9,6 +9,7 @@ import {
   setPriorityAction,
   setTitleAction,
 } from '../../../redux/reducers/issues-reducer';
+import { sendToServer } from '../../../socket/socket-context';
 import './issue-popup.scss';
 
 const IssuePopup: FC = () => {
@@ -16,7 +17,8 @@ const IssuePopup: FC = () => {
   const { title, link, priority } = useAppSelector(
     (state) => state.issues.issue
   );
-  const { issuePopupVisible } = useAppSelector((state) => state.issues);
+  const { issuePopupVisible, issue } = useAppSelector((state) => state.issues);
+  const { gameID } = useAppSelector((state) => state.authPopup);
 
   const resetIssue = () => {
     dispatch(setTitleAction(''));
@@ -50,7 +52,8 @@ const IssuePopup: FC = () => {
 
   const formSubmitHandler = (e: SyntheticEvent) => {
     e.preventDefault();
-    dispatch(addIssueAction());
+    sendToServer('issue_created', { gameID, issue });
+    dispatch(closeIssuePopupAction());
     resetIssue();
   };
 

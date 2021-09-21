@@ -14,9 +14,10 @@ export function handleAction(
 
   if (action.type === 'game_created') {
     const users = [];
+    const issues = [];
     users.push(action.payload.user);
     socket.join(gameID);
-    STATE.push({ gameID, users });
+    STATE.push({ gameID, users, issues });
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
@@ -54,12 +55,37 @@ export function handleAction(
   }
 
   if (action.type === 'game_name_changed') {
-    STATE[getStateIndex()].gameName = action.payload;
+    STATE[getStateIndex()].gameName = action.payload.gameName;
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'gameName/saveNewGameNameAction',
       payload: STATE[getStateIndex()].gameName,
     });
   }
+  if (action.type === 'issue_created') {
+    STATE[getStateIndex()].issues.push(action.payload.issue);
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'issues/updateIssuesAction',
+      payload: STATE[getStateIndex()].issues,
+    });
+  }
+
+  if (action.type === 'issue_deleted') {
+    STATE[getStateIndex()].issues.splice(action.payload, 1);
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'issues/updateIssuesAction',
+      payload: STATE[getStateIndex()].issues,
+    });
+  }
+
+  if (action.type === 'issue_edited') {
+    const editedIssueInd = STATE[getStateIndex()].issues.findIndex((item) => item.id === action.payload.issue.id);
+    STATE[getStateIndex()].issues[editedIssueInd] = action.payload.issue;
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'issues/updateIssuesAction',
+      payload: STATE[getStateIndex()].issues,
+    });
+  }
+
 
   // ADD YOUR REDUCER:
 }

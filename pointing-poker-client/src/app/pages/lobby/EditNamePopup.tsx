@@ -5,9 +5,12 @@ import {
   closeEditNamePopupAction,
   saveNewGameNameAction,
 } from '../../redux/reducers/game-name-reducer';
+import { sendToServer } from '../../socket/socket-context';
 
 function EditName(): JSX.Element {
   const dispatch = useAppDispatch();
+
+  const { gameID } = useAppSelector((state) => state.authPopup);
 
   const { editNamePopupVisible, gameName, prevGameName } = useAppSelector(
     (state) => state.gameName
@@ -24,6 +27,7 @@ function EditName(): JSX.Element {
   };
 
   const saveEditedGameName = () => {
+    sendToServer('game_name_changed', { gameID, gameName });
     dispatch(closeEditNamePopupAction());
   };
 

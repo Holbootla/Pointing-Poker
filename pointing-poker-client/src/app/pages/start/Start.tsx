@@ -1,7 +1,8 @@
-import { ChangeEvent, FormEvent } from 'react';
+import { ChangeEvent, FormEvent, useEffect } from 'react';
 import { Button, Form, FormControl, InputGroup } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
+  closeAuthPopupAction,
   setGameIDAction,
   setIsAdminAction,
   setNewGame,
@@ -12,6 +13,10 @@ import { socket } from '../../socket/socket-context';
 import AuthPopup from './AuthPopup';
 
 function Start(): JSX.Element {
+  useEffect(() => {
+    dispatch(closeAuthPopupAction());
+  }, []);
+
   function getRandomID(min: number, max: number) {
     return Math.ceil(Math.random() * (max - min) + min);
   }

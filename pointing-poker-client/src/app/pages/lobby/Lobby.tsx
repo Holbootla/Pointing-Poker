@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { FC, useEffect } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Members from '../../components/scrum/members/members';
 import IssuesLobby from '../../components/scrum/issues-lobby/issues-lobby';
@@ -10,18 +10,47 @@ import GameName from '../../components/shared/game-name/game-name';
 import EditName from './EditNamePopup';
 import CustomCoverPopup from './CustomCoverPopup';
 import CardValuePopup from './AddCardValuePopup';
-import { useAppSelector } from '../../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { sendToServer, socket } from '../../socket/socket-context';
+import { setGameSettings } from '../../redux/reducers/game-settings-reducer';
 
 const Lobby: FC = () => {
+  const dispatch = useAppDispatch();
   const { gameID } = useAppSelector((state) => state.authPopup);
-  const { isDefaultSettings } = useAppSelector((state) => state.gameSettings);
+  const gameSettings = useAppSelector((state) => state.gameSettings);
+  const history = useHistory();
   const linkToLobby = `https://.../lobby/${gameID}`;
-  const linkToGame = `https://.../game/${gameID}`;
 
-  const handelStartGameButtonClick = () =>
-    isDefaultSettings
-      ? console.log('send to server settings to use and save')
-      : console.log('send to server settings onlu to use');
+  useEffect(() => {
+    const defaultLocalSettings = localStorage.getItem('gameSettings');
+
+    if (defaultLocalSettings) {
+      dispatch(setGameSettings(JSON.parse(defaultLocalSettings)));
+    }
+
+    socket.on('GAME_STARTED', () => {
+      history.push(`/game/${gameID}`);
+    });
+
+    socket.on('leave_room', () => {
+      console.log(socket.id);
+      history.push(``);
+    });
+  }, []);
+
+  const handleStartGameButtonClick = () => {
+    const { isDefaultSettings } = gameSettings;
+    if (isDefaultSettings) {
+      localStorage.setItem('gameSettings', JSON.stringify(gameSettings));
+    }
+    sendToServer('settings_changed', { gameID, gameSettings }, () => {
+      sendToServer('game_started', { gameID });
+    });
+  };
+
+  const handleCancelGameButtonClick = () => {
+    sendToServer('game_canceled', { gameID });
+  };
 
   const copyLinkButtonHandler = () =>
     navigator.clipboard.writeText(linkToLobby);
@@ -46,16 +75,16 @@ const Lobby: FC = () => {
           <Button
             variant="primary"
             className="m-1"
-            onClick={handelStartGameButtonClick}
+            onClick={handleStartGameButtonClick}
           >
-            <Link className="link-styles-start" to={linkToGame}>
-              Start Game
-            </Link>
+            Start Game
           </Button>
-          <Button variant="outline-danger" className="m-1">
-            <Link className="link-styles-cansel" to={linkToLobby}>
-              Cancel game
-            </Link>
+          <Button
+            variant="outline-danger"
+            className="m-1"
+            onClick={handleCancelGameButtonClick}
+          >
+            Cancel game
           </Button>
         </div>
       </section>

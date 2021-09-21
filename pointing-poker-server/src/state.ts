@@ -16,11 +16,24 @@ interface IIssue {
   status: 'current' | 'resolved' | 'awaiting' | 'next';
 }
 
+interface IGameSettings {
+  cardChange: boolean;
+  timerOn: boolean;
+  scoreType: string;
+  scoreTypeShort: string;
+  timerMinutes: string;
+  timerSeconds: string;
+  cardCover: string;
+  cardValuesFinalSet: string[];
+  isDefaultSettings: boolean;
+}
+
 interface IServerState {
   gameID: string;
   users: IUser[];
   gameName?: string;
   issues?: IIssue[];
+  gameSettings?: IGameSettings;
   additionalKeys?: string;
 }
 

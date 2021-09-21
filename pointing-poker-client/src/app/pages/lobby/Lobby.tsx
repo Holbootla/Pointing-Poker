@@ -31,9 +31,14 @@ const Lobby: FC = () => {
     socket.on('GAME_STARTED', () => {
       history.push(`/game/${gameID}`);
     });
+
+    socket.on('leave_room', () => {
+      console.log(socket.id);
+      history.push(``);
+    });
   }, []);
 
-  const handelStartGameButtonClick = () => {
+  const handleStartGameButtonClick = () => {
     const { isDefaultSettings } = gameSettings;
     if (isDefaultSettings) {
       localStorage.setItem('gameSettings', JSON.stringify(gameSettings));
@@ -41,6 +46,10 @@ const Lobby: FC = () => {
     sendToServer('settings_changed', { gameID, gameSettings }, () => {
       sendToServer('game_started', { gameID });
     });
+  };
+
+  const handleCancelGameButtonClick = () => {
+    sendToServer('game_canceled', { gameID });
   };
 
   const copyLinkButtonHandler = () =>
@@ -66,14 +75,16 @@ const Lobby: FC = () => {
           <Button
             variant="primary"
             className="m-1"
-            onClick={handelStartGameButtonClick}
+            onClick={handleStartGameButtonClick}
           >
             Start Game
           </Button>
-          <Button variant="outline-danger" className="m-1">
-            {/* <Link className="link-styles-cansel" to={linkToLobby}> */}
+          <Button
+            variant="outline-danger"
+            className="m-1"
+            onClick={handleCancelGameButtonClick}
+          >
             Cancel game
-            {/* </Link> */}
           </Button>
         </div>
       </section>

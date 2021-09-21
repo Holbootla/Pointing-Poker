@@ -101,5 +101,10 @@ export function handleAction(
     io.to(gameID).emit('GAME_STARTED');
   }
 
+  if (action.type === 'game_canceled') {
+    io.to(gameID).emit('leave_room');
+    io.to(gameID).socketsLeave(gameID);
+  }
+
   // ADD YOUR REDUCER:
 }

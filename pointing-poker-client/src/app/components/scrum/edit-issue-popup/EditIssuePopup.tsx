@@ -2,16 +2,19 @@ import { FC, SyntheticEvent } from 'react';
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import {
-  editIssue,
+  // editIssue,
   setIdAction,
   setLinkAction,
   setPriorityAction,
   setTitleAction,
 } from '../../../redux/reducers/issues-reducer';
 import { closeEditIssuePopupAction } from '../../../redux/reducers/edit-issue-reducer';
+import { sendToServer } from '../../../socket/socket-context';
 
 const EditIssuePopup: FC = () => {
   const dispatch = useAppDispatch();
+
+  const { gameID } = useAppSelector((state) => state.authPopup);
 
   const { issue, issues } = useAppSelector((state) => state.issues);
   const { editIssuePopupVisible, idIssueToEdit } = useAppSelector(
@@ -45,8 +48,10 @@ const EditIssuePopup: FC = () => {
 
   const formSubmitHandler = (e: SyntheticEvent) => {
     e.preventDefault();
-    const issueInd = issues.findIndex((item) => item.id === idIssueToEdit);
-    dispatch(editIssue(issueInd));
+    console.log({ gameID, issue });
+    sendToServer('issue_edited', { gameID, issue });
+    // const issueInd = issues.findIndex((item) => item.id === idIssueToEdit);
+    // dispatch(editIssue(issueInd));
     resetIssue();
     dispatch(closeEditIssuePopupAction());
   };

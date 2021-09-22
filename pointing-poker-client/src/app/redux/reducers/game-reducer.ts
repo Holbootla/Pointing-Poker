@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 
-interface Issue {
+export interface Issue {
   id: number | string;
   title: string;
   link: string;
@@ -32,13 +32,13 @@ interface GameState {
 const initialState: GameState = {
   currentIssue: { id: '', title: '', link: '', priority: 'low', status: 'awaiting'},
   nextIssue: { id: '', title: '', link: '', priority: 'low', status: 'awaiting'},
-  currentTimer: { minutes: 2, seconds: 0 },
+  currentTimer: { minutes: 0, seconds: 10 },
   roundStatus: 'awaiting',
   votes: [{ memberId: 0, value: '5' }, { memberId: 2, value: '5' }, { memberId: 3, value: '8' }],
   averageValues: [],
   statistics: [
     {
-      issue: { id: 0, title: 'Title', link: 'link', priority: 'low', status: 'resolved'},
+      issue: { id: -1, title: 'Title', link: 'link', priority: 'low', status: 'resolved'},
       votes: [{ memberId: 0, value: '5' }, { memberId: 2, value: '5' }, { memberId: 3, value: '8' }],
       averageValues: [{ value: '5', percents: 75 }, { value: '8', percents: 25 }],
     }

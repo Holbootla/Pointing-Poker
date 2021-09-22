@@ -33,7 +33,6 @@
   padding-left: 10px;
   line-height: 2rem;
   border: 1px solid #24a6ac;
-  font-size: 0.8rem;
 }
 
 .game-control-btn-block {
@@ -56,6 +55,12 @@
 
 .game-control-btn-block .btn-primary:hover {
   background-color: #ffffff;
+}
+
+.gamer-cancel-game {
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
 }
 
 .link-styles-cansel {

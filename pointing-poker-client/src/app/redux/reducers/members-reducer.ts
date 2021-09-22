@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 
-interface Member {
-  id: number;
+export interface Member {
+  id: string;
   firstName: string;
   lastName: string;
   jobPosition: string;
@@ -18,7 +18,7 @@ interface MembersState {
 const initialState: MembersState = {
   members: [
     {
-      id: 0,
+      id: '0',
       firstName: 'Name',
       lastName: 'Surname',
       jobPosition: 'front-end developer',
@@ -27,7 +27,7 @@ const initialState: MembersState = {
       voteResult: '-',
     },
     {
-      id: 1,
+      id: '1',
       firstName: 'Konstantin',
       lastName: 'Djakov',
       jobPosition: 'front-end developer',
@@ -36,7 +36,7 @@ const initialState: MembersState = {
       voteResult: '-',
     },
     {
-      id: 2,
+      id: '2',
       firstName: 'Nikita',
       lastName: 'Lashch',
       jobPosition: 'front-end developer',
@@ -45,7 +45,7 @@ const initialState: MembersState = {
       voteResult: '-',
     },
     {
-      id: 3,
+      id: '3',
       firstName: 'Svetlana',
       lastName: 'Leshukova',
       jobPosition: 'front-end developer',

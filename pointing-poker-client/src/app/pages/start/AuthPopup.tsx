@@ -1,7 +1,7 @@
-import { ChangeEvent, FormEvent, useContext } from 'react';
+import { ChangeEvent, FormEvent } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
-import { sendToServer, SocketContext } from '../../socket/socket-context';
+import { sendToServer } from '../../socket/socket-context';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
   closeAuthPopupAction,

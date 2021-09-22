@@ -1,9 +1,11 @@
-import { useAppDispatch } from '../../../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { showKickPopupAction } from '../../../redux/reducers/kick-reducer';
+import isScrum from '../../../shared';
+import { socket } from '../../../socket/socket-context';
 import './member.scss';
 
 interface MemberProps {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   jobPosition: string;
@@ -18,6 +20,9 @@ function Member({
   isAdmin,
 }: MemberProps): JSX.Element {
   const dispatch = useAppDispatch();
+
+  const { members } = useAppSelector((state) => state.members);
+
   const avatarText = () => {
     if (lastName.length < 1) {
       return firstName.slice(0, 1);
@@ -27,6 +32,8 @@ function Member({
 
   const showKickPopup = () => dispatch(showKickPopupAction(String(id)));
 
+  const currentIsAdmin = isScrum(members, socket.id);
+
   return (
     <div className="item member-item">
       <div className="member-avatar-wrap">
@@ -34,13 +41,11 @@ function Member({
         <div className="member-avatar">{avatarText()}</div>
       </div>
       <div className="member-data">
-        <p className="current-status">Member ID {id}</p>
+        {socket.id === id && <p className="current-status">It&lsquo;s You</p>}
         <p className="member-name">{`${firstName} ${lastName}`}</p>
         <p className="member-position">{jobPosition}</p>
       </div>
-      {isAdmin ? (
-        <div className="scrum-card">scrum</div>
-      ) : (
+      {currentIsAdmin && (
         <div
           className="kick-icon"
           role="button"

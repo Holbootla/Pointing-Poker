@@ -25,7 +25,6 @@
   padding-left: 10px;
   line-height: 2rem;
   border: 1px solid #24a6ac;
-  font-size: 0.8rem;
 }
 .game-control-btn-block {
   justify-content: space-between;
@@ -42,6 +41,10 @@
       background-color: #ffffff;
     }
   }
+}
+
+.gamer-cancel-game {
+  justify-content: flex-end;
 }
 
 .link-styles-cansel {

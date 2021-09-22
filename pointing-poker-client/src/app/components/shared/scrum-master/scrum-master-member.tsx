@@ -1,4 +1,5 @@
 import { useAppSelector } from '../../../redux/hooks';
+import { socket } from '../../../socket/socket-context';
 
 function ScrumMasterMember(): JSX.Element {
   const { members } = useAppSelector((state) => state.members);
@@ -22,7 +23,9 @@ function ScrumMasterMember(): JSX.Element {
           </div>
         </div>
         <div className="member-data member-data-nokick">
-          <p className="current-status">user id = member.id </p>
+          {scrum && socket.id === scrum.id && (
+            <p className="current-status">It&lsquo;s You</p>
+          )}
           <p className="member-name">
             {scrum ? `${scrum.firstName} ${scrum.lastName}` : null}
           </p>

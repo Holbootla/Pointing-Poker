@@ -1,5 +1,5 @@
 import { FC, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Members from '../../components/scrum/members/members';
 import IssuesLobby from '../../components/scrum/issues-lobby/issues-lobby';
@@ -13,11 +13,13 @@ import CardValuePopup from './AddCardValuePopup';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { sendToServer, socket } from '../../socket/socket-context';
 import { setGameSettings } from '../../redux/reducers/game-settings-reducer';
+import isScrum from '../../shared';
 
 const Lobby: FC = () => {
   const dispatch = useAppDispatch();
   const { gameID } = useAppSelector((state) => state.authPopup);
   const gameSettings = useAppSelector((state) => state.gameSettings);
+  const { members } = useAppSelector((state) => state.members);
   const history = useHistory();
   const linkToLobby = `https://.../lobby/${gameID}`;
 
@@ -33,7 +35,6 @@ const Lobby: FC = () => {
     });
 
     socket.on('leave_room', () => {
-      console.log(socket.id);
       history.push(``);
     });
   }, []);
@@ -55,20 +56,22 @@ const Lobby: FC = () => {
   const copyLinkButtonHandler = () =>
     navigator.clipboard.writeText(linkToLobby);
 
-  return (
+  const currentIsAdmin = isScrum(members, socket.id);
+
+  return currentIsAdmin ? (
     <div className="container">
       <section className="section-wrap">
         <GameName />
         <ScrumMasterMember />
-        <p className="lobby-link-title">Link to lobby:</p>
+        <p className="lobby-link-title">Game ID:</p>
         <div className="lobby-link-block">
-          <p className="lobby-link-text">{linkToLobby}</p>
+          <p className="lobby-link-text">{gameID}</p>
           <Button
             variant="secondary"
             className="m-1"
             onClick={copyLinkButtonHandler}
           >
-            Copy Link
+            Copy Game ID
           </Button>
         </div>
         <div className="game-control-btn-block">
@@ -94,6 +97,23 @@ const Lobby: FC = () => {
       <EditName />
       <CustomCoverPopup />
       <CardValuePopup />
+    </div>
+  ) : (
+    <div className="container">
+      <section className="section-wrap">
+        <GameName />
+        <ScrumMasterMember />
+        <div className="game-control-btn-block gamer-cancel-game">
+          <Button
+            variant="outline-danger"
+            className="m-1"
+            onClick={handleCancelGameButtonClick}
+          >
+            Cancel game
+          </Button>
+        </div>
+      </section>
+      <Members />
     </div>
   );
 };

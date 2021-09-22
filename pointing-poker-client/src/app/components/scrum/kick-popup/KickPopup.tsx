@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { closeKickPopupAction } from '../../../redux/reducers/kick-reducer';
-import { kickMemberAction } from '../../../redux/reducers/members-reducer';
 import { sendToServer } from '../../../socket/socket-context';
 import './kickPopup.scss';
 
@@ -15,9 +14,7 @@ const KickPopup: FC = () => {
     (state) => state.kickPopup
   );
 
-  const kickedMember = members.find(
-    (member) => member.id === Number(kickedMemberId)
-  );
+  const kickedMember = members.find((member) => member.id === kickedMemberId);
 
   const closeKickPopup = () => {
     dispatch(closeKickPopupAction());
@@ -25,7 +22,6 @@ const KickPopup: FC = () => {
 
   const handelKickMemberClick = () => {
     sendToServer('user_kicked', { gameID, user: { id: kickedMemberId } });
-    // dispatch(kickMemberAction(kickedMember));
     dispatch(closeKickPopupAction());
   };
 

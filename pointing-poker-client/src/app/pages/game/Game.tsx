@@ -1,5 +1,5 @@
 import { Button, Col, Container, Row } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import CardFace from '../../components/shared/cards/card-face';
 import CardBreak from '../../components/shared/cards/card-break';
 import GameName from '../../components/shared/game-name/game-name';
@@ -8,26 +8,36 @@ import KickPopup from '../../components/scrum/kick-popup/KickPopup';
 import Member from '../../components/shared/member/member';
 import ScrumMasterMember from '../../components/shared/scrum-master/scrum-master-member';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { addVoteAction, finishRoundAction, gameState, setCurrentIssueAction, setCurrentTimer, setNextIssueAction, startRoundAction, setAvaregeValuesAction, addRoundInStatisticsAction } from '../../redux/reducers/game-reducer';
+import { addVoteAction, finishRoundAction, gameState, setCurrentIssueAction, setCurrentTimer, setNextIssueAction, startRoundAction, setAvaregeValuesAction, addRoundInStatisticsAction, Issue } from '../../redux/reducers/game-reducer';
 import { membersState, setAllVoteResultsAction, setVoteResultAction } from '../../redux/reducers/members-reducer';
 import './game.scss';
 import { IssueStatus, setIssueStatusAction } from '../../redux/reducers/issues-reducer';
 
 let timerId: NodeJS.Timeout;
+let nextIssueId: string | number;
+let votesQuantity: number;
 
 function Game(): JSX.Element {
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const { members } = useAppSelector(membersState);
   const { minutes, seconds } = useAppSelector(gameState).currentTimer;
   const { roundStatus, currentIssue, nextIssue, votes, averageValues } = useAppSelector(gameState);
-  const { cardValuesFinalSet, scoreTypeShort } = useAppSelector((store) => store.gameSettings)
+  const { cardValuesFinalSet, scoreTypeShort, cardCover } = useAppSelector((store) => store.gameSettings)
   const { issues } = useAppSelector((store) => store.issues);
+  const { isAdmin, role } = useAppSelector((store) => store.authPopup.user)
+  const { gameID } = useParams<{ gameID: string }>();
   const thisMemberId = 1;
+  nextIssueId = nextIssue.id;
+  votesQuantity = votes.length;
   
   const stopRound = () => {
-    dispatch(setIssueStatusAction({ id: currentIssue.id, status: "resolved"}));
-    if (nextIssue.id !== "") {
-      dispatch(setIssueStatusAction({ id: nextIssue.id, status: "current"}))
+    dispatch(setIssueStatusAction({ id: currentIssue.id, status: "resolved" }));
+    dispatch(setCurrentIssueAction({ ...currentIssue, status: "resolved" }));
+    if (nextIssueId !== "") {
+      dispatch(setIssueStatusAction({ id: nextIssueId, status: "current" }))
+      const newCurrentIssue = issues.find((issue) => issue.id === nextIssueId);
+      dispatch(setNextIssueAction({ ...newCurrentIssue, status: "current" }));
     }
     clearInterval(timerId);
     dispatch(setAvaregeValuesAction());
@@ -44,7 +54,7 @@ function Game(): JSX.Element {
       
       timerId = setInterval(() => {
         const totalTime = min * 60 + sec;
-        if (totalTime === 0 || votes.length === members.length) {
+        if (totalTime === 0 || votesQuantity === members.length) {
           stopRound();
         } else {
           const decreasedTotalTime = totalTime - 1;
@@ -56,6 +66,37 @@ function Game(): JSX.Element {
     }
   };
 
+  const stopGame = (): void => {
+    if (roundStatus === "awaiting") {
+      history.push(`/result/${gameID}`);
+    } else {
+      stopRound();
+      history.push(`/result/${gameID}`);
+    }
+  };
+
+  const nextIssueClickHandler = (): void => {
+    if (roundStatus === "awaiting") {
+      const currentIssueIndex = issues.findIndex((issue) => issue.status === "current");
+      const newCurrentIssue = (currentIssueIndex === -1 || currentIssueIndex === issues.length - 1)
+        ? issues.find((issue) => issue.status === "awaiting")
+        : issues.find((issue, index) => issue.status === "awaiting" && index > currentIssueIndex);
+      if (newCurrentIssue) {
+        dispatch(setIssueStatusAction({ id: newCurrentIssue.id, status: "current" }));
+        dispatch(setCurrentIssueAction({ ...newCurrentIssue, status: "current" }));
+      }
+    } else {
+      const nextIssueIndex = issues.findIndex((issue) => issue.status === "next");
+      const newNextIssue = (nextIssueIndex === -1 || nextIssueIndex === issues.length - 1)
+        ? issues.find((issue) => issue.status === "awaiting")
+        : issues.find((issue, index) => issue.status === "awaiting" && index > nextIssueIndex);
+      if (newNextIssue) {
+        dispatch(setIssueStatusAction({ id: newNextIssue.id, status: "next"}));
+        dispatch(setNextIssueAction({ ...newNextIssue, status: "next" }));
+      }
+    }
+  };
+
   const cardClickHandler = (cardValue: string): void => {
     if (roundStatus === "in progress") {
       dispatch(addVoteAction({ memberId: thisMemberId, value: cardValue }));
@@ -64,24 +105,21 @@ function Game(): JSX.Element {
   };
 
   const issueClickHandler = (issueId: number | string, status: IssueStatus): void => {
-    if (roundStatus === "awaiting" && status !== "current" && status !== "resolved") {
+    if (roundStatus === "awaiting" && status !== "current" && status !== "resolved" && isAdmin) {
+      dispatch(setIssueStatusAction({ id: issueId, status: "current" }));
       const newCurrentIssue = issues.find((issue) => issue.id === issueId);
-      dispatch(setCurrentIssueAction(newCurrentIssue));
-      dispatch(setIssueStatusAction({ id: issueId, status: "current"}));
-    } if (roundStatus === "in progress" && status !== "current" && status !== "resolved") {
+      dispatch(setCurrentIssueAction({ ...newCurrentIssue, status: "current" }));
+    } if (roundStatus === "in progress" && status !== "current" && status !== "resolved" && isAdmin) {
+      dispatch(setIssueStatusAction({ id: issueId, status: "next" }))
       const newNextIssue = issues.find((issue) => issue.id === issueId);
-      dispatch(setNextIssueAction(newNextIssue));
-      if (newNextIssue) {
-        dispatch(setIssueStatusAction({ id: issueId, status: "next"}))
-      }
+      dispatch(setNextIssueAction({ ...newNextIssue, status: "next" }));
     }
   };
 
-  const { gameID } = useParams<{ gameID: string }>();
   return (
-    <div className="container">
+    <div className="game">
       <GameName />
-      <div>Room #{gameID}</div>
+      <div className="game__room">Room #{gameID}</div>
       <Container>
         <Row>
           <Col xl={7}>
@@ -96,24 +134,27 @@ function Game(): JSX.Element {
                       <div className="game__timer-dividor">:</div>
                       <div className="game__timer-minutes">{seconds>9 ? seconds : `0${seconds}`}</div>
                   </div>
-                  <Button variant="success" className="m-1" onClick={() => startRound()}>
-                    Start round
-                  </Button>
                 </Col>
-                <Col>
-                  <Button variant="danger" className="m-1" onClick={() => stopRound()}>
-                    Stop game
-                  </Button>
-                  <Button variant="primary" className="m-1" onClick={() => startRound()}>
-                    Next issue
-                  </Button>
-                </Col>
+                {(isAdmin && 
+                  <Col>
+                    <Button variant="success" className="m-1" onClick={() => startRound()}>
+                      Start round
+                    </Button>
+                    <Button variant="primary" className="m-1" onClick={() => nextIssueClickHandler()}>
+                      Next issue
+                    </Button>
+                    <Button variant="danger" className="m-1" onClick={() => stopGame()}>
+                      Stop game
+                    </Button>
+                  </Col>
+                )}
               </Row>
               <Row>
                 <Col>
                   <h3>Issues</h3>
                   {issues.map((item) => (
                     <div
+                      className={`game__issue_${item.status}`}
                       key={item.id}
                       role="button"
                       tabIndex={0}
@@ -128,18 +169,31 @@ function Game(): JSX.Element {
                         status={item.status}
                       />
                     </div>
-                  ))}
+                  ))
+                  }
                 </Col>
                 <Col>
-                  <h3>Statistics</h3>
-                  <Row>
-                    {averageValues.map((item) => (
-                      <Col key={item.value}>
-                        <CardFace value={item.value} type={scoreTypeShort} />
-                        {item.percents} %
-                      </Col>
-                    ))}
-                  </Row>
+                  <h3>{(roundStatus === "awaiting") ? "Statistics" : "Playground"}</h3>
+                  {(roundStatus === "awaiting") 
+                    ? <Row>
+                      {averageValues.map((item) => (
+                        <Col key={item.value}>
+                          <CardFace value={item.value} type={scoreTypeShort} />
+                          {item.percents} %
+                        </Col>
+                      ))}
+                    </Row>
+                    : <Row>
+                      {votes.map((vote) => (
+                        <Col key={vote.memberId}>
+                          <div
+                            className="card-cover"
+                            style={{ backgroundColor: `${cardCover}` }}
+                          />
+                        </Col>
+                      ))}
+                      </Row>
+                  }
                 </Col>
               </Row>
             </Container>
@@ -158,21 +212,29 @@ function Game(): JSX.Element {
 											isAdmin={member.isAdmin}
                     />
                   </Col>
-                  <Col>{member.voteResult}</Col>
+                  {(isAdmin) &&
+                    <Col>{member.voteResult}</Col>
+                  }
+                  {(!isAdmin && roundStatus === "awaiting") &&
+                    <Col>{member.voteResult}</Col>
+                  }
+                  {(!isAdmin && roundStatus === "in progress") &&
+                    <Col>In progress</Col>
+                  }
                 </Row>
               ))}
             </Container>
           </Col>
         </Row>
         <Row>
-          {cardValuesFinalSet.map((cardValue) => (
+          {(role === "player") && cardValuesFinalSet.map((cardValue) => (
             <Col key={cardValue}>
               <div
                 role="button"
                 tabIndex={0}
                 onClick={() => cardClickHandler(cardValue)}
                 onKeyPress={() => cardClickHandler(cardValue)}
-              >{cardValue === 'Break' ? (
+              >{cardValue === "Break" ? (
                   <CardBreak key="cardBreack" />
                 ) : (
                   <CardFace value={cardValue} type={scoreTypeShort} />

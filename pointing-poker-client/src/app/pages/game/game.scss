@@ -1,6 +1,28 @@
+.game {
+  margin: 0 2%;
+}
+
+.game__room {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
 .game__timer {
+  height: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
+}
+
+.game__issue_current {
+  background-color: #7ef1c5;
+}
+
+.game__issue_next {
+  background-color: #e7f59b;
+}
+
+.game__issue_resolved {
+  background-color: #f5a99b;
 }

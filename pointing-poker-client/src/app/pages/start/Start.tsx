@@ -1,5 +1,13 @@
 import { ChangeEvent, FormEvent, useEffect } from 'react';
-import { Button, Form, FormControl, InputGroup } from 'react-bootstrap';
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  FormControl,
+  InputGroup,
+  Row,
+} from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
   closeAuthPopupAction,
@@ -46,48 +54,63 @@ function Start(): JSX.Element {
   };
 
   return (
-    <>
-      <h1>Planning poker</h1>
-      <h2>Start your planning:</h2>
-      <h3>
-        Create session:
-        <Button
-          variant="primary"
-          className="m-1"
-          onClick={() => {
-            handleStartGameButton();
-            showAuthPopup();
-          }}
-        >
-          Start new game
-        </Button>
-      </h3>
-      <div>or</div>
-      <h3>Connect to lobby by game ID</h3>
-      <Form
-        onSubmit={(e) => {
-          handleConnectGameButton(e);
-          showAuthPopup();
-        }}
-      >
-        <InputGroup>
-          <FormControl
-            type="number"
-            min="10000000"
-            max="99999999"
-            placeholder="Enter game ID"
-            aria-label="game-id"
-            value={gameID}
-            required
-            onChange={handleChangeConnectGameID}
-          />
-          <Button type="submit" variant="primary" id="button-addon2">
-            Connect
-          </Button>
-        </InputGroup>
-      </Form>
+    <Container>
+      <Row className="mb-5">
+        <Col>
+          <h1>Start your planning:</h1>
+        </Col>
+      </Row>
+      <Row className="mb-2">
+        <Col>
+          <h3>
+            Create session:
+            <Button
+              variant="primary"
+              className="m-1"
+              onClick={() => {
+                handleStartGameButton();
+                showAuthPopup();
+              }}
+            >
+              Start new game
+            </Button>
+          </h3>
+        </Col>
+      </Row>
+      <Row className="mb-3">
+        <Col>
+          <h4>or</h4>
+        </Col>
+      </Row>
+      <Row className="mb-2">
+        <Col>
+          <h3>Connect to lobby by game ID</h3>
+          <Form
+            onSubmit={(e) => {
+              handleConnectGameButton(e);
+              showAuthPopup();
+            }}
+          >
+            <InputGroup>
+              <FormControl
+                type="number"
+                min="10000000"
+                max="99999999"
+                placeholder="Enter game ID"
+                aria-label="game-id"
+                value={gameID}
+                required
+                onChange={handleChangeConnectGameID}
+              />
+              <Button type="submit" variant="primary" id="button-addon2">
+                Connect
+              </Button>
+            </InputGroup>
+          </Form>
+        </Col>
+      </Row>
       <AuthPopup />
-    </>
+    </Container>
   );
 }
 

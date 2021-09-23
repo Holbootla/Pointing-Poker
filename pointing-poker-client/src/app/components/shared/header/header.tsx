@@ -28,7 +28,7 @@ function Header(): JSX.Element {
   return (
     <Navbar bg="primary" variant="dark" expand="lg">
       <Container>
-        <Navbar.Brand>Pointing Poker</Navbar.Brand>
+        <Navbar.Brand href="/">Pointing Poker</Navbar.Brand>
         <Nav className="justify-content-end">
           <Nav.Link active>{pageTitle}</Nav.Link>
         </Nav>

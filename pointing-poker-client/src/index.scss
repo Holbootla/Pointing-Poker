@@ -118,3 +118,28 @@ img {
   border: 3px solid #0d6efd;
   border-radius: 50%;
 }
+
+footer {
+  color: #fff;
+  padding: 20px 0;
+  font-weight: 500;
+
+  .rs-logo {
+    width: 100px;
+  }
+
+  .author {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  a {
+    color: #fff;
+    text-decoration: none;
+
+    &:hover {
+      color: #fff !important;
+    }
+  }
+}

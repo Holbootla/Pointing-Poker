@@ -8,6 +8,7 @@ import Result from './app/pages/result/Result';
 import Start from './app/pages/start/Start';
 import { useAppDispatch } from './app/redux/hooks';
 import Header from './app/components/shared/header/header';
+import Footer from './app/components/shared/footer/footer';
 
 function App(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -42,6 +43,7 @@ function App(): JSX.Element {
           <NotFound />
         </Route>
       </Switch>
+      <Footer />
     </Router>
   );
 }

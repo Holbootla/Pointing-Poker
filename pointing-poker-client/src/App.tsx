@@ -7,6 +7,7 @@ import NotFound from './app/pages/not-found/NotFound';
 import Result from './app/pages/result/Result';
 import Start from './app/pages/start/Start';
 import { useAppDispatch } from './app/redux/hooks';
+import Header from './app/components/shared/header/header';
 
 function App(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -22,6 +23,7 @@ function App(): JSX.Element {
 
   return (
     <Router>
+      <Header />
       <Switch>
         <Route path="/lobby">
           <Lobby />

@@ -12,6 +12,7 @@ interface AuthPopupState {
     jobPosition: string;
     isAdmin: boolean;
     role: 'observer' | 'player';
+    voteResult?: string;
   };
 }
 
@@ -26,6 +27,7 @@ const initialState: AuthPopupState = {
     jobPosition: '',
     isAdmin: false,
     role: 'player',
+    voteResult: '-',
   },
 };
 
@@ -46,6 +48,7 @@ export const authPopupSlice = createSlice({
         jobPosition: '',
         isAdmin: false,
         role: 'player',
+        voteResult: '-',
       };
     },
     setGameIDAction: (state, action) => {

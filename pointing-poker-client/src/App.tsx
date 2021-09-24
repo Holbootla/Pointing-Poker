@@ -29,8 +29,7 @@ function App(): JSX.Element {
         <Route path="/lobby">
           <Lobby />
         </Route>
-        {/* <Route path="/game/:gameID"> */}
-        <Route path="/game">
+        <Route path="/game/:gameID">
           <Game />
         </Route>
         <Route path="/result">

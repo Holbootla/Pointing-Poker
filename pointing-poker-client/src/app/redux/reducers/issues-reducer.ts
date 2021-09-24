@@ -1,4 +1,4 @@
-import { ActionCreatorWithPayload, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export type IssueStatus = 'current' | 'resolved' | 'awaiting' | 'next';
 
@@ -79,20 +79,20 @@ export const issuesSlice = createSlice({
     setPriorityAction: (state, action: PayloadAction<string>) => {
       state.issue.priority = action.payload;
     },
-    setIssueStatusAction: (state, action: PayloadAction<{ id: number | string; status: IssueStatus }>) => {
-      state.issues = state.issues.map((issue) => {
-        if (issue.id === action.payload.id) {
-          return { ...issue, status: action.payload.status }
-        }
-        if (issue.status === 'current' && action.payload.status !== 'next') {
-          return { ...issue, status: 'awaiting' }
-        }
-        if (issue.status === 'next') {
-          return { ...issue, status: 'awaiting' }
-        }
-        return issue;
-      });
-    },
+    // setIssueStatusAction: (state, action: PayloadAction<{ id: number | string; status: IssueStatus }>) => {
+    //   state.issues = state.issues.map((issue) => {
+    //     if (issue.id === action.payload.id) {
+    //       return { ...issue, status: action.payload.status }
+    //     }
+    //     if (issue.status === 'current' && action.payload.status !== 'next') {
+    //       return { ...issue, status: 'awaiting' }
+    //     }
+    //     if (issue.status === 'next') {
+    //       return { ...issue, status: 'awaiting' }
+    //     }
+    //     return issue;
+    //   });
+    // },
     addIssueAction: (state) => {
       state.issues.push(state.issue);
       state.issuePopupVisible = false;
@@ -114,7 +114,7 @@ export const issuesSlice = createSlice({
 
 });
 
-export const { showIssuePopupAction, closeIssuePopupAction, addIssueAction, setTitleAction, setLinkAction, setPriorityAction, setIssueStatusAction, setIdAction, deleteIssueAction, addIssueToEditAction, editIssue, updateIssuesAction } =
+export const { showIssuePopupAction, closeIssuePopupAction, addIssueAction, setTitleAction, setLinkAction, setPriorityAction,/* setIssueStatusAction, */ setIdAction, deleteIssueAction, addIssueToEditAction, editIssue, updateIssuesAction } =
   issuesSlice.actions;
 
 export default issuesSlice.reducer;

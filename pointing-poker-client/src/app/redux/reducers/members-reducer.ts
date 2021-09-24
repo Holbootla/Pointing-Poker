@@ -16,44 +16,7 @@ interface MembersState {
 }
 
 const initialState: MembersState = {
-  members: [
-    {
-      id: '0',
-      firstName: 'Name',
-      lastName: 'Surname',
-      jobPosition: 'front-end developer',
-      isAdmin: false,
-      role: 'player',
-      voteResult: '-',
-    },
-    {
-      id: '1',
-      firstName: 'Konstantin',
-      lastName: 'Djakov',
-      jobPosition: 'front-end developer',
-      isAdmin: true,
-      role: 'player',
-      voteResult: '-',
-    },
-    {
-      id: '2',
-      firstName: 'Nikita',
-      lastName: 'Lashch',
-      jobPosition: 'front-end developer',
-      isAdmin: false,
-      role: 'player',
-      voteResult: '-',
-    },
-    {
-      id: '3',
-      firstName: 'Svetlana',
-      lastName: 'Leshukova',
-      jobPosition: 'front-end developer',
-      isAdmin: false,
-      role: 'player',
-      voteResult: '-',
-    },
-  ],
+  members: [],
 };
 
 export const membersSlice = createSlice({
@@ -72,20 +35,6 @@ export const membersSlice = createSlice({
         (member) => member.id !== action.payload.id
       );
     },
-    setVoteResultAction: (state, action) => {
-      state.members = state.members.map((member) => {
-        if (member.id === action.payload.memberId) {
-          return { ...member, voteResult: action.payload.voteResult };
-        }
-        return member;
-      });
-    },
-    setAllVoteResultsAction: (state, action) => {
-      state.members = state.members.map((member) => ({
-        ...member,
-        voteResult: action.payload.voteResult,
-      }));
-    },
   },
 });
 
@@ -93,8 +42,6 @@ export const {
   getMembersAction,
   kickMemberAction,
   setMembersAction,
-  setVoteResultAction,
-  setAllVoteResultsAction,
 } = membersSlice.actions;
 
 export const membersState = (state: RootState): MembersState => state.members;

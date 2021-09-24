@@ -28,6 +28,26 @@ interface IGameSettings {
   isDefaultSettings: boolean;
 }
 
+interface IAverageValue {
+  value: string;
+  percents: number;
+}
+
+interface IVote {
+  memberId: number;
+  value: string;
+}
+
+interface IGameState {
+  currentIssue?: IIssue;
+  nextIssue?: IIssue;
+  currentTimer?: { minutes: number, seconds: number };
+  roundStatus?: 'in progress' | 'awaiting';
+  votes?: IVote[];
+  averageValues?: IAverageValue[];
+  statistics?: { issue: IIssue, votes: IVote[], averageValues: IAverageValue[] }[];
+}
+
 interface IServerState {
   gameID: string;
   users: IUser[];
@@ -35,6 +55,7 @@ interface IServerState {
   issues?: IIssue[];
   gameSettings?: IGameSettings;
   additionalKeys?: string;
+  game?: IGameState;
 }
 
 export const STATE: IServerState[] = [];

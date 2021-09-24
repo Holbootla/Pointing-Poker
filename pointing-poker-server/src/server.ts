@@ -21,6 +21,9 @@ export const io = new Server(server, options);
 io.on('connection', (socket: Socket) => {
   console.log(socket.id);
   socket.on('UPDATE_SERVER', (action) => {
+    console.log('');
+    console.log('action from client');
+    console.log(action);
     handleAction(socket, action);
   });
 });

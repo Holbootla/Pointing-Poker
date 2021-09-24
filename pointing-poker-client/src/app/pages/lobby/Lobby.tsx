@@ -50,7 +50,12 @@ const Lobby: FC = () => {
   };
 
   const handleCancelGameButtonClick = () => {
-    sendToServer('game_canceled', { gameID });
+    sendToServer('game_canceled_admin', { gameID });
+  };
+
+  const handlePlayerCancelButtonClick = () => {
+    const memberId = socket.id;
+    sendToServer('game_canceled', { gameID, memberId });
   };
 
   const copyLinkButtonHandler = () =>
@@ -107,7 +112,7 @@ const Lobby: FC = () => {
           <Button
             variant="outline-danger"
             className="m-1"
-            onClick={handleCancelGameButtonClick}
+            onClick={handlePlayerCancelButtonClick}
           >
             Cancel game
           </Button>

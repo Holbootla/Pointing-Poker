@@ -101,9 +101,31 @@ export function handleAction(
     io.to(gameID).emit('GAME_STARTED');
   }
 
-  if (action.type === 'game_canceled') {
+  if (action.type === 'game_canceled_admin') {
     io.to(gameID).emit('leave_room');
+    STATE[getStateIndex()].users = [];
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'members/setMembersAction',
+      payload: {
+        members: STATE[getStateIndex()].users,
+      },
+    });
     io.to(gameID).socketsLeave(gameID);
+  }
+
+  if (action.type === 'game_canceled') {
+    io.to(socket.id).emit('leave_room');
+    const kickedUserIndex = STATE[getStateIndex()].users.findIndex((user) => {
+      user.id === action.payload.memberId;
+    });
+    STATE[getStateIndex()].users.splice(kickedUserIndex, 1);
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'members/setMembersAction',
+      payload: {
+        members: STATE[getStateIndex()].users,
+      },
+    });
+    io.to(socket.id).socketsLeave(gameID);
   }
 
   // ADD YOUR REDUCER:

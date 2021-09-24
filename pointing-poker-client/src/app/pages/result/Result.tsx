@@ -50,6 +50,7 @@ const Result = (): JSX.Element => {
       <Table className="invisible" id="resultTable">
         <thead>
           <tr>
+            <th>ISSUE TITLE</th>
             <th>ISSUE LINK</th>
             <th>SCORE</th>
             <th>TYPE OF SCORE</th>
@@ -60,7 +61,9 @@ const Result = (): JSX.Element => {
             <tr key={round.issue.id}>
               <td>{round.issue.title}</td>
               <td>{round.issue.link}</td>
-              <td>HERE IS THE FINAL SCORE OF ISSUE</td>
+              <td>
+                {round.averageValues[round.averageValues.length - 1].value}
+              </td>
               <td>{scoreTypeShort}</td>
             </tr>
           ))}

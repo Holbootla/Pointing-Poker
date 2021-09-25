@@ -23,7 +23,7 @@ export function handleAction(
     users.push(action.payload.user);
     socket.join(gameID);
     STATE.push({ gameID, users, issues });
-    STATE[getStateIndex()].game = { votes: [], averageValues: [], statistics: []};
+    STATE[getStateIndex()].game = { votes: [], averageValues: [], statistics: [] };
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
@@ -57,6 +57,8 @@ export function handleAction(
         members: STATE[getStateIndex()].users,
       },
     });
+    io.to(action.payload.user.id).emit('leave_room');
+    io.to(action.payload.user.id).socketsLeave(gameID);
     console.log(STATE, STATE[getStateIndex()].users);
   }
 
@@ -228,7 +230,7 @@ export function handleAction(
     STATE[getStateIndex()].game.roundStatus = 'in progress';
     STATE[getStateIndex()].game.votes = [];
     STATE[getStateIndex()].game.averageValues = [];
-    const payloadToClient = { 
+    const payloadToClient = {
       roundStatus: STATE[getStateIndex()].game.roundStatus,
       votes: STATE[getStateIndex()].game.votes,
       averageValues: STATE[getStateIndex()].game.averageValues
@@ -242,11 +244,11 @@ export function handleAction(
   if (action.type === 'finish_round') {
     STATE[getStateIndex()].game.roundStatus = 'awaiting';
     STATE[getStateIndex()].game.currentIssue = STATE[getStateIndex()].game.nextIssue;
-    STATE[getStateIndex()].game.nextIssue = { id: '', title: '', link: '', priority: 'low', status: 'awaiting'};
+    STATE[getStateIndex()].game.nextIssue = { id: '', title: '', link: '', priority: 'low', status: 'awaiting' };
     const minutes = Number(STATE[getStateIndex()].gameSettings.timerMinutes);
     const seconds = Number(STATE[getStateIndex()].gameSettings.timerSeconds);
     STATE[getStateIndex()].game.currentTimer = { minutes, seconds };
-    const payloadToClient = { 
+    const payloadToClient = {
       roundStatus: STATE[getStateIndex()].game.roundStatus,
       currentIssue: STATE[getStateIndex()].game.currentIssue,
       nextIssue: STATE[getStateIndex()].game.nextIssue,
@@ -293,24 +295,24 @@ export function handleAction(
 
   if (action.type === 'set_average_values') {
     const totalVotes = STATE[getStateIndex()].game.votes.length;
-      const votesCounter: { [key: string]: number } = {};
-      const votesValues: string[] = [];
-      const result: { value: string, percents: number }[] = [];
-      STATE[getStateIndex()].game.votes.forEach((vote) => {
-        if (!votesValues.includes(vote.value)) {
-          votesValues.push(vote.value);
-          votesCounter[vote.value] = 1;
-        } else {
-          votesCounter[vote.value] += 1;
-        }
+    const votesCounter: { [key: string]: number } = {};
+    const votesValues: string[] = [];
+    const result: { value: string, percents: number }[] = [];
+    STATE[getStateIndex()].game.votes.forEach((vote) => {
+      if (!votesValues.includes(vote.value)) {
+        votesValues.push(vote.value);
+        votesCounter[vote.value] = 1;
+      } else {
+        votesCounter[vote.value] += 1;
+      }
+    });
+    Object.entries(votesCounter)
+      .sort((a, b) => a[1] - b[1])
+      .slice(0, 10)
+      .forEach(([voteValue, counter]) => {
+        const percents = Math.round(counter / totalVotes * 10000) / 100;
+        result.push({ value: voteValue, percents })
       });
-      Object.entries(votesCounter)
-        .sort((a, b) => a[1] - b[1])
-        .slice(0, 10)
-        .forEach(([voteValue, counter]) => {
-          const percents = Math.round(counter / totalVotes * 10000) / 100; 
-          result.push({ value: voteValue, percents })
-        });
     STATE[getStateIndex()].game.averageValues = result;
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/setAverageValuesAction',
@@ -321,7 +323,7 @@ export function handleAction(
   if (action.type === 'add_round_in_statistics') {
     STATE[getStateIndex()].game.statistics = [
       ...STATE[getStateIndex()].game.statistics,
-      { 
+      {
         issue: STATE[getStateIndex()].game.currentIssue,
         votes: STATE[getStateIndex()].game.votes,
         averageValues: STATE[getStateIndex()].game.averageValues

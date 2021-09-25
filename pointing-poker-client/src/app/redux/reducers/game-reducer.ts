@@ -32,17 +32,11 @@ interface GameState {
 const initialState: GameState = {
   currentIssue: { id: '', title: '', link: '', priority: 'low', status: 'awaiting'},
   nextIssue: { id: '', title: '', link: '', priority: 'low', status: 'awaiting'},
-  currentTimer: { minutes: 0, seconds: 10 },
+  currentTimer: { minutes: 0, seconds: 0 },
   roundStatus: 'awaiting',
-  votes: [{ memberId: 0, value: '5' }, { memberId: 2, value: '5' }, { memberId: 3, value: '8' }],
+  votes: [],
   averageValues: [],
-  statistics: [
-    {
-      issue: { id: -1, title: 'Title', link: 'link', priority: 'low', status: 'resolved'},
-      votes: [{ memberId: 0, value: '5' }, { memberId: 2, value: '5' }, { memberId: 3, value: '8' }],
-      averageValues: [{ value: '5', percents: 75 }, { value: '8', percents: 25 }],
-    }
-  ],
+  statistics: [],
 };
 
 export const gameSlice = createSlice({
@@ -55,59 +49,22 @@ export const gameSlice = createSlice({
     setNextIssueAction: (state, action) => {
       state.nextIssue = action.payload;
     },
-    startRoundAction: (state) => {
-      state.roundStatus = 'in progress';
-      state.votes = initialState.votes;
-      state.averageValues = initialState.averageValues;
-    },
-    finishRoundAction: (state) => {
-      state.roundStatus = 'awaiting';
-      state.currentIssue = state.nextIssue;
-      state.nextIssue = initialState.nextIssue;
-      state.currentTimer = initialState.currentTimer;
-    },
+
+    startRoundAction: (state, action) => ({ ...state, ...action.payload }),
+
+    finishRoundAction: (state, action) => ({ ...state, ...action.payload }),
+    
     setCurrentTimer: (state, action) => {
       state.currentTimer = action.payload;
     },
     addVoteAction: (state, action) => {
-      if (state.votes.find((vote) => vote.memberId === action.payload.memberId)) {
-        state.votes = state.votes.map((vote) => {
-          if (vote.memberId === action.payload.memberId) {
-            return { memberId: vote.memberId, value: action.payload.value };
-          }
-          return vote;
-        });
-      } else {
-        state.votes = [...state.votes, action.payload];
-      }
+      state.votes = action.payload;
     },
-    setAvaregeValuesAction: (state) => {
-      const totalVotes = state.votes.length;
-      const votesCounter: { [key: string]: number } = {};
-      const votesValues: string[] = [];
-      const result: { value: string, percents: number }[] = [];
-      state.votes.forEach((vote) => {
-        if (!votesValues.includes(vote.value)) {
-          votesValues.push(vote.value);
-          votesCounter[vote.value] = 1;
-        } else {
-          votesCounter[vote.value] += 1;
-        }
-      });
-      Object.entries(votesCounter)
-        .sort((a, b) => a[1] - b[1])
-        .slice(0, 3)
-        .forEach(([voteValue, counter]) => {
-          const percents = Math.round(counter / totalVotes * 10000) / 100; 
-          result.push({ value: voteValue, percents })
-        });
-      state.averageValues = result;
+    setAverageValuesAction: (state, action) => {
+      state.averageValues = action.payload;
     },
-    addRoundInStatisticsAction: (state) => {
-      state.statistics = [
-        ...state.statistics,
-        { issue: state.currentIssue, votes: state.votes, averageValues: state.averageValues},
-      ];
+    addRoundInStatisticsAction: (state, action) => {
+      state.statistics = action.payload;
     },
   },
 });
@@ -119,7 +76,7 @@ export const {
   setNextIssueAction,
   setCurrentTimer,
   addVoteAction,
-  setAvaregeValuesAction,
+  setAverageValuesAction,
   addRoundInStatisticsAction,
 } = gameSlice.actions;
 

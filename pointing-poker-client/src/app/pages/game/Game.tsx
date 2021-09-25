@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import CardFace from '../../components/shared/cards/card-face';
@@ -7,11 +8,13 @@ import IssueGame from '../../components/shared/issue-game/issue-game';
 import KickPopup from '../../components/scrum/kick-popup/KickPopup';
 import Member from '../../components/shared/member/member';
 import ScrumMasterMember from '../../components/shared/scrum-master/scrum-master-member';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { addVoteAction, finishRoundAction, gameState, setCurrentIssueAction, setCurrentTimer, setNextIssueAction, startRoundAction, setAvaregeValuesAction, addRoundInStatisticsAction, Issue } from '../../redux/reducers/game-reducer';
-import { membersState, setAllVoteResultsAction, setVoteResultAction } from '../../redux/reducers/members-reducer';
+import { useAppSelector } from '../../redux/hooks';
+import { gameState } from '../../redux/reducers/game-reducer';
+import { membersState } from '../../redux/reducers/members-reducer';
 import './game.scss';
-import { IssueStatus, setIssueStatusAction } from '../../redux/reducers/issues-reducer';
+import { IssueStatus } from '../../redux/reducers/issues-reducer';
+import { sendToServer, socket } from '../../socket/socket-context';
+import NewIssue from '../../components/scrum/new-issue/new-issue';
 
 let timerId: NodeJS.Timeout;
 let nextIssueId: string | number;
@@ -19,36 +22,42 @@ let votesQuantity: number;
 
 function Game(): JSX.Element {
   const history = useHistory();
-  const dispatch = useAppDispatch();
   const { members } = useAppSelector(membersState);
   const { minutes, seconds } = useAppSelector(gameState).currentTimer;
   const { roundStatus, currentIssue, nextIssue, votes, averageValues } = useAppSelector(gameState);
   const { cardValuesFinalSet, scoreTypeShort, cardCover } = useAppSelector((store) => store.gameSettings)
   const { issues } = useAppSelector((store) => store.issues);
-  const { isAdmin, role } = useAppSelector((store) => store.authPopup.user)
+  const { isAdmin, role, id } = useAppSelector((store) => store.authPopup.user)
   const { gameID } = useParams<{ gameID: string }>();
-  const thisMemberId = 1;
+  const thisMemberId = id;
   nextIssueId = nextIssue.id;
   votesQuantity = votes.length;
+
+  useEffect(() => {
+    sendToServer('get_current_timer', { gameID });
+    socket.on('GAME_STOPPED', () => {
+      history.push(`/result/${gameID}`);
+    });
+  },[gameID, history]);
   
   const stopRound = () => {
-    dispatch(setIssueStatusAction({ id: currentIssue.id, status: "resolved" }));
-    dispatch(setCurrentIssueAction({ ...currentIssue, status: "resolved" }));
+    sendToServer('set_issue_status', { gameID, id: currentIssue.id, status: 'resolved' });
+    sendToServer('set_current_issue', { gameID, currentIssue: { ...currentIssue, status: 'resolved' } });
     if (nextIssueId !== "") {
-      dispatch(setIssueStatusAction({ id: nextIssueId, status: "current" }))
+      sendToServer('set_issue_status', { gameID, id: nextIssueId, status: 'current' });
       const newCurrentIssue = issues.find((issue) => issue.id === nextIssueId);
-      dispatch(setNextIssueAction({ ...newCurrentIssue, status: "current" }));
+      sendToServer('set_next_issue', { gameID, nextIssue: { ...newCurrentIssue, status: 'current' } });
     }
     clearInterval(timerId);
-    dispatch(setAvaregeValuesAction());
-    dispatch(addRoundInStatisticsAction());
-    dispatch(finishRoundAction());
+    sendToServer('set_average_values', { gameID });
+    sendToServer('add_round_in_statistics', { gameID });
+    sendToServer('finish_round', { gameID });
   };
 
   const startRound = (): void => {
-    if (roundStatus === "awaiting" && currentIssue.id !== "") {
-      dispatch(startRoundAction());
-      dispatch(setAllVoteResultsAction({ voteResult: "In progress"}));
+    if (roundStatus === 'awaiting' && currentIssue.id !== '') {
+      sendToServer('start_round', { gameID });
+      sendToServer('set_all_vote_results', { gameID, voteResult: 'In progress' });
       let min = minutes;
       let sec = seconds;
       
@@ -60,59 +69,59 @@ function Game(): JSX.Element {
           const decreasedTotalTime = totalTime - 1;
           sec = decreasedTotalTime % 60;
           min = (decreasedTotalTime - sec) / 60;
-          dispatch(setCurrentTimer({ minutes: min, seconds: sec}));
+          sendToServer('set_current_timer', { gameID, currentTimer: ({ minutes: min, seconds: sec }) });
         }
       }, 1000)
     }
   };
 
   const stopGame = (): void => {
-    if (roundStatus === "awaiting") {
-      history.push(`/result/${gameID}`);
+    if (roundStatus === 'awaiting') {
+      sendToServer('stop_game', { gameID });
     } else {
       stopRound();
-      history.push(`/result/${gameID}`);
+      sendToServer('stop_game', { gameID });
     }
   };
 
   const nextIssueClickHandler = (): void => {
-    if (roundStatus === "awaiting") {
-      const currentIssueIndex = issues.findIndex((issue) => issue.status === "current");
+    if (roundStatus === 'awaiting') {
+      const currentIssueIndex = issues.findIndex((issue) => issue.status === 'current');
       const newCurrentIssue = (currentIssueIndex === -1 || currentIssueIndex === issues.length - 1)
-        ? issues.find((issue) => issue.status === "awaiting")
-        : issues.find((issue, index) => issue.status === "awaiting" && index > currentIssueIndex);
+        ? issues.find((issue) => issue.status === 'awaiting')
+        : issues.find((issue, index) => issue.status === 'awaiting' && index > currentIssueIndex);
       if (newCurrentIssue) {
-        dispatch(setIssueStatusAction({ id: newCurrentIssue.id, status: "current" }));
-        dispatch(setCurrentIssueAction({ ...newCurrentIssue, status: "current" }));
+        sendToServer('set_issue_status', { gameID, id: newCurrentIssue.id, status: 'current' });
+        sendToServer('set_current_issue', { gameID, currentIssue: { ...newCurrentIssue, status: 'current' } });
       }
     } else {
-      const nextIssueIndex = issues.findIndex((issue) => issue.status === "next");
+      const nextIssueIndex = issues.findIndex((issue) => issue.status === 'next');
       const newNextIssue = (nextIssueIndex === -1 || nextIssueIndex === issues.length - 1)
-        ? issues.find((issue) => issue.status === "awaiting")
-        : issues.find((issue, index) => issue.status === "awaiting" && index > nextIssueIndex);
+        ? issues.find((issue) => issue.status === 'awaiting')
+        : issues.find((issue, index) => issue.status === 'awaiting' && index > nextIssueIndex);
       if (newNextIssue) {
-        dispatch(setIssueStatusAction({ id: newNextIssue.id, status: "next"}));
-        dispatch(setNextIssueAction({ ...newNextIssue, status: "next" }));
+        sendToServer('set_issue_status', { gameID, id: newNextIssue.id, status: 'next' });
+        sendToServer('set_next_issue', { gameID, nextIssue: { ...newNextIssue, status: 'next' } });
       }
     }
   };
 
   const cardClickHandler = (cardValue: string): void => {
-    if (roundStatus === "in progress") {
-      dispatch(addVoteAction({ memberId: thisMemberId, value: cardValue }));
-      dispatch(setVoteResultAction({ memberId: thisMemberId, voteResult: `${cardValue} ${scoreTypeShort}` }));
+    if (roundStatus === 'in progress') {
+      sendToServer('add_vote', { gameID, memberId: thisMemberId, value: cardValue });
+      sendToServer('set_vote_result', { gameID, memberId: thisMemberId, voteResult: `${cardValue} ${scoreTypeShort}` });
     }
   };
 
   const issueClickHandler = (issueId: number | string, status: IssueStatus): void => {
-    if (roundStatus === "awaiting" && status !== "current" && status !== "resolved" && isAdmin) {
-      dispatch(setIssueStatusAction({ id: issueId, status: "current" }));
+    if (roundStatus === 'awaiting' && status !== 'current' && status !== 'resolved' && isAdmin) {
+      sendToServer('set_issue_status', { gameID, id: issueId, status: 'current' });
       const newCurrentIssue = issues.find((issue) => issue.id === issueId);
-      dispatch(setCurrentIssueAction({ ...newCurrentIssue, status: "current" }));
-    } if (roundStatus === "in progress" && status !== "current" && status !== "resolved" && isAdmin) {
-      dispatch(setIssueStatusAction({ id: issueId, status: "next" }))
+      sendToServer('set_current_issue', { gameID, currentIssue: { ...newCurrentIssue, status: 'current' } });
+    } if (roundStatus === 'in progress' && status !== 'current' && status !== 'resolved' && isAdmin) {
+      sendToServer('set_issue_status', { gameID, id: issueId, status: 'next' });
       const newNextIssue = issues.find((issue) => issue.id === issueId);
-      dispatch(setNextIssueAction({ ...newNextIssue, status: "next" }));
+      sendToServer('set_next_issue', { gameID, nextIssue: { ...newNextIssue, status: 'next' } });
     }
   };
 
@@ -171,6 +180,7 @@ function Game(): JSX.Element {
                     </div>
                   ))
                   }
+                  {(isAdmin &&<NewIssue/>)}
                 </Col>
                 <Col>
                   <h3>{(roundStatus === "awaiting") ? "Statistics" : "Playground"}</h3>

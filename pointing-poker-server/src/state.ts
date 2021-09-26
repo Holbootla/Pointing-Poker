@@ -41,11 +41,22 @@ interface IVote {
 interface IGameState {
   currentIssue?: IIssue;
   nextIssue?: IIssue;
-  currentTimer?: { minutes: number, seconds: number };
+  currentTimer?: { minutes: number; seconds: number };
   roundStatus?: 'in progress' | 'awaiting';
   votes?: IVote[];
   averageValues?: IAverageValue[];
-  statistics?: { issue: IIssue, votes: IVote[], averageValues: IAverageValue[] }[];
+  statistics?: {
+    issue: IIssue;
+    votes: IVote[];
+    averageValues: IAverageValue[];
+  }[];
+}
+
+interface IChatMessage {
+  userId: string;
+  message: string;
+  time: string;
+  messageId: number;
 }
 
 interface IServerState {
@@ -56,6 +67,7 @@ interface IServerState {
   gameSettings?: IGameSettings;
   additionalKeys?: string;
   game?: IGameState;
+  chatHistory?: IChatMessage[];
 }
 
 export const STATE: IServerState[] = [];

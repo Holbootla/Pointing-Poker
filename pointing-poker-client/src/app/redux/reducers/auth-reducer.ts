@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { RootState } from '../store';
 
 interface AuthPopupState {
   authPopupVisible: boolean;
@@ -92,8 +91,5 @@ export const {
   setIsAdminAction,
   setRoleAction,
 } = authPopupSlice.actions;
-
-export const authPopupVisible = (state: RootState): boolean =>
-  state.authPopup.authPopupVisible;
 
 export default authPopupSlice.reducer;

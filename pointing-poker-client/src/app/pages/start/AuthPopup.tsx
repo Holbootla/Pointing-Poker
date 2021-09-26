@@ -45,13 +45,10 @@ function AuthPopup(): JSX.Element {
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
 
-    sendToServer(
-      newGame ? 'game_created' : 'user_connected',
-      { gameID, user },
-      () => {
-        history.push(`/lobby/${gameID}`);
-      }
-    );
+    sendToServer(newGame ? 'game_created' : 'user_connected', {
+      gameID,
+      user,
+    }).then(() => history.push(`/lobby/${gameID}`));
   };
 
   return (

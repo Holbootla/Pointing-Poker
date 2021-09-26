@@ -19,11 +19,16 @@ export function handleAction(
   if (action.type === 'game_created') {
     const users = [];
     const issues = [];
+    const chatHistory = [];
 
     users.push(action.payload.user);
     socket.join(gameID);
-    STATE.push({ gameID, users, issues });
-    STATE[getStateIndex()].game = { votes: [], averageValues: [], statistics: [] };
+    STATE.push({ gameID, users, issues, chatHistory });
+    STATE[getStateIndex()].game = {
+      votes: [],
+      averageValues: [],
+      statistics: [],
+    };
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
@@ -63,12 +68,14 @@ export function handleAction(
   }
 
   if (action.type === 'set_vote_result') {
-    STATE[getStateIndex()].users = STATE[getStateIndex()].users.map((member) => {
-      if (member.id === action.payload.memberId) {
-        return { ...member, voteResult: action.payload.voteResult };
+    STATE[getStateIndex()].users = STATE[getStateIndex()].users.map(
+      (member) => {
+        if (member.id === action.payload.memberId) {
+          return { ...member, voteResult: action.payload.voteResult };
+        }
+        return member;
       }
-      return member;
-    });
+    );
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
       payload: {
@@ -78,10 +85,12 @@ export function handleAction(
   }
 
   if (action.type === 'set_all_vote_results') {
-    STATE[getStateIndex()].users = STATE[getStateIndex()].users.map((member) => ({
-      ...member,
-      voteResult: action.payload.voteResult,
-    }));
+    STATE[getStateIndex()].users = STATE[getStateIndex()].users.map(
+      (member) => ({
+        ...member,
+        voteResult: action.payload.voteResult,
+      })
+    );
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
       payload: {
@@ -141,18 +150,20 @@ export function handleAction(
   }
 
   if (action.type === 'set_issue_status') {
-    STATE[getStateIndex()].issues = STATE[getStateIndex()].issues.map((issue) => {
-      if (issue.id === action.payload.id) {
-        return { ...issue, status: action.payload.status }
+    STATE[getStateIndex()].issues = STATE[getStateIndex()].issues.map(
+      (issue) => {
+        if (issue.id === action.payload.id) {
+          return { ...issue, status: action.payload.status };
+        }
+        if (issue.status === 'current' && action.payload.status !== 'next') {
+          return { ...issue, status: 'awaiting' };
+        }
+        if (issue.status === 'next') {
+          return { ...issue, status: 'awaiting' };
+        }
+        return issue;
       }
-      if (issue.status === 'current' && action.payload.status !== 'next') {
-        return { ...issue, status: 'awaiting' }
-      }
-      if (issue.status === 'next') {
-        return { ...issue, status: 'awaiting' }
-      }
-      return issue;
-    });
+    );
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'issues/updateIssuesAction',
@@ -240,7 +251,7 @@ export function handleAction(
     const payloadToClient = {
       roundStatus: STATE[getStateIndex()].game.roundStatus,
       votes: STATE[getStateIndex()].game.votes,
-      averageValues: STATE[getStateIndex()].game.averageValues
+      averageValues: STATE[getStateIndex()].game.averageValues,
     };
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/startRoundAction',
@@ -250,8 +261,15 @@ export function handleAction(
 
   if (action.type === 'finish_round') {
     STATE[getStateIndex()].game.roundStatus = 'awaiting';
-    STATE[getStateIndex()].game.currentIssue = STATE[getStateIndex()].game.nextIssue;
-    STATE[getStateIndex()].game.nextIssue = { id: '', title: '', link: '', priority: 'low', status: 'awaiting' };
+    STATE[getStateIndex()].game.currentIssue =
+      STATE[getStateIndex()].game.nextIssue;
+    STATE[getStateIndex()].game.nextIssue = {
+      id: '',
+      title: '',
+      link: '',
+      priority: 'low',
+      status: 'awaiting',
+    };
     const minutes = Number(STATE[getStateIndex()].gameSettings.timerMinutes);
     const seconds = Number(STATE[getStateIndex()].gameSettings.timerSeconds);
     STATE[getStateIndex()].game.currentTimer = { minutes, seconds };
@@ -284,15 +302,24 @@ export function handleAction(
   }
 
   if (action.type === 'add_vote') {
-    if (STATE[getStateIndex()].game.votes.find((vote) => vote.memberId === action.payload.memberId)) {
-      STATE[getStateIndex()].game.votes = STATE[getStateIndex()].game.votes.map((vote) => {
-        if (vote.memberId === action.payload.memberId) {
-          return { memberId: vote.memberId, value: action.payload.value };
+    if (
+      STATE[getStateIndex()].game.votes.find(
+        (vote) => vote.memberId === action.payload.memberId
+      )
+    ) {
+      STATE[getStateIndex()].game.votes = STATE[getStateIndex()].game.votes.map(
+        (vote) => {
+          if (vote.memberId === action.payload.memberId) {
+            return { memberId: vote.memberId, value: action.payload.value };
+          }
+          return vote;
         }
-        return vote;
-      });
+      );
     } else {
-      STATE[getStateIndex()].game.votes = [...STATE[getStateIndex()].game.votes, action.payload];
+      STATE[getStateIndex()].game.votes = [
+        ...STATE[getStateIndex()].game.votes,
+        action.payload,
+      ];
     }
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/addVoteAction',
@@ -304,7 +331,7 @@ export function handleAction(
     const totalVotes = STATE[getStateIndex()].game.votes.length;
     const votesCounter: { [key: string]: number } = {};
     const votesValues: string[] = [];
-    const result: { value: string, percents: number }[] = [];
+    const result: { value: string; percents: number }[] = [];
     STATE[getStateIndex()].game.votes.forEach((vote) => {
       if (!votesValues.includes(vote.value)) {
         votesValues.push(vote.value);
@@ -317,8 +344,8 @@ export function handleAction(
       .sort((a, b) => a[1] - b[1])
       .slice(0, 10)
       .forEach(([voteValue, counter]) => {
-        const percents = Math.round(counter / totalVotes * 10000) / 100;
-        result.push({ value: voteValue, percents })
+        const percents = Math.round((counter / totalVotes) * 10000) / 100;
+        result.push({ value: voteValue, percents });
       });
     STATE[getStateIndex()].game.averageValues = result;
     io.to(gameID).emit('UPDATE_CLIENT', {
@@ -333,7 +360,7 @@ export function handleAction(
       {
         issue: STATE[getStateIndex()].game.currentIssue,
         votes: STATE[getStateIndex()].game.votes,
-        averageValues: STATE[getStateIndex()].game.averageValues
+        averageValues: STATE[getStateIndex()].game.averageValues,
       },
     ];
     io.to(gameID).emit('UPDATE_CLIENT', {
@@ -346,5 +373,26 @@ export function handleAction(
     io.to(gameID).emit('GAME_STOPPED');
   }
 
+  /*=====================================================================*/
+  /*                                  CHAT                               */
+  /*=====================================================================*/
+
+  if (action.type === 'chat_message') {
+    const { userId, message, time } = action.payload.message;
+    const messageTime = new Date(time);
+    const messageToHistory = {
+      userId: userId,
+      message: message,
+      time: `${messageTime.getHours()}:${messageTime.getMinutes()}`,
+      messageId: time,
+    };
+    STATE[getStateIndex()].chatHistory.push(messageToHistory);
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'chat/setMessagesAction',
+      payload: {
+        chatHistory: STATE[getStateIndex()].chatHistory,
+      },
+    });
+  }
   // ADD YOUR REDUCER:
 }

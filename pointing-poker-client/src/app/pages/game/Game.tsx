@@ -15,6 +15,7 @@ import './game.scss';
 import { IssueStatus } from '../../redux/reducers/issues-reducer';
 import { sendToServer, socket } from '../../socket/socket-context';
 import NewIssue from '../../components/scrum/new-issue/new-issue';
+import Chat from '../../components/shared/chat/chat';
 
 let timerId: NodeJS.Timeout;
 let nextIssueId: string | number;
@@ -24,10 +25,13 @@ function Game(): JSX.Element {
   const history = useHistory();
   const { members } = useAppSelector(membersState);
   const { minutes, seconds } = useAppSelector(gameState).currentTimer;
-  const { roundStatus, currentIssue, nextIssue, votes, averageValues } = useAppSelector(gameState);
-  const { cardValuesFinalSet, scoreTypeShort, cardCover } = useAppSelector((store) => store.gameSettings)
+  const { roundStatus, currentIssue, nextIssue, votes, averageValues } =
+    useAppSelector(gameState);
+  const { cardValuesFinalSet, scoreTypeShort, cardCover } = useAppSelector(
+    (store) => store.gameSettings
+  );
   const { issues } = useAppSelector((store) => store.issues);
-  const { isAdmin, role, id } = useAppSelector((store) => store.authPopup.user)
+  const { isAdmin, role, id } = useAppSelector((store) => store.authPopup.user);
   const { gameID } = useParams<{ gameID: string }>();
   const thisMemberId = id;
   nextIssueId = nextIssue.id;
@@ -38,15 +42,29 @@ function Game(): JSX.Element {
     socket.on('GAME_STOPPED', () => {
       history.push(`/result/${gameID}`);
     });
-  },[gameID, history]);
-  
+  }, [gameID, history]);
+
   const stopRound = () => {
-    sendToServer('set_issue_status', { gameID, id: currentIssue.id, status: 'resolved' });
-    sendToServer('set_current_issue', { gameID, currentIssue: { ...currentIssue, status: 'resolved' } });
-    if (nextIssueId !== "") {
-      sendToServer('set_issue_status', { gameID, id: nextIssueId, status: 'current' });
+    sendToServer('set_issue_status', {
+      gameID,
+      id: currentIssue.id,
+      status: 'resolved',
+    });
+    sendToServer('set_current_issue', {
+      gameID,
+      currentIssue: { ...currentIssue, status: 'resolved' },
+    });
+    if (nextIssueId !== '') {
+      sendToServer('set_issue_status', {
+        gameID,
+        id: nextIssueId,
+        status: 'current',
+      });
       const newCurrentIssue = issues.find((issue) => issue.id === nextIssueId);
-      sendToServer('set_next_issue', { gameID, nextIssue: { ...newCurrentIssue, status: 'current' } });
+      sendToServer('set_next_issue', {
+        gameID,
+        nextIssue: { ...newCurrentIssue, status: 'current' },
+      });
     }
     clearInterval(timerId);
     sendToServer('set_average_values', { gameID });
@@ -57,10 +75,13 @@ function Game(): JSX.Element {
   const startRound = (): void => {
     if (roundStatus === 'awaiting' && currentIssue.id !== '') {
       sendToServer('start_round', { gameID });
-      sendToServer('set_all_vote_results', { gameID, voteResult: 'In progress' });
+      sendToServer('set_all_vote_results', {
+        gameID,
+        voteResult: 'In progress',
+      });
       let min = minutes;
       let sec = seconds;
-      
+
       timerId = setInterval(() => {
         const totalTime = min * 60 + sec;
         if (totalTime === 0 || votesQuantity === members.length) {
@@ -69,9 +90,12 @@ function Game(): JSX.Element {
           const decreasedTotalTime = totalTime - 1;
           sec = decreasedTotalTime % 60;
           min = (decreasedTotalTime - sec) / 60;
-          sendToServer('set_current_timer', { gameID, currentTimer: ({ minutes: min, seconds: sec }) });
+          sendToServer('set_current_timer', {
+            gameID,
+            currentTimer: { minutes: min, seconds: sec },
+          });
         }
-      }, 1000)
+      }, 1000);
     }
   };
 
@@ -86,42 +110,100 @@ function Game(): JSX.Element {
 
   const nextIssueClickHandler = (): void => {
     if (roundStatus === 'awaiting') {
-      const currentIssueIndex = issues.findIndex((issue) => issue.status === 'current');
-      const newCurrentIssue = (currentIssueIndex === -1 || currentIssueIndex === issues.length - 1)
-        ? issues.find((issue) => issue.status === 'awaiting')
-        : issues.find((issue, index) => issue.status === 'awaiting' && index > currentIssueIndex);
+      const currentIssueIndex = issues.findIndex(
+        (issue) => issue.status === 'current'
+      );
+      const newCurrentIssue =
+        currentIssueIndex === -1 || currentIssueIndex === issues.length - 1
+          ? issues.find((issue) => issue.status === 'awaiting')
+          : issues.find(
+              (issue, index) =>
+                issue.status === 'awaiting' && index > currentIssueIndex
+            );
       if (newCurrentIssue) {
-        sendToServer('set_issue_status', { gameID, id: newCurrentIssue.id, status: 'current' });
-        sendToServer('set_current_issue', { gameID, currentIssue: { ...newCurrentIssue, status: 'current' } });
+        sendToServer('set_issue_status', {
+          gameID,
+          id: newCurrentIssue.id,
+          status: 'current',
+        });
+        sendToServer('set_current_issue', {
+          gameID,
+          currentIssue: { ...newCurrentIssue, status: 'current' },
+        });
       }
     } else {
-      const nextIssueIndex = issues.findIndex((issue) => issue.status === 'next');
-      const newNextIssue = (nextIssueIndex === -1 || nextIssueIndex === issues.length - 1)
-        ? issues.find((issue) => issue.status === 'awaiting')
-        : issues.find((issue, index) => issue.status === 'awaiting' && index > nextIssueIndex);
+      const nextIssueIndex = issues.findIndex(
+        (issue) => issue.status === 'next'
+      );
+      const newNextIssue =
+        nextIssueIndex === -1 || nextIssueIndex === issues.length - 1
+          ? issues.find((issue) => issue.status === 'awaiting')
+          : issues.find(
+              (issue, index) =>
+                issue.status === 'awaiting' && index > nextIssueIndex
+            );
       if (newNextIssue) {
-        sendToServer('set_issue_status', { gameID, id: newNextIssue.id, status: 'next' });
-        sendToServer('set_next_issue', { gameID, nextIssue: { ...newNextIssue, status: 'next' } });
+        sendToServer('set_issue_status', {
+          gameID,
+          id: newNextIssue.id,
+          status: 'next',
+        });
+        sendToServer('set_next_issue', {
+          gameID,
+          nextIssue: { ...newNextIssue, status: 'next' },
+        });
       }
     }
   };
 
   const cardClickHandler = (cardValue: string): void => {
     if (roundStatus === 'in progress') {
-      sendToServer('add_vote', { gameID, memberId: thisMemberId, value: cardValue });
-      sendToServer('set_vote_result', { gameID, memberId: thisMemberId, voteResult: `${cardValue} ${scoreTypeShort}` });
+      sendToServer('add_vote', {
+        gameID,
+        memberId: thisMemberId,
+        value: cardValue,
+      });
+      sendToServer('set_vote_result', {
+        gameID,
+        memberId: thisMemberId,
+        voteResult: `${cardValue} ${scoreTypeShort}`,
+      });
     }
   };
 
-  const issueClickHandler = (issueId: number | string, status: IssueStatus): void => {
-    if (roundStatus === 'awaiting' && status !== 'current' && status !== 'resolved' && isAdmin) {
-      sendToServer('set_issue_status', { gameID, id: issueId, status: 'current' });
+  const issueClickHandler = (
+    issueId: number | string,
+    status: IssueStatus
+  ): void => {
+    if (
+      roundStatus === 'awaiting' &&
+      status !== 'current' &&
+      status !== 'resolved' &&
+      isAdmin
+    ) {
+      sendToServer('set_issue_status', {
+        gameID,
+        id: issueId,
+        status: 'current',
+      });
       const newCurrentIssue = issues.find((issue) => issue.id === issueId);
-      sendToServer('set_current_issue', { gameID, currentIssue: { ...newCurrentIssue, status: 'current' } });
-    } if (roundStatus === 'in progress' && status !== 'current' && status !== 'resolved' && isAdmin) {
+      sendToServer('set_current_issue', {
+        gameID,
+        currentIssue: { ...newCurrentIssue, status: 'current' },
+      });
+    }
+    if (
+      roundStatus === 'in progress' &&
+      status !== 'current' &&
+      status !== 'resolved' &&
+      isAdmin
+    ) {
       sendToServer('set_issue_status', { gameID, id: issueId, status: 'next' });
       const newNextIssue = issues.find((issue) => issue.id === issueId);
-      sendToServer('set_next_issue', { gameID, nextIssue: { ...newNextIssue, status: 'next' } });
+      sendToServer('set_next_issue', {
+        gameID,
+        nextIssue: { ...newNextIssue, status: 'next' },
+      });
     }
   };
 
@@ -139,20 +221,34 @@ function Game(): JSX.Element {
                 </Col>
                 <Col>
                   <div className="game__timer">
-                      <div className="game__timer-minutes">{minutes}</div>
-                      <div className="game__timer-dividor">:</div>
-                      <div className="game__timer-minutes">{seconds>9 ? seconds : `0${seconds}`}</div>
+                    <div className="game__timer-minutes">{minutes}</div>
+                    <div className="game__timer-dividor">:</div>
+                    <div className="game__timer-minutes">
+                      {seconds > 9 ? seconds : `0${seconds}`}
+                    </div>
                   </div>
                 </Col>
-                {(isAdmin && 
+                {isAdmin && (
                   <Col>
-                    <Button variant="success" className="m-1" onClick={() => startRound()}>
+                    <Button
+                      variant="success"
+                      className="m-1"
+                      onClick={() => startRound()}
+                    >
                       Start round
                     </Button>
-                    <Button variant="primary" className="m-1" onClick={() => nextIssueClickHandler()}>
+                    <Button
+                      variant="primary"
+                      className="m-1"
+                      onClick={() => nextIssueClickHandler()}
+                    >
                       Next issue
                     </Button>
-                    <Button variant="danger" className="m-1" onClick={() => stopGame()}>
+                    <Button
+                      variant="danger"
+                      className="m-1"
+                      onClick={() => stopGame()}
+                    >
                       Stop game
                     </Button>
                   </Col>
@@ -178,14 +274,15 @@ function Game(): JSX.Element {
                         status={item.status}
                       />
                     </div>
-                  ))
-                  }
-                  {(isAdmin &&<NewIssue/>)}
+                  ))}
+                  {isAdmin && <NewIssue />}
                 </Col>
                 <Col>
-                  <h3>{(roundStatus === "awaiting") ? "Statistics" : "Playground"}</h3>
-                  {(roundStatus === "awaiting") 
-                    ? <Row>
+                  <h3>
+                    {roundStatus === 'awaiting' ? 'Statistics' : 'Playground'}
+                  </h3>
+                  {roundStatus === 'awaiting' ? (
+                    <Row>
                       {averageValues.map((item) => (
                         <Col key={item.value}>
                           <CardFace value={item.value} type={scoreTypeShort} />
@@ -193,7 +290,8 @@ function Game(): JSX.Element {
                         </Col>
                       ))}
                     </Row>
-                    : <Row>
+                  ) : (
+                    <Row>
                       {votes.map((vote) => (
                         <Col key={vote.memberId}>
                           <div
@@ -202,14 +300,15 @@ function Game(): JSX.Element {
                           />
                         </Col>
                       ))}
-                      </Row>
-                  }
+                    </Row>
+                  )}
                 </Col>
               </Row>
             </Container>
           </Col>
           <Col xl={5}>
             <Container>
+              <Chat />
               <h2>Players:</h2>
               {members.map((member) => (
                 <Row key={member.id}>
@@ -219,39 +318,39 @@ function Game(): JSX.Element {
                       firstName={member.firstName}
                       lastName={member.lastName}
                       jobPosition={member.jobPosition}
-											isAdmin={member.isAdmin}
+                      isAdmin={member.isAdmin}
                     />
                   </Col>
-                  {(isAdmin) &&
+                  {isAdmin && <Col>{member.voteResult}</Col>}
+                  {!isAdmin && roundStatus === 'awaiting' && (
                     <Col>{member.voteResult}</Col>
-                  }
-                  {(!isAdmin && roundStatus === "awaiting") &&
-                    <Col>{member.voteResult}</Col>
-                  }
-                  {(!isAdmin && roundStatus === "in progress") &&
+                  )}
+                  {!isAdmin && roundStatus === 'in progress' && (
                     <Col>In progress</Col>
-                  }
+                  )}
                 </Row>
               ))}
             </Container>
           </Col>
         </Row>
         <Row>
-          {(role === "player") && cardValuesFinalSet.map((cardValue) => (
-            <Col key={cardValue}>
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => cardClickHandler(cardValue)}
-                onKeyPress={() => cardClickHandler(cardValue)}
-              >{cardValue === "Break" ? (
-                  <CardBreak key="cardBreack" />
-                ) : (
-                  <CardFace value={cardValue} type={scoreTypeShort} />
-                )}
-              </div>
-            </Col>
-          ))}
+          {role === 'player' &&
+            cardValuesFinalSet.map((cardValue) => (
+              <Col key={cardValue}>
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => cardClickHandler(cardValue)}
+                  onKeyPress={() => cardClickHandler(cardValue)}
+                >
+                  {cardValue === 'Break' ? (
+                    <CardBreak key="cardBreack" />
+                  ) : (
+                    <CardFace value={cardValue} type={scoreTypeShort} />
+                  )}
+                </div>
+              </Col>
+            ))}
         </Row>
       </Container>
       <KickPopup />

@@ -34,7 +34,8 @@ const IssuePopup: FC = () => {
     dispatch(setIdAction(id));
   };
 
-  const createIssueId = (): number => Math.round(Math.random() * 10000);
+  const createIssueId = (): string =>
+    Math.round(Math.random() * 10000).toString();
 
   const closeIssuePopup = () => {
     dispatch(closeIssuePopupAction());

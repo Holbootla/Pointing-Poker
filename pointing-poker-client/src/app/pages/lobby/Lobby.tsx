@@ -13,15 +13,13 @@ import CardValuePopup from './AddCardValuePopup';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { sendToServer, socket } from '../../socket/socket-context';
 import { setGameSettings } from '../../redux/reducers/game-settings-reducer';
-import isScrum from '../../shared';
 
 const Lobby: FC = () => {
   const dispatch = useAppDispatch();
   const { gameID } = useAppSelector((state) => state.authPopup);
   const gameSettings = useAppSelector((state) => state.gameSettings);
-  const { members } = useAppSelector((state) => state.members);
   const history = useHistory();
-  const linkToLobby = `https://.../lobby/${gameID}`;
+  const { isAdmin } = useAppSelector((state) => state.authPopup.user);
 
   useEffect(() => {
     const defaultLocalSettings = localStorage.getItem('gameSettings');
@@ -58,12 +56,9 @@ const Lobby: FC = () => {
     sendToServer('game_canceled', { gameID, memberId });
   };
 
-  const copyLinkButtonHandler = () =>
-    navigator.clipboard.writeText(linkToLobby);
+  const copyGameIdButtonHandler = () => navigator.clipboard.writeText(gameID);
 
-  const currentIsAdmin = isScrum(members, socket.id);
-
-  return currentIsAdmin ? (
+  return isAdmin ? (
     <div className="container">
       <section className="section-wrap">
         <GameName />
@@ -74,7 +69,7 @@ const Lobby: FC = () => {
           <Button
             variant="secondary"
             className="m-1"
-            onClick={copyLinkButtonHandler}
+            onClick={copyGameIdButtonHandler}
           >
             Copy Game ID
           </Button>

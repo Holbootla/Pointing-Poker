@@ -132,6 +132,13 @@ export function handleAction(
       payload: STATE[getStateIndex()].issues,
     });
   }
+  if (action.type === 'issues_updated') {
+    STATE[getStateIndex()].issues = action.payload.issuesUpdated;
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'issues/updateIssuesAction',
+      payload: STATE[getStateIndex()].issues,
+    });
+  }
 
   if (action.type === 'set_issue_status') {
     STATE[getStateIndex()].issues = STATE[getStateIndex()].issues.map((issue) => {

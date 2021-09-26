@@ -1,6 +1,5 @@
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { showKickPopupAction } from '../../../redux/reducers/kick-reducer';
-import isScrum from '../../../shared';
 import { socket } from '../../../socket/socket-context';
 import './member.scss';
 
@@ -22,6 +21,7 @@ function Member({
   const dispatch = useAppDispatch();
 
   const { members } = useAppSelector((state) => state.members);
+  const { user } = useAppSelector((state) => state.authPopup);
 
   const avatarText = () => {
     if (lastName.length < 1) {
@@ -31,8 +31,6 @@ function Member({
   };
 
   const showKickPopup = () => dispatch(showKickPopupAction(String(id)));
-
-  const currentIsAdmin = isScrum(members, socket.id);
 
   return (
     <div className="item member-item">
@@ -45,7 +43,7 @@ function Member({
         <p className="member-name">{`${firstName} ${lastName}`}</p>
         <p className="member-position">{jobPosition}</p>
       </div>
-      {currentIsAdmin && (
+      {user.isAdmin && !isAdmin && (
         <div
           className="kick-icon"
           role="button"

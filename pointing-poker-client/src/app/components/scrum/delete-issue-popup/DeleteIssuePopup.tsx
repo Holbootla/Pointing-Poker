@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { deleteIssueAction } from '../../../redux/reducers/issues-reducer';
 import { closeDeleteIssuePopupAction } from '../../../redux/reducers/delete-issue-reducer';
 import './delete-issue-popup.scss';
 import { sendToServer } from '../../../socket/socket-context';
@@ -25,7 +24,6 @@ const DeleteIssuePopup: FC = () => {
   );
 
   const deleteIssue = () => {
-    // dispatch(deleteIssueAction(deleteIssueIndex));
     dispatch(closeDeleteIssuePopupAction());
     sendToServer('issue_deleted', { gameID, deleteIssueIndex });
   };

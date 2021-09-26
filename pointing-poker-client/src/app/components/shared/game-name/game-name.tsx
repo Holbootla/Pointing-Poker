@@ -3,27 +3,23 @@ import {
   savePrevGameNameAction,
   showEditNamePopupAction,
 } from '../../../redux/reducers/game-name-reducer';
-import isScrum from '../../../shared';
-import { socket } from '../../../socket/socket-context';
 import './game-name.scss';
 
 function GameName(): JSX.Element {
   const dispatch = useAppDispatch();
 
   const { gameName } = useAppSelector((state) => state.gameName);
-  const { members } = useAppSelector((state) => state.members);
+  const { isAdmin } = useAppSelector((state) => state.authPopup.user);
 
   const showEditNamePopup = () => {
     dispatch(showEditNamePopupAction());
     dispatch(savePrevGameNameAction());
   };
 
-  const currentIsAdmin = isScrum(members, socket.id);
-
   return (
     <div className="game-name-wrap">
       <div className="game-name-title">{gameName}</div>
-      {currentIsAdmin && (
+      {isAdmin && (
         <div
           className="edit-game-name"
           role="button"

@@ -13,6 +13,7 @@ import CardValuePopup from './AddCardValuePopup';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { sendToServer, socket } from '../../socket/socket-context';
 import { setGameSettings } from '../../redux/reducers/game-settings-reducer';
+import Chat from '../../components/shared/chat/chat';
 
 const Lobby: FC = () => {
   const dispatch = useAppDispatch();
@@ -42,9 +43,9 @@ const Lobby: FC = () => {
     if (isDefaultSettings) {
       localStorage.setItem('gameSettings', JSON.stringify(gameSettings));
     }
-    sendToServer('settings_changed', { gameID, gameSettings }, () => {
-      sendToServer('game_started', { gameID });
-    });
+    sendToServer('settings_changed', { gameID, gameSettings }).then(() =>
+      sendToServer('game_started', { gameID })
+    );
   };
 
   const handleCancelGameButtonClick = () => {
@@ -89,6 +90,7 @@ const Lobby: FC = () => {
           >
             Cancel game
           </Button>
+          <Chat />
         </div>
       </section>
       <Members />
@@ -111,6 +113,7 @@ const Lobby: FC = () => {
           >
             Cancel game
           </Button>
+          <Chat />
         </div>
       </section>
       <Members />

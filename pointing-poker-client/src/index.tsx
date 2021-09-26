@@ -17,3 +17,9 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root')
 );
+
+// TODO:
+// move input values to local state
+// remove multi dispatch
+// separate socket-actions and reducer on server
+// refactor server-reducer (remove multi actions with state)

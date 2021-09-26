@@ -8,17 +8,17 @@ export const socket = io('http://localhost:3001/', {
 
 export const sendToServer = (
   actionType: string,
-  payload: any,
-  callback?: () => any
-): void => {
-  socket.emit(
-    'UPDATE_SERVER',
-    {
-      type: actionType,
-      payload,
-    },
-    callback && callback()
+  payload: unknown
+): Promise<null> =>
+  new Promise((res) =>
+    socket.emit(
+      'UPDATE_SERVER',
+      {
+        type: actionType,
+        payload,
+      },
+      res(null)
+    )
   );
-};
 
 export const SocketContext = createContext(socket);

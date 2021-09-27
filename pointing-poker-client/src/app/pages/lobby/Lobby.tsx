@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { sendToServer, socket } from '../../socket/socket-context';
 import { setGameSettings } from '../../redux/reducers/game-settings-reducer';
 import Chat from '../../components/shared/chat/chat';
+import OwnCardValuePopup from './SetOwnCardPopup';
 
 const Lobby: FC = () => {
   const dispatch = useAppDispatch();
@@ -99,6 +100,7 @@ const Lobby: FC = () => {
       <EditName />
       <CustomCoverPopup />
       <CardValuePopup />
+      <OwnCardValuePopup />
     </div>
   ) : (
     <div className="container">

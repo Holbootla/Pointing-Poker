@@ -90,8 +90,8 @@ const Lobby: FC = () => {
           >
             Cancel game
           </Button>
-          <Chat />
         </div>
+        <Chat />
       </section>
       <Members />
       <IssuesLobby />

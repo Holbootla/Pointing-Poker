@@ -42,7 +42,6 @@ function Chat(): JSX.Element {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(e);
     sendToServer('chat_message', {
       gameID,
       message: {

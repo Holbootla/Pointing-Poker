@@ -1,8 +1,8 @@
-import { ChangeEvent, FC, SyntheticEvent } from 'react';
+import { ChangeEvent, FC } from 'react';
 import XLSX from 'xlsx';
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import { Button, Form } from 'react-bootstrap';
+import { useAppSelector } from '../../../redux/hooks';
 import { Issue } from '../../../redux/reducers/game-reducer';
-import { updateIssuesAction } from '../../../redux/reducers/issues-reducer';
 import { sendToServer } from '../../../socket/socket-context';
 import DeleteIssuePopup from '../delete-issue-popup/DeleteIssuePopup';
 import EditIssuePopup from '../edit-issue-popup/EditIssuePopup';
@@ -18,7 +18,6 @@ const IssuesLobby: FC = () => {
     priority: string;
     status?: string;
   }
-  const dispatch = useAppDispatch();
   const { issues } = useAppSelector((state) => state.issues);
 
   const { gameID } = useAppSelector((state) => state.authPopup);
@@ -45,8 +44,20 @@ const IssuesLobby: FC = () => {
         reject(error);
       };
     });
-    console.log(response);
     return response;
+  };
+  const data = [
+    {
+      title: 'Add new feature to the prolect A',
+      link: 'https://hsbi.hse.ru/articles/ficha-chto-eto-znachit/',
+    },
+  ];
+
+  const downloadSampleFile = () => {
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Issues');
+    return XLSX.writeFile(wb, `issues.xlsx`);
   };
 
   const handleInputFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,15 +67,20 @@ const IssuesLobby: FC = () => {
       const issuesUpdated = issuesData.map((issue) => {
         issue.id = createIssueId();
         issue.status = 'awaiting';
+        issue.priority = 'low';
         return issue;
       }) as Issue[];
       sendToServer('issues_updated', { gameID, issuesUpdated });
     }
+    e.target.files = null;
   };
 
   return (
     <section className="section-wrap">
       <div className="section-title">issues:</div>
+      <p className="settings-label add-issue-title">
+        Add issues one by one manually
+      </p>
 
       <div className="issues-container">
         <ul className="issues-list">
@@ -81,15 +97,40 @@ const IssuesLobby: FC = () => {
           <NewIssue />
         </ul>
       </div>
-      <label htmlFor="issuesList">
-        Add issues from file:
-        <input
-          type="file"
-          name="issuesList"
-          accept="xlsx"
-          onChange={handleInputFileChange}
-        />
-      </label>
+      <div>
+        <p className="settings-label add-issue-title mt-2">
+          Or add multiple issues from file:
+        </p>
+        <div className="add-file-block-wrap">
+          <div className="step-block">
+            <p>
+              <span className="step">Step 1:</span> Download a file format
+              sample
+            </p>
+            <Button
+              variant="primary"
+              size="sm"
+              type="button"
+              onClick={downloadSampleFile}
+            >
+              Download
+            </Button>
+          </div>
+          <div className="step-block">
+            <p>
+              <span className="step">Step 2:</span>Upload file with issues from
+              you desktop
+            </p>
+            <Form.Control
+              size="sm"
+              type="file"
+              accept="xlsx"
+              onChange={handleInputFileChange}
+              placeholder="Choose file"
+            />
+          </div>
+        </div>
+      </div>
       <DeleteIssuePopup />
       <EditIssuePopup />
     </section>

@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import {
   cleanCardsSelectedAction,
   showAddCardValuePopupAction,
+  showSetOwnCardPopupAction,
 } from '../../../redux/reducers/add-card-reducer';
 import {
   Cover,
@@ -94,6 +95,9 @@ function GameSettings(): JSX.Element {
   const showAddCardValuePopup = () => {
     dispatch(showAddCardValuePopupAction());
   };
+  const showSetOwnCardValuePopup = () => {
+    dispatch(showSetOwnCardPopupAction());
+  };
 
   const handelDefaultSettings = () => dispatch(setDefaultSettings());
 
@@ -140,6 +144,7 @@ function GameSettings(): JSX.Element {
                 Powers of 2 ( 0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, ?, Pass,
                 Break )
               </option>
+              <option value="OS">Set your own sequence of cards</option>
             </Form.Select>
           </Form.Group>
           <Form.Group className="mb-3">
@@ -155,6 +160,7 @@ function GameSettings(): JSX.Element {
               <option value="FB">FB</option>
               <option value="SP">SP</option>
               <option value="P2">P2</option>
+              <option value="OS">OS</option>
             </Form.Select>
           </Form.Group>
           <div className="timer-settings-block">
@@ -248,8 +254,16 @@ function GameSettings(): JSX.Element {
               className="card-cover option-add"
               role="button"
               tabIndex={0}
-              onKeyPress={showAddCardValuePopup}
-              onClick={showAddCardValuePopup}
+              onKeyPress={
+                scoreType === 'OS'
+                  ? showSetOwnCardValuePopup
+                  : showAddCardValuePopup
+              }
+              onClick={
+                scoreType === 'OS'
+                  ? showSetOwnCardValuePopup
+                  : showAddCardValuePopup
+              }
             />
           </div>
         </div>

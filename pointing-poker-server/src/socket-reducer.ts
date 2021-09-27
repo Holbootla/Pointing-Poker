@@ -52,9 +52,9 @@ export function handleAction(
   }
 
   if (action.type === 'user_kicked') {
-    const kickedUserIndex = STATE[getStateIndex()].users.findIndex((user) => {
-      user.id === action.payload.user.id;
-    });
+    const kickedUserIndex = STATE[getStateIndex()].users.findIndex(
+      (user) => user.id === action.payload.user.id
+    );
     STATE[getStateIndex()].users.splice(kickedUserIndex, 1);
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
@@ -212,9 +212,9 @@ export function handleAction(
 
   if (action.type === 'game_canceled') {
     io.to(socket.id).emit('leave_room');
-    const kickedUserIndex = STATE[getStateIndex()].users.findIndex((user) => {
-      user.id === action.payload.memberId;
-    });
+    const kickedUserIndex = STATE[getStateIndex()].users.findIndex(
+      (user) => user.id === action.payload.memberId
+    );
     STATE[getStateIndex()].users.splice(kickedUserIndex, 1);
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',

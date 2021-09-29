@@ -1,9 +1,7 @@
 import { FC } from 'react';
+import { Toast } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import {
-  addIssueToEditAction,
-  Issue,
-} from '../../../redux/reducers/issues-reducer';
+import { addIssueToEditAction } from '../../../redux/reducers/issues-reducer';
 import {
   saveIdIssueToDeleteAction,
   showDeleteIssuePopupAction,
@@ -14,11 +12,14 @@ import {
 } from '../../../redux/reducers/edit-issue-reducer';
 import './issue-lobby.scss';
 
-const IssueLobby: FC<Issue> = ({ title, priority, id }) => {
+interface Props {
+  id: number | string;
+}
+
+const IssueLobby: FC<Props> = ({ id }) => {
   const dispatch = useAppDispatch();
   const { issues } = useAppSelector((state) => state.issues);
-
-  const issueToEdit = issues.find((issue) => issue.id === id);
+  const currentIssue = issues.find((issue) => issue.id === id);
 
   const showDeleteIssuePopup = () => {
     dispatch(showDeleteIssuePopupAction());
@@ -27,32 +28,40 @@ const IssueLobby: FC<Issue> = ({ title, priority, id }) => {
   const showEditIssuePopup = () => {
     dispatch(showEditIssuePopupAction());
     dispatch(saveIdIssueToEditAction(id));
-    if (issueToEdit) dispatch(addIssueToEditAction(issueToEdit));
+    if (currentIssue) dispatch(addIssueToEditAction(currentIssue));
   };
 
   return (
-    <li className="item item-issue">
-      <div className="issue-data">
-        <p className="issue-name issue-name-text">{title}</p>
-        <p className="issue-priority">{priority}</p>
-      </div>
-      <div className="issue-icons-wrap">
-        <div
-          className="issue-icon issue-edit"
+    <Toast
+      onClose={showDeleteIssuePopup}
+      key={id}
+      className="d-inline-block m-1 issue"
+    >
+      <Toast.Header>
+        <strong className="me-auto">{currentIssue?.title}</strong>
+        <small
+          className="text-muted"
           role="button"
-          tabIndex={0}
-          onKeyPress={showEditIssuePopup}
+          tabIndex={Number(id)}
           onClick={showEditIssuePopup}
-        />
-        <div
-          className="issue-icon issue-delete"
-          role="button"
-          tabIndex={0}
-          onKeyPress={showDeleteIssuePopup}
-          onClick={showDeleteIssuePopup}
-        />
-      </div>
-    </li>
+          onKeyPress={showEditIssuePopup}
+        >
+          edit
+        </small>
+      </Toast.Header>
+      <Toast.Body className="d-flex flex-column">
+        <span>
+          Link:{' '}
+          <a href={currentIssue?.link} target="_blank" rel="noreferrer">
+            {currentIssue?.link.substr(0, 35)}
+            {currentIssue && currentIssue?.link.length > 35 && '...'}
+          </a>
+        </span>
+        <small className="align-self-end text-muted">
+          {currentIssue?.priority}
+        </small>
+      </Toast.Body>
+    </Toast>
   );
 };
 

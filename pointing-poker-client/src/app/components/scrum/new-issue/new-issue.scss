@@ -9,7 +9,12 @@
   background-position: center;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  &:hover{
+  &:hover {
     transform: scale(1.2);
   }
+}
+
+.new-issue-container {
+  width: 305px;
+  height: 103px;
 }

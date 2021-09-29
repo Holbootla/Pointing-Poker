@@ -216,7 +216,7 @@ function Game(): JSX.Element {
   return (
     <div className="game">
       <GameName />
-      <div className="game__room">Room #{gameID}</div>
+      {/* <div className="game__room">Room #{gameID}</div> */}
       <Container>
         <Row>
           <Col xl={7}>

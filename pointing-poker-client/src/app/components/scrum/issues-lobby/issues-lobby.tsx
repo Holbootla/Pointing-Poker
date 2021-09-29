@@ -82,7 +82,7 @@ const IssuesLobby: FC = () => {
         Add issues one by one manually
       </p>
       {issues.map((issue) => (
-        <IssueLobby id={issue.id} />
+        <IssueLobby id={issue.id} mode={'lobby'} />
       ))}
       <NewIssue />
       <div>

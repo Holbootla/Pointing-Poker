@@ -5,6 +5,7 @@ interface IUser {
   jobPosition: string;
   isAdmin: boolean;
   role: 'observer' | 'player';
+  avatar?: string,
   voteResult?: string;
 }
 

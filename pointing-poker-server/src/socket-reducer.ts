@@ -1,6 +1,8 @@
 import { Socket } from 'socket.io';
 import { io } from './server';
 import { STATE } from './state';
+import fs from 'fs';
+import path from 'path';
 
 export function handleAction(
   socket: Socket,
@@ -50,6 +52,31 @@ export function handleAction(
     });
     console.log(STATE, STATE[getStateIndex()].users);
   }
+
+  if (action.type === 'user_avatar_uploaded') {
+    const photoDir = path.resolve(__dirname, './temp/')
+    if (!fs.existsSync(photoDir)) {
+      fs.mkdirSync(photoDir)
+    }
+    const writer = fs.createWriteStream(path.resolve(photoDir, action.payload.avatar.name), {
+      encoding: 'base64'
+    });
+    writer.write(action.payload.avatar.data);
+    writer.end();
+    STATE[getStateIndex()].users.map((user) => {
+      if (user.id === action.payload.memberId)
+        user.avatar = 'http://localhost:3001/temp/' + action.payload.avatar.name;
+      console.log(user.avatar);
+    });
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'members/setMembersAction',
+      payload: {
+        members: STATE[getStateIndex()].users,
+      },
+    });
+    console.log(STATE, STATE[getStateIndex()].users);
+  };
+
 
   if (action.type === 'user_kicked') {
     const kickedUserIndex = STATE[getStateIndex()].users.findIndex(

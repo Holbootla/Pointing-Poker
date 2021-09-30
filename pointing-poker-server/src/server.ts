@@ -1,11 +1,14 @@
-import * as express from 'express';
+import express from 'express';
 import * as http from 'http';
+import path from 'path';
 // import * as WebSocket from 'ws';
 import { Server, Socket } from 'socket.io';
 import { handleAction } from './socket-reducer';
 // import { createMessage, getMessage, removeMessage } from './mongo';
 
 const app = express();
+
+app.use('/temp', express.static(__dirname + '/temp'));
 
 //initialize a simple http server
 const server = http.createServer(app);

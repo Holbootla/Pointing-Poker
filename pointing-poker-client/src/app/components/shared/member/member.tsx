@@ -9,6 +9,7 @@ interface MemberProps {
   lastName: string;
   jobPosition: string;
   isAdmin: boolean;
+  avatar: string;
 }
 
 function Member({
@@ -17,11 +18,12 @@ function Member({
   lastName,
   jobPosition,
   isAdmin,
+  avatar,
 }: MemberProps): JSX.Element {
   const dispatch = useAppDispatch();
   const { members } = useAppSelector((state) => state.members);
   const { user } = useAppSelector((state) => state.authPopup);
-  const currMember = members.find((member) => member.id === user.id);
+  const currMember = members.find((member) => member.id === id);
   const avatarText = () => {
     if (lastName.length < 1) {
       return firstName.slice(0, 1);
@@ -35,7 +37,7 @@ function Member({
     <div className="item member-item">
       <div className="member-avatar-wrap">
         {currMember?.avatar ? (
-          <img src={currMember.avatar} className="member-avatar-pic" alt="" />
+          <img src={avatar} className="member-avatar-pic" alt="" />
         ) : (
           <div className="member-avatar">{avatarText()}</div>
         )}

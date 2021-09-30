@@ -44,7 +44,6 @@ function Game(): JSX.Element {
   votesQuantity = votes.length;
 
   useEffect(() => {
-    sendToServer('get_current_timer', { gameID });
     socket.on('GAME_STOPPED', () => {
       history.push(`/result/${gameID}`);
     });
@@ -73,8 +72,8 @@ function Game(): JSX.Element {
       });
     }
     clearInterval(timerId);
-    sendToServer('set_average_values', { gameID });
-    sendToServer('add_round_in_statistics', { gameID });
+    // sendToServer('set_average_values', { gameID });
+    // sendToServer('add_round_in_statistics', { gameID });
     sendToServer('finish_round', { gameID });
   };
 

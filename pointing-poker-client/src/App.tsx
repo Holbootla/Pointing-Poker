@@ -9,6 +9,8 @@ import Start from './app/pages/start/Start';
 import { useAppDispatch } from './app/redux/hooks';
 import Header from './app/components/shared/header/header';
 import Footer from './app/components/shared/footer/footer';
+import Loader from './app/components/shared/loader/loader';
+import { closeSpinnerAction } from './app/redux/reducers/spinner-reducer';
 
 function App(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -19,11 +21,13 @@ function App(): JSX.Element {
     });
     socket.on('UPDATE_CLIENT', (action) => {
       dispatch(action);
+      dispatch(closeSpinnerAction());
     });
   }, [socket]);
 
   return (
     <Router>
+      <Loader />
       <Header />
       <Switch>
         <Route path="/lobby">

@@ -1,10 +1,16 @@
 import { useEffect } from 'react';
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import {
+  Button,
+  Col,
+  Container,
+  Row,
+  Toast,
+  ToastContainer,
+} from 'react-bootstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import CardFace from '../../components/shared/cards/card-face';
 import CardBreak from '../../components/shared/cards/card-break';
 import GameName from '../../components/shared/game-name/game-name';
-import IssueGame from '../../components/shared/issue-game/issue-game';
 import KickPopup from '../../components/scrum/kick-popup/KickPopup';
 import Member from '../../components/shared/member/member';
 import ScrumMasterMember from '../../components/shared/scrum-master/scrum-master-member';
@@ -38,7 +44,6 @@ function Game(): JSX.Element {
   votesQuantity = votes.length;
 
   useEffect(() => {
-    sendToServer('get_current_timer', { gameID });
     socket.on('GAME_STOPPED', () => {
       history.push(`/result/${gameID}`);
     });
@@ -67,8 +72,8 @@ function Game(): JSX.Element {
       });
     }
     clearInterval(timerId);
-    sendToServer('set_average_values', { gameID });
-    sendToServer('add_round_in_statistics', { gameID });
+    // sendToServer('set_average_values', { gameID });
+    // sendToServer('add_round_in_statistics', { gameID });
     sendToServer('finish_round', { gameID });
   };
 
@@ -210,7 +215,7 @@ function Game(): JSX.Element {
   return (
     <div className="game">
       <GameName />
-      <div className="game__room">Room #{gameID}</div>
+      {/* <div className="game__room">Room #{gameID}</div> */}
       <Container>
         <Row>
           <Col xl={7}>
@@ -257,24 +262,57 @@ function Game(): JSX.Element {
               <Row>
                 <Col>
                   <h3>Issues</h3>
-                  {issues.map((item) => (
-                    <div
-                      className={`game__issue_${item.status}`}
-                      key={item.id}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => issueClickHandler(item.id, item.status)}
-                      onKeyPress={() => issueClickHandler(item.id, item.status)}
-                    >
-                      <IssueGame
-                        id={item.id}
-                        link={item.link}
-                        title={item.title}
-                        priority={item.priority}
-                        status={item.status}
-                      />
-                    </div>
-                  ))}
+                  <ToastContainer>
+                    {issues.map((item) => (
+                      <Toast
+                        bg={
+                          (item.status === 'current' && 'success') ||
+                          (item.status === 'resolved' && 'danger') ||
+                          undefined
+                        }
+                        key={item.id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => issueClickHandler(item.id, item.status)}
+                        onKeyPress={() =>
+                          issueClickHandler(item.id, item.status)
+                        }
+                      >
+                        <Toast.Header closeButton={false}>
+                          <strong className="me-auto">{item.title}</strong>
+                          <small className="text-muted">{item.status}</small>
+                        </Toast.Header>
+                        <Toast.Body
+                          className={`d-flex flex-column ${
+                            item.status !== 'awaiting' && 'text-white'
+                          }`}
+                        >
+                          <span>
+                            Link:{' '}
+                            <a
+                              href={item.link}
+                              target="_blank"
+                              rel="noreferrer"
+                              className={
+                                (item.status !== 'awaiting' && 'text-light') ||
+                                'text-primary'
+                              }
+                            >
+                              {item.link.substr(0, 40)}
+                              {item.link.length > 40 && '...'}
+                            </a>
+                          </span>
+                          <small
+                            className={`align-self-end ${
+                              item.status !== 'awaiting' && 'text-white-50'
+                            }`}
+                          >
+                            {item.priority}
+                          </small>
+                        </Toast.Body>
+                      </Toast>
+                    ))}
+                  </ToastContainer>
                   {isAdmin && <NewIssue />}
                 </Col>
                 <Col>

@@ -1,3 +1,4 @@
+import { Button } from 'react-bootstrap';
 import { useAppDispatch } from '../../../redux/hooks';
 import { showIssuePopupAction } from '../../../redux/reducers/issues-reducer';
 import IssuePopup from '../issue-popup/Issue-popup';
@@ -7,18 +8,16 @@ function NewIssue(): JSX.Element {
   const dispatch = useAppDispatch();
 
   const showIssuePopup = () => dispatch(showIssuePopupAction());
-  
+
   return (
-    <li className="item item-issue">
-      <p className="issue-name new-issue-name">create new issue</p>
-      <div
-        className="issue-add"
-        role="button"
-        tabIndex={0}
-        onKeyPress={showIssuePopup}
-        onClick={showIssuePopup}/>
-      <IssuePopup />
-    </li>
+    <div className="d-inline-block m-1">
+      <div className="d-flex justify-content-center align-items-center new-issue-container">
+        <Button size="lg" onClick={showIssuePopup}>
+          CREATE NEW ISSUE
+        </Button>
+        <IssuePopup />
+      </div>
+    </div>
   );
 }
 export default NewIssue;

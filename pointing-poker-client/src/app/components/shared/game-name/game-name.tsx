@@ -1,3 +1,5 @@
+import { Badge } from 'react-bootstrap';
+import EditName from '../../../pages/lobby/EditNamePopup';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import {
   savePrevGameNameAction,
@@ -10,6 +12,7 @@ function GameName(): JSX.Element {
 
   const { gameName } = useAppSelector((state) => state.gameName);
   const { isAdmin } = useAppSelector((state) => state.authPopup.user);
+  const { gameID } = useAppSelector((state) => state.authPopup);
 
   const showEditNamePopup = () => {
     dispatch(showEditNamePopupAction());
@@ -18,7 +21,10 @@ function GameName(): JSX.Element {
 
   return (
     <div className="game-name-wrap">
-      <div className="game-name-title">{gameName}</div>
+      <h1 className="game-name-title">
+        {gameName} <Badge bg="secondary">#{gameID}</Badge>
+      </h1>
+
       {isAdmin && (
         <div
           className="edit-game-name"
@@ -28,6 +34,7 @@ function GameName(): JSX.Element {
           onClick={showEditNamePopup}
         />
       )}
+      <EditName />
     </div>
   );
 }

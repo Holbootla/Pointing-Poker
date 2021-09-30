@@ -25,7 +25,7 @@ const DeleteIssuePopup: FC = () => {
 
   const deleteIssue = () => {
     dispatch(closeDeleteIssuePopupAction());
-    sendToServer('issue_deleted', { gameID, deleteIssueIndex });
+    sendToServer('issue_deleted', { gameID, idIssueToDelete });
   };
 
   return (

@@ -1,8 +1,7 @@
-import { Button, Table } from 'react-bootstrap';
+import { Button, Table, Toast } from 'react-bootstrap';
 import XLSX from 'xlsx';
 import CardFace from '../../components/shared/cards/card-face';
 import GameName from '../../components/shared/game-name/game-name';
-import IssueGame from '../../components/shared/issue-game/issue-game';
 import { useAppSelector } from '../../redux/hooks';
 import { gameState } from '../../redux/reducers/game-reducer';
 import './result.scss';
@@ -24,15 +23,22 @@ const Result = (): JSX.Element => {
       <div className="result">
         {statistics.map((round) => (
           <div key={round.issue.id}>
-            <div className="result__issue">
-              <IssueGame
-                id={round.issue.id}
-                title={round.issue.title}
-                link={round.issue.link}
-                priority={round.issue.priority}
-                status={round.issue.status}
-              />
-            </div>
+            <Toast>
+              <Toast.Header closeButton={false}>
+                <strong className="me-auto">{round.issue.title}</strong>
+                <small className="text-muted">{round.issue.status}</small>
+              </Toast.Header>
+              <Toast.Body className="d-flex flex-column">
+                <span>
+                  Link:{' '}
+                  <a href={round.issue.link} target="_blank" rel="noreferrer">
+                    {round.issue.link.substr(0, 40)}
+                    {round.issue.link.length > 40 && '...'}
+                  </a>
+                </span>
+                <small className="align-self-end">{round.issue.priority}</small>
+              </Toast.Body>
+            </Toast>
             <div className="result__cards">
               {round.averageValues.map((averageValue) => (
                 <div className="result__card" key={averageValue.value}>

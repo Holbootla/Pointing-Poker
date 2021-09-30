@@ -7,7 +7,6 @@ import GameSettings from '../../components/scrum/game-settings/game-settings';
 import ScrumMasterMember from '../../components/shared/scrum-master/scrum-master-member';
 import './lobby.scss';
 import GameName from '../../components/shared/game-name/game-name';
-import EditName from './EditNamePopup';
 import CustomCoverPopup from './CustomCoverPopup';
 import CardValuePopup from './AddCardValuePopup';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
@@ -97,7 +96,6 @@ const Lobby: FC = () => {
       <Members />
       <IssuesLobby />
       <GameSettings />
-      <EditName />
       <CustomCoverPopup />
       <CardValuePopup />
       <OwnCardValuePopup />

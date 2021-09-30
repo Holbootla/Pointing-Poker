@@ -81,22 +81,10 @@ const IssuesLobby: FC = () => {
       <p className="settings-label add-issue-title">
         Add issues one by one manually
       </p>
-
-      <div className="issues-container">
-        <ul className="issues-list">
-          {issues.map((issue) => (
-            <IssueLobby
-              key={issue.id}
-              id={issue.id}
-              title={issue.title}
-              priority={issue.priority}
-              link={issue.link}
-              status={issue.status}
-            />
-          ))}
-          <NewIssue />
-        </ul>
-      </div>
+      {issues.map((issue) => (
+        <IssueLobby id={issue.id} mode="lobby" />
+      ))}
+      <NewIssue />
       <div>
         <p className="settings-label add-issue-title mt-2">
           Or add multiple issues from file:

@@ -1,4 +1,4 @@
-interface IUser {
+export interface IUser {
   id: string;
   firstName: string;
   lastName: string;
@@ -9,7 +9,7 @@ interface IUser {
   voteResult?: string;
 }
 
-interface IIssue {
+export interface IIssue {
   id: number | string;
   title: string;
   link: string;
@@ -17,7 +17,7 @@ interface IIssue {
   status: 'current' | 'resolved' | 'awaiting' | 'next';
 }
 
-interface IGameSettings {
+export interface IGameSettings {
   cardChange: boolean;
   timerOn: boolean;
   scoreType: string;
@@ -29,17 +29,17 @@ interface IGameSettings {
   isDefaultSettings: boolean;
 }
 
-interface IAverageValue {
+export interface IAverageValue {
   value: string;
   percents: number;
 }
 
-interface IVote {
-  memberId: number;
+export interface IVote {
+  memberId: string;
   value: string;
 }
 
-interface IGameState {
+export interface IGameState {
   currentIssue?: IIssue;
   nextIssue?: IIssue;
   currentTimer?: { minutes: number; seconds: number };
@@ -53,14 +53,14 @@ interface IGameState {
   }[];
 }
 
-interface IChatMessage {
+export interface IChatMessage {
   userId: string;
   message: string;
   time: string;
   messageId: number;
 }
 
-interface IServerState {
+export interface IServerState {
   gameID: string;
   users: IUser[];
   gameName?: string;

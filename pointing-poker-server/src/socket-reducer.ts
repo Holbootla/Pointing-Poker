@@ -4,13 +4,36 @@ import { STATE } from './state';
 import fs from 'fs';
 import path from 'path';
 
-export function handleAction(
+import {
+  addIssue,
+  addRoundInStatistics,
+  addUser,
+  addVote,
+  changeGameName,
+  changeSettings,
+  createState,
+  deleteIssue,
+  editIssue,
+  finishRound,
+  getState,
+  kickUser,
+  removeSTate,
+  setAllVoteResults,
+  setAverageValues,
+  setCurrentIssue,
+  setCurrentTimer,
+  setIssueStatus,
+  setMessages,
+  setNextIssue,
+  setVoteResult,
+  startRound,
+  updateIssues
+} from './mongo';
+
+export async function handleAction(
   socket: Socket,
   action: { type: string; payload: any }
 ) {
-  const getStateIndex = () => {
-    return STATE.findIndex((el) => el.gameID === gameID);
-  };
 
   const gameID = action.payload.gameID.toString();
 
@@ -19,38 +42,31 @@ export function handleAction(
   /*=====================================================================*/
 
   if (action.type === 'game_created') {
-    const users = [];
-    const issues = [];
-    const chatHistory = [];
 
-    users.push(action.payload.user);
     socket.join(gameID);
-    STATE.push({ gameID, users, issues, chatHistory });
-    STATE[getStateIndex()].game = {
-      votes: [],
-      averageValues: [],
-      statistics: [],
-    };
+
+    const newStateFromDb = await createState(gameID, [action.payload.user]);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
       payload: {
-        members: STATE[getStateIndex()].users,
+        members: newStateFromDb.users,
       },
     });
-    console.log(STATE, STATE[getStateIndex()].users);
   }
 
   if (action.type === 'user_connected') {
+
     socket.join(gameID);
-    STATE[getStateIndex()].users.push(action.payload.user);
+
+    const newStateFromDb = await addUser(gameID, action.payload.user);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
       payload: {
-        members: STATE[getStateIndex()].users,
+        members: newStateFromDb.users,
       },
     });
-    console.log(STATE, STATE[getStateIndex()].users);
   }
 
   if (action.type === 'user_avatar_uploaded') {
@@ -79,49 +95,39 @@ export function handleAction(
 
 
   if (action.type === 'user_kicked') {
-    const kickedUserIndex = STATE[getStateIndex()].users.findIndex(
-      (user) => user.id === action.payload.user.id
-    );
-    STATE[getStateIndex()].users.splice(kickedUserIndex, 1);
+    
+    const newStateFromDb = await kickUser(gameID, action.payload.user.id);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
       payload: {
-        members: STATE[getStateIndex()].users,
+        members: newStateFromDb.users,
       },
     });
     io.to(action.payload.user.id).emit('leave_room');
     io.to(action.payload.user.id).socketsLeave(gameID);
-    console.log(STATE, STATE[getStateIndex()].users);
   }
 
   if (action.type === 'set_vote_result') {
-    STATE[getStateIndex()].users = STATE[getStateIndex()].users.map(
-      (member) => {
-        if (member.id === action.payload.memberId) {
-          return { ...member, voteResult: action.payload.voteResult };
-        }
-        return member;
-      }
-    );
+    
+    const newStateFromDb = await setVoteResult(gameID, action.payload.memberId, action.payload.voteResult);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
       payload: {
-        members: STATE[getStateIndex()].users,
+        members: newStateFromDb.users,
       },
     });
   }
 
   if (action.type === 'set_all_vote_results') {
-    STATE[getStateIndex()].users = STATE[getStateIndex()].users.map(
-      (member) => ({
-        ...member,
-        voteResult: action.payload.voteResult,
-      })
-    );
+
+    const newStateFromDb = await setAllVoteResults(gameID, action.payload.voteResult);
+    
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
       payload: {
-        members: STATE[getStateIndex()].users,
+        members: newStateFromDb.users,
       },
     });
   }
@@ -131,10 +137,12 @@ export function handleAction(
   /*=====================================================================*/
 
   if (action.type === 'game_name_changed') {
-    STATE[getStateIndex()].gameName = action.payload.gameName;
+
+    const newStateFromDb = await changeGameName(gameID, action.payload.gameName);
+    
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'gameName/saveNewGameNameAction',
-      payload: STATE[getStateIndex()].gameName,
+      payload: newStateFromDb.gameName,
     });
   }
 
@@ -143,58 +151,52 @@ export function handleAction(
   /*=====================================================================*/
 
   if (action.type === 'issue_created') {
-    STATE[getStateIndex()].issues.push(action.payload.issue);
+
+    const newStateFromDb = await addIssue(gameID, action.payload.issue);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'issues/updateIssuesAction',
-      payload: STATE[getStateIndex()].issues,
+      payload: newStateFromDb.issues,
     });
   }
 
   if (action.type === 'issue_deleted') {
-    STATE[getStateIndex()].issues.splice(action.payload, 1);
+
+    const newStateFromDb = await deleteIssue(gameID, action.payload.idIssueToDelete);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'issues/updateIssuesAction',
-      payload: STATE[getStateIndex()].issues,
+      payload: newStateFromDb.issues,
     });
   }
 
   if (action.type === 'issue_edited') {
-    const editedIssueInd = STATE[getStateIndex()].issues.findIndex(
-      (item) => item.id === action.payload.issue.id
-    );
-    STATE[getStateIndex()].issues[editedIssueInd] = action.payload.issue;
+    
+    const newStateFromDb = await editIssue(gameID, action.payload.issue);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'issues/updateIssuesAction',
-      payload: STATE[getStateIndex()].issues,
+      payload: newStateFromDb.issues,
     });
   }
+
   if (action.type === 'issues_updated') {
-    STATE[getStateIndex()].issues = action.payload.issuesUpdated;
+    
+    const newStateFromDb = await updateIssues(gameID, action.payload.issuesUpdated);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'issues/updateIssuesAction',
-      payload: STATE[getStateIndex()].issues,
+      payload: newStateFromDb.issues,
     });
   }
 
   if (action.type === 'set_issue_status') {
-    STATE[getStateIndex()].issues = STATE[getStateIndex()].issues.map(
-      (issue) => {
-        if (issue.id === action.payload.id) {
-          return { ...issue, status: action.payload.status };
-        }
-        if (issue.status === 'current' && action.payload.status !== 'next') {
-          return { ...issue, status: 'awaiting' };
-        }
-        if (issue.status === 'next') {
-          return { ...issue, status: 'awaiting' };
-        }
-        return issue;
-      }
-    );
+    
+    const newStateFromDb = await setIssueStatus(gameID, action.payload.id, action.payload.status);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'issues/updateIssuesAction',
-      payload: STATE[getStateIndex()].issues,
+      payload: newStateFromDb.issues,
     });
   }
 
@@ -203,13 +205,17 @@ export function handleAction(
   /*=====================================================================*/
 
   if (action.type === 'settings_changed') {
-    STATE[getStateIndex()].gameSettings = action.payload.gameSettings;
-    const minutes = Number(action.payload.gameSettings.timerMinutes);
-    const seconds = Number(action.payload.gameSettings.timerSeconds);
-    STATE[getStateIndex()].game.currentTimer = { minutes, seconds };
+    
+    const newStateFromDb = await changeSettings(gameID, action.payload.gameSettings);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'gameSettings/setGameSettings',
-      payload: STATE[getStateIndex()].gameSettings,
+      payload: newStateFromDb.gameSettings,
+    });
+
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'game/setCurrentTimer',
+      payload: newStateFromDb.game.currentTimer,
     });
   }
 
@@ -227,28 +233,25 @@ export function handleAction(
 
   if (action.type === 'game_canceled_admin') {
     io.to(gameID).emit('leave_room');
-    STATE[getStateIndex()].users = [];
-    io.to(gameID).emit('UPDATE_CLIENT', {
-      type: 'members/setMembersAction',
-      payload: {
-        members: STATE[getStateIndex()].users,
-      },
-    });
+    
+    removeSTate(gameID);
+
     io.to(gameID).socketsLeave(gameID);
   }
 
   if (action.type === 'game_canceled') {
+
     io.to(socket.id).emit('leave_room');
-    const kickedUserIndex = STATE[getStateIndex()].users.findIndex(
-      (user) => user.id === action.payload.memberId
-    );
-    STATE[getStateIndex()].users.splice(kickedUserIndex, 1);
+    
+    const newStateFromDb = await kickUser(gameID, action.payload.memberId);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
       payload: {
-        members: STATE[getStateIndex()].users,
+        members: newStateFromDb.users,
       },
     });
+
     io.to(socket.id).socketsLeave(gameID);
   }
 
@@ -257,29 +260,35 @@ export function handleAction(
   /*=====================================================================*/
 
   if (action.type === 'get_current_timer') {
+
+    const newStateFromDb = await getState(gameID);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/setCurrentTimer',
-      payload: STATE[getStateIndex()].game.currentTimer,
+      payload: newStateFromDb.game.currentTimer,
     });
   }
 
   if (action.type === 'set_current_timer') {
-    STATE[getStateIndex()].game.currentTimer = action.payload.currentTimer;
+
+    const newStateFromDb = await setCurrentTimer(gameID, action.payload.currentTimer);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/setCurrentTimer',
-      payload: STATE[getStateIndex()].game.currentTimer,
+      payload: newStateFromDb.game.currentTimer,
     });
   }
 
   if (action.type === 'start_round') {
-    STATE[getStateIndex()].game.roundStatus = 'in progress';
-    STATE[getStateIndex()].game.votes = [];
-    STATE[getStateIndex()].game.averageValues = [];
+    
+    const newStateFromDb = await startRound(gameID);
+
     const payloadToClient = {
-      roundStatus: STATE[getStateIndex()].game.roundStatus,
-      votes: STATE[getStateIndex()].game.votes,
-      averageValues: STATE[getStateIndex()].game.averageValues,
+      roundStatus: newStateFromDb.game.roundStatus,
+      votes: newStateFromDb.game.votes,
+      averageValues: newStateFromDb.game.averageValues,
     };
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/startRoundAction',
       payload: payloadToClient,
@@ -287,24 +296,28 @@ export function handleAction(
   }
 
   if (action.type === 'finish_round') {
-    STATE[getStateIndex()].game.roundStatus = 'awaiting';
-    STATE[getStateIndex()].game.currentIssue =
-      STATE[getStateIndex()].game.nextIssue;
-    STATE[getStateIndex()].game.nextIssue = {
-      id: '',
-      title: '',
-      link: '',
-      priority: 'low',
-      status: 'awaiting',
-    };
-    const minutes = Number(STATE[getStateIndex()].gameSettings.timerMinutes);
-    const seconds = Number(STATE[getStateIndex()].gameSettings.timerSeconds);
-    STATE[getStateIndex()].game.currentTimer = { minutes, seconds };
+
+    let newStateFromDb = await setAverageValues(gameID);
+
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'game/setAverageValuesAction',
+      payload: newStateFromDb.game.averageValues,
+    });
+
+    newStateFromDb = await addRoundInStatistics(gameID);
+
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'game/addRoundInStatisticsAction',
+      payload: newStateFromDb.game.statistics,
+    });
+    
+    newStateFromDb = await finishRound(gameID);
+
     const payloadToClient = {
-      roundStatus: STATE[getStateIndex()].game.roundStatus,
-      currentIssue: STATE[getStateIndex()].game.currentIssue,
-      nextIssue: STATE[getStateIndex()].game.nextIssue,
-      currentTimer: STATE[getStateIndex()].game.currentTimer,
+      roundStatus: newStateFromDb.game.roundStatus,
+      currentIssue: newStateFromDb.game.currentIssue,
+      nextIssue: newStateFromDb.game.nextIssue,
+      currentTimer: newStateFromDb.game.currentTimer,
     };
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/finishRoundAction',
@@ -313,86 +326,52 @@ export function handleAction(
   }
 
   if (action.type === 'set_current_issue') {
-    STATE[getStateIndex()].game.currentIssue = action.payload.currentIssue;
+
+    const newStateFromDb = await setCurrentIssue(gameID, action.payload.currentIssue);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/setCurrentIssueAction',
-      payload: STATE[getStateIndex()].game.currentIssue,
+      payload: newStateFromDb.game.currentIssue,
     });
   }
 
   if (action.type === 'set_next_issue') {
-    STATE[getStateIndex()].game.nextIssue = action.payload.nextIssue;
+
+    const newStateFromDb = await setNextIssue(gameID, action.payload.nextIssue);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/setNextIssueAction',
-      payload: STATE[getStateIndex()].game.nextIssue,
+      payload: newStateFromDb.game.nextIssue,
     });
   }
 
   if (action.type === 'add_vote') {
-    if (
-      STATE[getStateIndex()].game.votes.find(
-        (vote) => vote.memberId === action.payload.memberId
-      )
-    ) {
-      STATE[getStateIndex()].game.votes = STATE[getStateIndex()].game.votes.map(
-        (vote) => {
-          if (vote.memberId === action.payload.memberId) {
-            return { memberId: vote.memberId, value: action.payload.value };
-          }
-          return vote;
-        }
-      );
-    } else {
-      STATE[getStateIndex()].game.votes = [
-        ...STATE[getStateIndex()].game.votes,
-        action.payload,
-      ];
-    }
+    
+    const newStateFromDb = await addVote(gameID, action.payload.memberId, action.payload.value);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/addVoteAction',
-      payload: STATE[getStateIndex()].game.votes,
+      payload: newStateFromDb.game.votes,
     });
   }
 
   if (action.type === 'set_average_values') {
-    const totalVotes = STATE[getStateIndex()].game.votes.length;
-    const votesCounter: { [key: string]: number } = {};
-    const votesValues: string[] = [];
-    const result: { value: string; percents: number }[] = [];
-    STATE[getStateIndex()].game.votes.forEach((vote) => {
-      if (!votesValues.includes(vote.value)) {
-        votesValues.push(vote.value);
-        votesCounter[vote.value] = 1;
-      } else {
-        votesCounter[vote.value] += 1;
-      }
-    });
-    Object.entries(votesCounter)
-      .sort((a, b) => a[1] - b[1])
-      .slice(0, 10)
-      .forEach(([voteValue, counter]) => {
-        const percents = Math.round((counter / totalVotes) * 10000) / 100;
-        result.push({ value: voteValue, percents });
-      });
-    STATE[getStateIndex()].game.averageValues = result;
+    
+    const newStateFromDb = await setAverageValues(gameID);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/setAverageValuesAction',
-      payload: STATE[getStateIndex()].game.averageValues,
+      payload: newStateFromDb.game.averageValues,
     });
   }
 
   if (action.type === 'add_round_in_statistics') {
-    STATE[getStateIndex()].game.statistics = [
-      ...STATE[getStateIndex()].game.statistics,
-      {
-        issue: STATE[getStateIndex()].game.currentIssue,
-        votes: STATE[getStateIndex()].game.votes,
-        averageValues: STATE[getStateIndex()].game.averageValues,
-      },
-    ];
+    
+    const newStateFromDb = await addRoundInStatistics(gameID);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/addRoundInStatisticsAction',
-      payload: STATE[getStateIndex()].game.statistics,
+      payload: newStateFromDb.game.statistics,
     });
   }
 
@@ -405,19 +384,13 @@ export function handleAction(
   /*=====================================================================*/
 
   if (action.type === 'chat_message') {
-    const { userId, message, time } = action.payload.message;
-    const messageTime = new Date(time);
-    const messageToHistory = {
-      userId: userId,
-      message: message,
-      time: `${messageTime.getHours()}:${messageTime.getMinutes()}`,
-      messageId: time,
-    };
-    STATE[getStateIndex()].chatHistory.push(messageToHistory);
+    
+    const newStateFromDb = await setMessages(gameID, action.payload.message);
+
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'chat/setMessagesAction',
       payload: {
-        chatHistory: STATE[getStateIndex()].chatHistory,
+        chatHistory: newStateFromDb.chatHistory,
       },
     });
   }

@@ -12,6 +12,7 @@ import { gameSettingsSlice } from './reducers/game-settings-reducer';
 import { issuesSlice } from './reducers/issues-reducer';
 import { kickPopupSlice } from './reducers/kick-reducer';
 import { membersSlice } from './reducers/members-reducer';
+import { spinnerSlice } from './reducers/spinner-reducer';
 
 export const store = configureStore({
   reducer: {
@@ -28,6 +29,7 @@ export const store = configureStore({
     members: membersSlice.reducer,
     game: gameSlice.reducer,
     chat: chatSlice.reducer,
+    spinner: spinnerSlice.reducer,
   },
 });
 

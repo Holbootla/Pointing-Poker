@@ -10,6 +10,7 @@ import {
   setLastNameAction,
   setRoleAction,
 } from '../../redux/reducers/auth-reducer';
+import { showSpinnerAction } from '../../redux/reducers/spinner-reducer';
 
 function AuthPopup(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -68,7 +69,7 @@ function AuthPopup(): JSX.Element {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-
+    dispatch(showSpinnerAction());
     sendToServer(newGame ? 'game_created' : 'user_connected', {
       gameID,
       user,

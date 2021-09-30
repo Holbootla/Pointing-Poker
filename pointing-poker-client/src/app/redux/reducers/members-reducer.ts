@@ -8,6 +8,7 @@ export interface Member {
   jobPosition: string;
   isAdmin: boolean;
   role: 'observer' | 'player';
+  avatar: string;
   voteResult: string;
 }
 
@@ -29,6 +30,7 @@ export const membersSlice = createSlice({
     },
     setMembersAction: (state, action) => {
       state.members = action.payload.members;
+      console.log(action.payload.members, 'members');
     },
     kickMemberAction: (state, action) => {
       state.members = state.members.filter(

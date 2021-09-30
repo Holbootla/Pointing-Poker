@@ -80,4 +80,15 @@
 .link-styles-start:hover {
   color: #0d6efd;
 }
+
+.card-warning {
+  color: #dc3545;
+  font-weight: 700;
+}
+
+.input-avatar {
+  margin-top: 2rem;
+  width: 300px;
+  font-weight: 600;
+}
 /*# sourceMappingURL=lobby.css.map */

@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AuthPopupState {
   authPopupVisible: boolean;
@@ -71,7 +71,6 @@ export const authPopupSlice = createSlice({
     },
     setIsAdminAction: (state, action) => {
       state.user.isAdmin = action.payload;
-      // state.currentIsAdmin = action.payload;
     },
     setRoleAction: (state, action) => {
       state.user.role = action.payload;

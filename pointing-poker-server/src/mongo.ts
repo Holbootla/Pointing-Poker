@@ -9,6 +9,8 @@ import {
   IVote,
   IAverageValue
 } from './state';
+import fs from 'fs';
+import path from 'path';
 
 type StateDocument = IServerState & Document;
 
@@ -89,6 +91,32 @@ export const kickUser = async (
   const client = await MongoClient.connect(url);
   const collection = client.db(dbName).collection(collectionName);
   await collection.updateOne({ gameID }, { $pull: { users: { id: userID} } });
+  const result = await collection.findOne({ gameID });
+  client.close();
+  return result as StateDocument;
+};
+
+export const avatarUpload = async (
+  gameID: string,
+  userID: string,
+  avatarName: string,
+  avatarData: string | ArrayBuffer | null,
+): Promise<StateDocument> => {
+  const client = await MongoClient.connect(url);
+  const collection = client.db(dbName).collection(collectionName);
+  const state = await collection.findOne({ gameID });
+  const photoDir = path.resolve(__dirname, './temp/')
+    if (!fs.existsSync(photoDir)) {
+      fs.mkdirSync(photoDir)
+    }
+    const writer = fs.createWriteStream(path.resolve(photoDir, avatarName), {
+      encoding: 'base64'
+    });
+    writer.write(avatarData);
+    writer.end();
+  const avatar = `http://localhost:3001/temp/${avatarName}`;
+  const newUsers = state.users.map((user) => (user.id === userID) ? { ...user, avatar } : user);
+  await collection.updateOne({ gameID  }, {$set: { users: newUsers }});
   const result = await collection.findOne({ gameID });
   client.close();
   return result as StateDocument;

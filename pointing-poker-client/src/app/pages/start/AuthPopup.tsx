@@ -13,10 +13,12 @@ import {
 
 function AuthPopup(): JSX.Element {
   const dispatch = useAppDispatch();
+  let avatarFile: File;
 
   const { authPopupVisible, gameID, newGame, user } = useAppSelector(
     (state) => state.authPopup
   );
+  const { members } = useAppSelector((state) => state.members);
 
   const history = useHistory();
 
@@ -41,6 +43,28 @@ function AuthPopup(): JSX.Element {
       dispatch(setRoleAction('player'));
     }
   };
+  const receiveTarget = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files !== null) {
+      const file = e.target.files[0];
+      avatarFile = file;
+    }
+  };
+
+  const handleInputPictureChange = (file: File) => {
+    console.log('Я отправляю фай', 'id', user.id);
+    const reader = new FileReader();
+    reader.onload = () => {
+      sendToServer('user_avatar_uploaded', {
+        gameID,
+        memberId: user.id,
+        avatar: {
+          name: file.name,
+          data: reader.result,
+        },
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -48,7 +72,11 @@ function AuthPopup(): JSX.Element {
     sendToServer(newGame ? 'game_created' : 'user_connected', {
       gameID,
       user,
-    }).then(() => history.push(`/lobby/${gameID}`));
+    })
+      .then(() => {
+        if (avatarFile) handleInputPictureChange(avatarFile);
+      })
+      .then(() => history.push(`/lobby/${gameID}`));
   };
 
   return (
@@ -87,6 +115,15 @@ function AuthPopup(): JSX.Element {
             <Form.Text className="text-muted">
               Your job position will be influence on weight of your vote
             </Form.Text>
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="avatar">
+            <Form.Label>Add avatar picture</Form.Label>
+            <Form.Control
+              size="sm"
+              type="file"
+              accept="image/png, image/jpeg"
+              onChange={receiveTarget}
+            />
           </Form.Group>
           <Form.Group className="mb-3" controlId="Observer">
             <Form.Check

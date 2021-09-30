@@ -19,10 +19,9 @@ function Member({
   isAdmin,
 }: MemberProps): JSX.Element {
   const dispatch = useAppDispatch();
-
   const { members } = useAppSelector((state) => state.members);
   const { user } = useAppSelector((state) => state.authPopup);
-
+  const currMember = members.find((member) => member.id === user.id);
   const avatarText = () => {
     if (lastName.length < 1) {
       return firstName.slice(0, 1);
@@ -35,15 +34,18 @@ function Member({
   return (
     <div className="item member-item">
       <div className="member-avatar-wrap">
-        <img src="" className="member-avatar-pic hidden" alt="" />
-        <div className="member-avatar">{avatarText()}</div>
+        {currMember?.avatar ? (
+          <img src={currMember.avatar} className="member-avatar-pic" alt="" />
+        ) : (
+          <div className="member-avatar">{avatarText()}</div>
+        )}
       </div>
       <div className="member-data">
         {socket.id === id && <p className="current-status">It&lsquo;s You</p>}
         <p className="member-name">{`${firstName} ${lastName}`}</p>
         <p className="member-position">{jobPosition}</p>
       </div>
-      {user.isAdmin && !isAdmin && (
+      {currMember?.isAdmin && !isAdmin ? (
         <div
           className="kick-icon"
           role="button"
@@ -51,7 +53,7 @@ function Member({
           onKeyPress={() => showKickPopup()}
           onClick={() => showKickPopup()}
         />
-      )}
+      ) : null}
     </div>
   );
 }

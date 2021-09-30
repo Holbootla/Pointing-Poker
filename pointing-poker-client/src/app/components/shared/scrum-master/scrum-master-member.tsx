@@ -1,5 +1,6 @@
 import { useAppSelector } from '../../../redux/hooks';
 import { socket } from '../../../socket/socket-context';
+import '../member/member.scss';
 
 function ScrumMasterMember(): JSX.Element {
   const { members } = useAppSelector((state) => state.members);
@@ -17,10 +18,13 @@ function ScrumMasterMember(): JSX.Element {
       <p className="settings-label">Scrum master:</p>
       <div className="item member-item member-scrum">
         <div className="member-avatar-wrap">
-          <img src="" className="member-avatar-pic hidden" alt="" />
-          <div className="member-avatar">
-            {scrum ? avatarText(scrum.firstName, scrum.lastName) : null}
-          </div>
+          {scrum?.avatar ? (
+            <img src={scrum.avatar} className="member-avatar-pic" alt="" />
+          ) : (
+            <div className="member-avatar">
+              {scrum ? avatarText(scrum.firstName, scrum.lastName) : null}
+            </div>
+          )}
         </div>
         <div className="member-data member-data-nokick">
           {scrum && socket.id === scrum.id && (

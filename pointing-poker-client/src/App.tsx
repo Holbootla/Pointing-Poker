@@ -38,9 +38,9 @@ function App(): JSX.Element {
         <Route exact path="/">
           <Start />
         </Route>
-        <Route path="*">
+        {/* <Route path="*">
           <NotFound />
-        </Route>
+        </Route> */}
       </Switch>
       <Footer />
     </Router>

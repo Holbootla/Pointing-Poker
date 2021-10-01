@@ -13,7 +13,6 @@ import CardBreak from '../../components/shared/cards/card-break';
 import GameName from '../../components/shared/game-name/game-name';
 import KickPopup from '../../components/scrum/kick-popup/KickPopup';
 import Member from '../../components/shared/member/member';
-import ScrumMasterMember from '../../components/shared/scrum-master/scrum-master-member';
 import { useAppSelector } from '../../redux/hooks';
 import { gameState } from '../../redux/reducers/game-reducer';
 import { membersState } from '../../redux/reducers/members-reducer';
@@ -30,6 +29,7 @@ let votesQuantity: number;
 function Game(): JSX.Element {
   const history = useHistory();
   const { members } = useAppSelector(membersState);
+  const admin = members.find((member) => member.isAdmin === true);
   const { minutes, seconds } = useAppSelector(gameState).currentTimer;
   const { roundStatus, currentIssue, nextIssue, votes, averageValues } =
     useAppSelector(gameState);
@@ -222,7 +222,18 @@ function Game(): JSX.Element {
             <Container>
               <Row>
                 <Col>
-                  <ScrumMasterMember />
+                  {admin && (
+                    <>
+                      <h4>Scrum master:</h4>
+                      <Member
+                        id={admin.id}
+                        firstName={admin.firstName}
+                        lastName={admin.lastName}
+                        jobPosition={admin.jobPosition}
+                        avatar={admin.avatar}
+                      />
+                    </>
+                  )}
                 </Col>
                 <Col>
                   <div className="game__timer">
@@ -347,7 +358,7 @@ function Game(): JSX.Element {
           <Col xl={5}>
             <Container>
               <Chat />
-              <h2>Players:</h2>
+              <h4>Players:</h4>
               {members.map((member) => (
                 <Row key={member.id}>
                   <Col>
@@ -356,7 +367,6 @@ function Game(): JSX.Element {
                       firstName={member.firstName}
                       lastName={member.lastName}
                       jobPosition={member.jobPosition}
-                      isAdmin={member.isAdmin}
                       avatar={member.avatar}
                     />
                   </Col>

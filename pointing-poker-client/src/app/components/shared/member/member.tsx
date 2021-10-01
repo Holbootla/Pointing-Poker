@@ -23,7 +23,7 @@ function Member({
   const dispatch = useAppDispatch();
   const { members } = useAppSelector((state) => state.members);
   const { user } = useAppSelector((state) => state.authPopup);
-  const currMember = members.find((member) => member.id === id);
+  const currMember = members.find((member) => member.id === user.id);
   const avatarText = () => {
     if (lastName.length < 1) {
       return firstName.slice(0, 1);
@@ -36,7 +36,7 @@ function Member({
   return (
     <div className="item member-item">
       <div className="member-avatar-wrap">
-        {currMember?.avatar ? (
+        {avatar ? (
           <img src={avatar} className="member-avatar-pic" alt="" />
         ) : (
           <div className="member-avatar">{avatarText()}</div>

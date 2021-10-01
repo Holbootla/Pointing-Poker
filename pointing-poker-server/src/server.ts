@@ -14,6 +14,7 @@ app.use('/temp', express.static(__dirname + '/temp'));
 const server = http.createServer(app);
 const options = {
   path: '/api/',
+  maxHttpBufferSize: 10 * 1024 * 1024, // increase message size to 10mb to handle file upload
   cors: {
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST'],

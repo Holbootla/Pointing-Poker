@@ -19,7 +19,6 @@ function Members(): JSX.Element {
               firstName={member.firstName}
               lastName={member.lastName}
               jobPosition={member.jobPosition}
-              isAdmin={member.isAdmin}
               avatar={member.avatar}
             />
           ))}

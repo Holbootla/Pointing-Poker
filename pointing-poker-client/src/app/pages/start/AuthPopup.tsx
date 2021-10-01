@@ -14,7 +14,7 @@ import { showSpinnerAction } from '../../redux/reducers/spinner-reducer';
 
 function AuthPopup(): JSX.Element {
   const dispatch = useAppDispatch();
-  let avatarFile: File;
+  let avatarFile: File | null = null;
 
   const { authPopupVisible, gameID, newGame, user } = useAppSelector(
     (state) => state.authPopup
@@ -51,13 +51,12 @@ function AuthPopup(): JSX.Element {
     }
   };
 
-  const handleInputPictureChange = (file: File) => {
-    console.log('Я отправляю фай', 'id', user.id);
+  const newUserWithAvatar = async (file: File) => {
     const reader = new FileReader();
     reader.onload = () => {
-      sendToServer('user_avatar_uploaded', {
+      sendToServer(newGame ? 'game_created' : 'user_connected', {
         gameID,
-        memberId: user.id,
+        user,
         avatar: {
           name: file.name,
           data: reader.result,
@@ -70,14 +69,16 @@ function AuthPopup(): JSX.Element {
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     dispatch(showSpinnerAction());
-    sendToServer(newGame ? 'game_created' : 'user_connected', {
-      gameID,
-      user,
-    })
-      .then(() => {
-        if (avatarFile) handleInputPictureChange(avatarFile);
-      })
-      .then(() => history.push(`/lobby/${gameID}`));
+    if (avatarFile !== null) {
+      newUserWithAvatar(avatarFile).then(() =>
+        history.push(`/lobby/${gameID}`)
+      );
+    } else if (avatarFile === null) {
+      sendToServer(newGame ? 'game_created' : 'user_connected', {
+        gameID,
+        user,
+      }).then(() => history.push(`/lobby/${gameID}`));
+    }
   };
 
   return (

@@ -8,6 +8,7 @@ import {
   InputGroup,
   Row,
 } from 'react-bootstrap';
+import { useLocation } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
   closeAuthPopupAction,
@@ -21,8 +22,16 @@ import { socket } from '../../socket/socket-context';
 import AuthPopup from './AuthPopup';
 
 function Start(): JSX.Element {
+  const { gameID } = useAppSelector((state) => state.authPopup);
+  const location = useLocation();
+  const locationID = location.pathname.split('/').splice(-1, 1);
+
   useEffect(() => {
     dispatch(closeAuthPopupAction());
+  }, []);
+
+  useEffect(() => {
+    if (locationID) dispatch(setGameIDAction(locationID));
   }, []);
 
   function getRandomID(min: number, max: number) {
@@ -30,8 +39,6 @@ function Start(): JSX.Element {
   }
 
   const dispatch = useAppDispatch();
-
-  const { gameID } = useAppSelector((state) => state.authPopup);
 
   const showAuthPopup = () => dispatch(showAuthPopupAction());
 

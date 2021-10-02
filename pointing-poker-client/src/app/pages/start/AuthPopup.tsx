@@ -19,7 +19,6 @@ function AuthPopup(): JSX.Element {
   const { authPopupVisible, gameID, newGame, user } = useAppSelector(
     (state) => state.authPopup
   );
-  const { members } = useAppSelector((state) => state.members);
 
   const history = useHistory();
 

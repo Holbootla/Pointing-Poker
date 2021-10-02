@@ -42,6 +42,9 @@ function App(): JSX.Element {
         <Route exact path="/">
           <Start />
         </Route>
+        <Route path="/start/:gameID">
+          <Start />
+        </Route>
         <Route path="*">
           <NotFound />
         </Route>

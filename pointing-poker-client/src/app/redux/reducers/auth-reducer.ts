@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AuthPopupState {
   authPopupVisible: boolean;
-  gameID: '';
+  gameID: string;
   newGame: boolean;
   user: {
     id: string;

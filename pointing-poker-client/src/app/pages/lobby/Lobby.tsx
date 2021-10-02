@@ -1,4 +1,5 @@
 import { FC, useEffect } from 'react';
+import { useLocation } from 'react-router';
 import { useHistory } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Members from '../../components/scrum/members/members';
@@ -40,6 +41,12 @@ const Lobby: FC = () => {
     });
   }, []);
 
+  const path = 'http://localhost:3000/start/';
+  const location = useLocation();
+  const locationID = location.pathname.split('/').splice(-1, 1);
+  const link = path + locationID;
+  const copyGameIdButtonHandler = () => navigator.clipboard.writeText(link);
+
   const handleStartGameButtonClick = () => {
     const { isDefaultSettings } = gameSettings;
     if (isDefaultSettings) {
@@ -59,8 +66,6 @@ const Lobby: FC = () => {
     sendToServer('game_canceled', { gameID, memberId });
   };
 
-  const copyGameIdButtonHandler = () => navigator.clipboard.writeText(gameID);
-
   return isAdmin ? (
     <div className="container">
       <section className="section-wrap">
@@ -78,9 +83,12 @@ const Lobby: FC = () => {
           </>
         )}
 
-        <p className="lobby-link-title">Game ID:</p>
+        <p className="lobby-link-title">Link to lobby:</p>
         <div className="lobby-link-block">
-          <p className="lobby-link-text">{gameID}</p>
+          <p className="lobby-link-text">
+            {path}
+            {locationID}
+          </p>
           <Button
             variant="secondary"
             className="m-1"

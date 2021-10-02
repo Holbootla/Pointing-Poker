@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect } from 'react';
+import { FormEvent, useEffect } from 'react';
 import {
   Button,
   Col,
@@ -8,7 +8,8 @@ import {
   InputGroup,
   Row,
 } from 'react-bootstrap';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { useLocation } from 'react-router';
+import { useAppDispatch } from '../../redux/hooks';
 import {
   closeAuthPopupAction,
   setGameIDAction,
@@ -31,7 +32,8 @@ function Start(): JSX.Element {
 
   const dispatch = useAppDispatch();
 
-  const { gameID } = useAppSelector((state) => state.authPopup);
+  const location = useLocation();
+  const locationID = location.pathname.split('/').splice(-1, 1);
 
   const showAuthPopup = () => dispatch(showAuthPopupAction());
 
@@ -42,12 +44,13 @@ function Start(): JSX.Element {
     dispatch(setUserIDAction(socket.id));
   };
 
-  const handleChangeConnectGameID = (e: ChangeEvent<HTMLInputElement>) => {
-    dispatch(setGameIDAction(e.target.value.toString()));
-  };
+  // const handleChangeConnectGameID = (e: ChangeEvent<HTMLInputElement>) => {
+  //   dispatch(setGameIDAction(e.target.value.toString()));
+  // };
 
   const handleConnectGameButton = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    dispatch(setGameIDAction(locationID));
     dispatch(setNewGame(false));
     dispatch(setIsAdminAction(false));
     dispatch(setUserIDAction(socket.id));
@@ -98,9 +101,9 @@ function Start(): JSX.Element {
                 max="99999999"
                 placeholder="Enter game ID"
                 aria-label="game-id"
-                value={gameID}
+                value={locationID}
                 required
-                onChange={handleChangeConnectGameID}
+                // onChange={handleChangeConnectGameID}
               />
               <Button type="submit" variant="primary" id="button-addon2">
                 Connect

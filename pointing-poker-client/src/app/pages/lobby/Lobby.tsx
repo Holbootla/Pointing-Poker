@@ -1,5 +1,4 @@
 import { FC, useEffect } from 'react';
-import { useLocation } from 'react-router';
 import { useHistory } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import Members from '../../components/scrum/members/members';
@@ -42,9 +41,7 @@ const Lobby: FC = () => {
   }, []);
 
   const path = 'http://localhost:3000/start/';
-  const location = useLocation();
-  const locationID = location.pathname.split('/').splice(-1, 1);
-  const link = path + locationID;
+  const link = path + gameID;
   const copyGameIdButtonHandler = () => navigator.clipboard.writeText(link);
 
   const handleStartGameButtonClick = () => {
@@ -87,7 +84,7 @@ const Lobby: FC = () => {
         <div className="lobby-link-block">
           <p className="lobby-link-text">
             {path}
-            {locationID}
+            {gameID}
           </p>
           <Button
             variant="secondary"

@@ -1,12 +1,5 @@
 import { useEffect } from 'react';
-import {
-  Button,
-  Col,
-  Container,
-  Row,
-  Toast,
-  ToastContainer,
-} from 'react-bootstrap';
+import { Button, Col, Container, Row, ToastContainer } from 'react-bootstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import CardFace from '../../components/shared/cards/card-face';
 import CardBreak from '../../components/shared/cards/card-break';
@@ -21,6 +14,7 @@ import { IssueStatus } from '../../redux/reducers/issues-reducer';
 import { sendToServer, socket } from '../../socket/socket-context';
 import NewIssue from '../../components/scrum/new-issue/new-issue';
 import Chat from '../../components/shared/chat/chat';
+import IssueLobby from '../../components/scrum/issue-lobby/issue-lobby';
 
 let timerId: NodeJS.Timeout;
 let nextIssueId: string | number;
@@ -82,7 +76,7 @@ function Game(): JSX.Element {
       sendToServer('start_round', { gameID });
       sendToServer('set_all_vote_results', {
         gameID,
-        voteResult: 'In progress',
+        voteResult: 'Thinking...',
       });
       let min = minutes;
       let sec = seconds;
@@ -217,20 +211,21 @@ function Game(): JSX.Element {
       <GameName />
       {/* <div className="game__room">Room #{gameID}</div> */}
       <Container>
-        <Row>
-          <Col xl={7}>
+        <Row className="mb-5">
+          <Col xl={8}>
             <Container>
-              <Row>
+              <Row className="mb-5">
                 <Col>
                   {admin && (
                     <>
-                      <h4>Scrum master:</h4>
+                      <h3>Scrum master</h3>
                       <Member
                         id={admin.id}
                         firstName={admin.firstName}
                         lastName={admin.lastName}
                         jobPosition={admin.jobPosition}
                         avatar={admin.avatar}
+                        isGame={false}
                       />
                     </>
                   )}
@@ -246,82 +241,57 @@ function Game(): JSX.Element {
                 </Col>
                 {isAdmin && (
                   <Col>
+                    <h3>Controls</h3>
                     <Button
                       variant="success"
                       className="m-1"
                       onClick={() => startRound()}
                     >
-                      Start round
+                      Start&nbsp;round
                     </Button>
                     <Button
                       variant="primary"
                       className="m-1"
                       onClick={() => nextIssueClickHandler()}
                     >
-                      Next issue
+                      Next&nbsp;issue
                     </Button>
                     <Button
                       variant="danger"
                       className="m-1"
                       onClick={() => stopGame()}
                     >
-                      Stop game
+                      Stop&nbsp;game
                     </Button>
+                    <Chat size={undefined} />
                   </Col>
                 )}
               </Row>
-              <Row>
+              <Row className="mb-5">
                 <Col>
                   <h3>Issues</h3>
                   <ToastContainer>
-                    {issues.map((item) => (
-                      <Toast
-                        bg={
-                          (item.status === 'current' && 'success') ||
-                          (item.status === 'resolved' && 'danger') ||
-                          undefined
-                        }
-                        key={item.id}
+                    {issues.map((issue) => (
+                      <div
+                        key={issue.id}
                         role="button"
                         tabIndex={0}
-                        onClick={() => issueClickHandler(item.id, item.status)}
+                        onClick={() =>
+                          issueClickHandler(issue.id, issue.status)
+                        }
                         onKeyPress={() =>
-                          issueClickHandler(item.id, item.status)
+                          issueClickHandler(issue.id, issue.status)
                         }
                       >
-                        <Toast.Header closeButton={false}>
-                          <strong className="me-auto">{item.title}</strong>
-                          <small className="text-muted">{item.status}</small>
-                        </Toast.Header>
-                        <Toast.Body
-                          className={`d-flex flex-column ${
-                            item.status !== 'awaiting' && 'text-white'
-                          }`}
-                        >
-                          <span>
-                            Link:{' '}
-                            <a
-                              href={item.link}
-                              target="_blank"
-                              rel="noreferrer"
-                              className={
-                                (item.status !== 'awaiting' && 'text-light') ||
-                                'text-primary'
-                              }
-                            >
-                              {item.link.substr(0, 40)}
-                              {item.link.length > 40 && '...'}
-                            </a>
-                          </span>
-                          <small
-                            className={`align-self-end ${
-                              item.status !== 'awaiting' && 'text-white-50'
-                            }`}
-                          >
-                            {item.priority}
-                          </small>
-                        </Toast.Body>
-                      </Toast>
+                        <IssueLobby
+                          id={issue.id}
+                          mode="game"
+                          title={issue.title}
+                          link={issue.link}
+                          status={issue.status}
+                          priority={issue.priority}
+                        />
+                      </div>
                     ))}
                   </ToastContainer>
                   {isAdmin && <NewIssue />}
@@ -355,10 +325,9 @@ function Game(): JSX.Element {
               </Row>
             </Container>
           </Col>
-          <Col xl={5}>
+          <Col xl={4}>
             <Container>
-              <Chat />
-              <h4>Players:</h4>
+              <h3>Players</h3>
               {members.map((member) => (
                 <Row key={member.id}>
                   <Col>
@@ -368,24 +337,19 @@ function Game(): JSX.Element {
                       lastName={member.lastName}
                       jobPosition={member.jobPosition}
                       avatar={member.avatar}
+                      isGame
+                      voteResult={member.voteResult}
                     />
                   </Col>
-                  {isAdmin && <Col>{member.voteResult}</Col>}
-                  {!isAdmin && roundStatus === 'awaiting' && (
-                    <Col>{member.voteResult}</Col>
-                  )}
-                  {!isAdmin && roundStatus === 'in progress' && (
-                    <Col>In progress</Col>
-                  )}
                 </Row>
               ))}
             </Container>
           </Col>
         </Row>
-        <Row>
+        <Row className="mb-5">
           {role === 'player' &&
             cardValuesFinalSet.map((cardValue) => (
-              <Col key={cardValue}>
+              <Col key={cardValue} className="d-flex justify-content-center">
                 <div
                   role="button"
                   tabIndex={0}

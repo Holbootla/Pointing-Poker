@@ -46,6 +46,7 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'import/no-extraneous-dependencies': 'off',
     'no-param-reassign': 'off',
+    'react/require-default-props': 'off',
   },
   settings: {
     react: {

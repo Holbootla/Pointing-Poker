@@ -1,12 +1,5 @@
 import { useEffect } from 'react';
-import {
-  Button,
-  Col,
-  Container,
-  Row,
-  Toast,
-  ToastContainer,
-} from 'react-bootstrap';
+import { Button, Col, Container, Row, ToastContainer } from 'react-bootstrap';
 import { useHistory, useParams } from 'react-router-dom';
 import CardFace from '../../components/shared/cards/card-face';
 import CardBreak from '../../components/shared/cards/card-break';
@@ -83,7 +76,7 @@ function Game(): JSX.Element {
       sendToServer('start_round', { gameID });
       sendToServer('set_all_vote_results', {
         gameID,
-        voteResult: 'In progress',
+        voteResult: 'Thinking...',
       });
       let min = minutes;
       let sec = seconds;
@@ -219,7 +212,7 @@ function Game(): JSX.Element {
       {/* <div className="game__room">Room #{gameID}</div> */}
       <Container>
         <Row>
-          <Col xl={7}>
+          <Col xl={8}>
             <Container>
               <Row>
                 <Col>
@@ -232,6 +225,7 @@ function Game(): JSX.Element {
                         lastName={admin.lastName}
                         jobPosition={admin.jobPosition}
                         avatar={admin.avatar}
+                        isGame={false}
                       />
                     </>
                   )}
@@ -329,7 +323,7 @@ function Game(): JSX.Element {
               </Row>
             </Container>
           </Col>
-          <Col xl={5}>
+          <Col xl={4}>
             <Container>
               <Chat />
               <h4>Players:</h4>
@@ -342,15 +336,10 @@ function Game(): JSX.Element {
                       lastName={member.lastName}
                       jobPosition={member.jobPosition}
                       avatar={member.avatar}
+                      isGame
+                      voteResult={member.voteResult}
                     />
                   </Col>
-                  {isAdmin && <Col>{member.voteResult}</Col>}
-                  {!isAdmin && roundStatus === 'awaiting' && (
-                    <Col>{member.voteResult}</Col>
-                  )}
-                  {!isAdmin && roundStatus === 'in progress' && (
-                    <Col>In progress</Col>
-                  )}
                 </Row>
               ))}
             </Container>

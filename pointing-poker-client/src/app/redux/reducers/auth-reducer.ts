@@ -26,7 +26,7 @@ const initialState: AuthPopupState = {
     jobPosition: '',
     isAdmin: false,
     role: 'player',
-    voteResult: '-',
+    voteResult: '',
   },
 };
 

@@ -76,6 +76,7 @@ const Lobby: FC = () => {
               lastName={admin.lastName}
               jobPosition={admin.jobPosition}
               avatar={admin.avatar}
+              isGame={false}
             />
           </>
         )}
@@ -132,6 +133,7 @@ const Lobby: FC = () => {
               lastName={admin.lastName}
               jobPosition={admin.jobPosition}
               avatar={admin.avatar}
+              isGame={false}
             />
           </>
         )}

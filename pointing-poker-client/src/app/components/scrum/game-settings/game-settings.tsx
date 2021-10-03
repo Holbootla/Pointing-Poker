@@ -268,6 +268,7 @@ function GameSettings(): JSX.Element {
           </div>
         </div>
         <Form.Check
+          id="settings-default-check"
           type="checkbox"
           className="settings-label-default"
           label="Make these my default game settings"

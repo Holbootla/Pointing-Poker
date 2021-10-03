@@ -21,6 +21,7 @@ import { IssueStatus } from '../../redux/reducers/issues-reducer';
 import { sendToServer, socket } from '../../socket/socket-context';
 import NewIssue from '../../components/scrum/new-issue/new-issue';
 import Chat from '../../components/shared/chat/chat';
+import IssueLobby from '../../components/scrum/issue-lobby/issue-lobby';
 
 let timerId: NodeJS.Timeout;
 let nextIssueId: string | number;
@@ -274,54 +275,27 @@ function Game(): JSX.Element {
                 <Col>
                   <h3>Issues</h3>
                   <ToastContainer>
-                    {issues.map((item) => (
-                      <Toast
-                        bg={
-                          (item.status === 'current' && 'success') ||
-                          (item.status === 'resolved' && 'danger') ||
-                          undefined
-                        }
-                        key={item.id}
+                    {issues.map((issue) => (
+                      <div
+                        key={issue.id}
                         role="button"
                         tabIndex={0}
-                        onClick={() => issueClickHandler(item.id, item.status)}
+                        onClick={() =>
+                          issueClickHandler(issue.id, issue.status)
+                        }
                         onKeyPress={() =>
-                          issueClickHandler(item.id, item.status)
+                          issueClickHandler(issue.id, issue.status)
                         }
                       >
-                        <Toast.Header closeButton={false}>
-                          <strong className="me-auto">{item.title}</strong>
-                          <small className="text-muted">{item.status}</small>
-                        </Toast.Header>
-                        <Toast.Body
-                          className={`d-flex flex-column ${
-                            item.status !== 'awaiting' && 'text-white'
-                          }`}
-                        >
-                          <span>
-                            Link:{' '}
-                            <a
-                              href={item.link}
-                              target="_blank"
-                              rel="noreferrer"
-                              className={
-                                (item.status !== 'awaiting' && 'text-light') ||
-                                'text-primary'
-                              }
-                            >
-                              {item.link.substr(0, 40)}
-                              {item.link.length > 40 && '...'}
-                            </a>
-                          </span>
-                          <small
-                            className={`align-self-end ${
-                              item.status !== 'awaiting' && 'text-white-50'
-                            }`}
-                          >
-                            {item.priority}
-                          </small>
-                        </Toast.Body>
-                      </Toast>
+                        <IssueLobby
+                          id={issue.id}
+                          mode="game"
+                          title={issue.title}
+                          link={issue.link}
+                          status={issue.status}
+                          priority={issue.priority}
+                        />
+                      </div>
                     ))}
                   </ToastContainer>
                   {isAdmin && <NewIssue />}

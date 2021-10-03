@@ -103,7 +103,7 @@ function GameSettings(): JSX.Element {
 
   return (
     <section className="section-wrap">
-      <div className="section-title">game settings:</div>
+      <h3 className="section-title">Game settings:</h3>
       <Form>
         <Form.Check
           id="cardChangeCheck"

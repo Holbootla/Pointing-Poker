@@ -9,7 +9,7 @@ function Members(): JSX.Element {
 
   return (
     <section className="section-wrap">
-      <div className="section-title">members:</div>
+      <h3 className="section-title">Members:</h3>
       <div className="members-container">
         <div className="members-list">
           {members.map((member) => (

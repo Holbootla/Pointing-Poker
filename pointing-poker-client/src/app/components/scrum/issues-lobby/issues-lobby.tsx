@@ -77,10 +77,10 @@ const IssuesLobby: FC = () => {
 
   return (
     <section className="section-wrap">
-      <div className="section-title">issues:</div>
-      <p className="settings-label add-issue-title">
-        Add issues one by one manually
-      </p>
+      <h3 className="section-title">Issues:</h3>
+      <h5 className="settings-label add-issue-title">
+        Add issues one by one manually:
+      </h5>
       {issues.map((issue) => (
         <IssueLobby
           id={issue.id}
@@ -92,10 +92,10 @@ const IssuesLobby: FC = () => {
         />
       ))}
       <NewIssue />
-      <div>
-        <p className="settings-label add-issue-title mt-2">
+      <div className="mt-4">
+        <h5 className="settings-label add-issue-title mt-2">
           Or add multiple issues from file:
-        </p>
+        </h5>
         <div className="add-file-block-wrap">
           <div className="step-block">
             <p>

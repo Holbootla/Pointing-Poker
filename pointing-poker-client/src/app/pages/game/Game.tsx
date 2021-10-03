@@ -211,14 +211,14 @@ function Game(): JSX.Element {
       <GameName />
       {/* <div className="game__room">Room #{gameID}</div> */}
       <Container>
-        <Row>
+        <Row className="mb-5">
           <Col xl={8}>
             <Container>
-              <Row>
+              <Row className="mb-5">
                 <Col>
                   {admin && (
                     <>
-                      <h4>Scrum master:</h4>
+                      <h3>Scrum master</h3>
                       <Member
                         id={admin.id}
                         firstName={admin.firstName}
@@ -241,31 +241,33 @@ function Game(): JSX.Element {
                 </Col>
                 {isAdmin && (
                   <Col>
+                    <h3>Controls</h3>
                     <Button
                       variant="success"
                       className="m-1"
                       onClick={() => startRound()}
                     >
-                      Start round
+                      Start&nbsp;round
                     </Button>
                     <Button
                       variant="primary"
                       className="m-1"
                       onClick={() => nextIssueClickHandler()}
                     >
-                      Next issue
+                      Next&nbsp;issue
                     </Button>
                     <Button
                       variant="danger"
                       className="m-1"
                       onClick={() => stopGame()}
                     >
-                      Stop game
+                      Stop&nbsp;game
                     </Button>
+                    <Chat size={undefined} />
                   </Col>
                 )}
               </Row>
-              <Row>
+              <Row className="mb-5">
                 <Col>
                   <h3>Issues</h3>
                   <ToastContainer>
@@ -325,8 +327,7 @@ function Game(): JSX.Element {
           </Col>
           <Col xl={4}>
             <Container>
-              <Chat />
-              <h4>Players:</h4>
+              <h3>Players</h3>
               {members.map((member) => (
                 <Row key={member.id}>
                   <Col>
@@ -345,10 +346,10 @@ function Game(): JSX.Element {
             </Container>
           </Col>
         </Row>
-        <Row>
+        <Row className="mb-5">
           {role === 'player' &&
             cardValuesFinalSet.map((cardValue) => (
-              <Col key={cardValue}>
+              <Col key={cardValue} className="d-flex justify-content-center">
                 <div
                   role="button"
                   tabIndex={0}

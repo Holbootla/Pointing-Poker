@@ -1,6 +1,6 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
+import { Alert, Button } from 'react-bootstrap';
 import Members from '../../components/scrum/members/members';
 import IssuesLobby from '../../components/scrum/issues-lobby/issues-lobby';
 import GameSettings from '../../components/scrum/game-settings/game-settings';
@@ -23,8 +23,10 @@ const Lobby: FC = () => {
   const { isAdmin } = useAppSelector((state) => state.authPopup.user);
   const { members } = useAppSelector((state) => state.members);
   const admin = members.find((member) => member.isAdmin === true);
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
+    setShowAlert(true);
     const defaultLocalSettings = localStorage.getItem('gameSettings');
 
     if (defaultLocalSettings) {
@@ -66,6 +68,15 @@ const Lobby: FC = () => {
   return isAdmin ? (
     <div className="container">
       <section className="section-wrap">
+        <Alert
+          variant="success"
+          show={showAlert}
+          onClose={() => setShowAlert(false)}
+          dismissible
+        >
+          <Alert.Heading>Welcome to the lobby of game #{gameID}!</Alert.Heading>
+          <p>Please, configure settings and start the game.</p>
+        </Alert>
         <GameName />
         {admin && (
           <>
@@ -125,6 +136,18 @@ const Lobby: FC = () => {
   ) : (
     <div className="container">
       <section className="section-wrap">
+        <Alert
+          variant="success"
+          show={showAlert}
+          onClose={() => setShowAlert(false)}
+          dismissible
+        >
+          <Alert.Heading>Welcome to the lobby of game #{gameID}!</Alert.Heading>
+          <p>
+            Please, wait for other players. Scrum master will start the game
+            soon.
+          </p>
+        </Alert>
         <GameName />
         {admin && (
           <>

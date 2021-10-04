@@ -103,7 +103,7 @@ function GameSettings(): JSX.Element {
 
   return (
     <section className="section-wrap">
-      <div className="section-title">game settings:</div>
+      <h3 className="section-title">Game settings:</h3>
       <Form>
         <Form.Check
           id="cardChangeCheck"
@@ -268,6 +268,7 @@ function GameSettings(): JSX.Element {
           </div>
         </div>
         <Form.Check
+          id="settings-default-check"
           type="checkbox"
           className="settings-label-default"
           label="Make these my default game settings"

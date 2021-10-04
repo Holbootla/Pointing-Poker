@@ -76,6 +76,7 @@ const Lobby: FC = () => {
               lastName={admin.lastName}
               jobPosition={admin.jobPosition}
               avatar={admin.avatar}
+              isGame={false}
             />
           </>
         )}
@@ -96,21 +97,23 @@ const Lobby: FC = () => {
         </div>
         <div className="game-control-btn-block">
           <Button
+            size="lg"
             variant="primary"
             className="m-1"
             onClick={handleStartGameButtonClick}
           >
-            Start Game
+            START GAME
           </Button>
+          <Chat size="lg" />
           <Button
+            size="lg"
             variant="outline-danger"
             className="m-1"
             onClick={handleCancelGameButtonClick}
           >
-            Cancel game
+            CANCEL GAME
           </Button>
         </div>
-        <Chat />
       </section>
       <Members />
       <IssuesLobby />
@@ -132,18 +135,20 @@ const Lobby: FC = () => {
               lastName={admin.lastName}
               jobPosition={admin.jobPosition}
               avatar={admin.avatar}
+              isGame={false}
             />
           </>
         )}
         <div className="game-control-btn-block gamer-cancel-game">
           <Button
+            size="lg"
             variant="outline-danger"
             className="m-1"
             onClick={handlePlayerCancelButtonClick}
           >
             Cancel game
           </Button>
-          <Chat />
+          <Chat size="lg" />
         </div>
       </section>
       <Members />

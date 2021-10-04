@@ -8,7 +8,11 @@ import {
 } from '../../../redux/reducers/chat-reducer';
 import { sendToServer } from '../../../socket/socket-context';
 
-function Chat(): JSX.Element {
+interface IChatProps {
+  size: 'sm' | 'lg' | undefined;
+}
+
+function Chat({ size }: IChatProps): JSX.Element {
   const dispatch = useAppDispatch();
 
   const { gameID, user } = useAppSelector((state) => state.authPopup);
@@ -57,11 +61,12 @@ function Chat(): JSX.Element {
   return (
     <>
       <Button
-        variant="outline-warning"
+        size={size}
+        variant="warning"
         className="m-1"
         onClick={handleOpenChatButtonClick}
       >
-        Open chat
+        Open&nbsp;chat
       </Button>
       <Offcanvas show={chatVisible} onHide={closeChat} placement="end">
         <Offcanvas.Header closeButton>

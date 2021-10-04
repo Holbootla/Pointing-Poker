@@ -26,7 +26,7 @@ const initialState: AuthPopupState = {
     jobPosition: '',
     isAdmin: false,
     role: 'player',
-    voteResult: '-',
+    voteResult: '',
   },
 };
 
@@ -47,7 +47,7 @@ export const authPopupSlice = createSlice({
         jobPosition: '',
         isAdmin: false,
         role: 'player',
-        voteResult: '-',
+        voteResult: '',
       };
     },
     setGameIDAction: (state, action) => {

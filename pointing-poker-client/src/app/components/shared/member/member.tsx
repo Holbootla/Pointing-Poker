@@ -9,6 +9,9 @@ interface MemberProps {
   lastName: string;
   jobPosition: string;
   avatar: string;
+  isGame: boolean;
+  roundStatus?: 'in progress' | 'awaiting';
+  voteResult?: string;
 }
 
 function Member({
@@ -17,6 +20,9 @@ function Member({
   lastName,
   jobPosition,
   avatar,
+  isGame,
+  roundStatus,
+  voteResult,
 }: MemberProps): JSX.Element {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.authPopup);
@@ -45,7 +51,18 @@ function Member({
         )}
       </Toast.Header>
       <Toast.Body className="d-flex flex-column">
-        <small className="align-self-end text-muted">{jobPosition}</small>
+        {isGame ? (
+          <div className="d-flex justify-content-between w-100">
+            <small className="text-warning">
+              {user.isAdmin && voteResult}
+              {!user.isAdmin && roundStatus === 'in progress' && 'Thinking...'}
+              {!user.isAdmin && roundStatus === 'awaiting' && voteResult}
+            </small>
+            <small className="text-muted">{jobPosition}</small>
+          </div>
+        ) : (
+          <small className="align-self-end text-muted">{jobPosition}</small>
+        )}
       </Toast.Body>
     </Toast>
   );

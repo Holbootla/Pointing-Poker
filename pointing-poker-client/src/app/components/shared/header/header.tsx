@@ -11,6 +11,9 @@ function Header(): JSX.Element {
     case '':
       pageTitle = 'Home';
       break;
+    case 'start':
+      pageTitle = 'Home';
+      break;
     case 'lobby':
       pageTitle = 'Lobby';
       break;

@@ -41,7 +41,7 @@ export interface IVote {
 
 export interface IGameState {
   currentIssue?: IIssue;
-  nextIssue?: IIssue;
+  showRestartControls?: boolean;
   currentTimer?: { minutes: number; seconds: number };
   roundStatus?: 'in progress' | 'awaiting';
   votes?: IVote[];

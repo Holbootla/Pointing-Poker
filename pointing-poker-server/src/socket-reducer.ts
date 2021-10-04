@@ -3,9 +3,7 @@ import { io } from './server';
 
 import {
   addIssue,
-  addRoundInStatistics,
   addUser,
-  addVote,
   avatarUpload,
   changeGameName,
   changeSettings,
@@ -13,17 +11,15 @@ import {
   deleteIssue,
   editIssue,
   finishRound,
+  resetGame,
   getState,
   kickUser,
   removeSTate,
-  setAllVoteResults,
-  setAverageValues,
   setCurrentIssue,
   setCurrentTimer,
-  setIssueStatus,
   setMessages,
-  setNextIssue,
-  setVoteResult,
+  stopRound,
+  setVote,
   startRound,
   updateIssues
 } from './mongo';
@@ -135,30 +131,6 @@ export async function handleAction(
     io.to(action.payload.user.id).socketsLeave(gameID);
   }
 
-  if (action.type === 'set_vote_result') {
-
-    const newStateFromDb = await setVoteResult(gameID, action.payload.memberId, action.payload.voteResult);
-
-    io.to(gameID).emit('UPDATE_CLIENT', {
-      type: 'members/setMembersAction',
-      payload: {
-        members: newStateFromDb.users,
-      },
-    });
-  }
-
-  if (action.type === 'set_all_vote_results') {
-
-    const newStateFromDb = await setAllVoteResults(gameID, action.payload.voteResult);
-
-    io.to(gameID).emit('UPDATE_CLIENT', {
-      type: 'members/setMembersAction',
-      payload: {
-        members: newStateFromDb.users,
-      },
-    });
-  }
-
   /*=====================================================================*/
   /*                               GAME NAME                             */
   /*=====================================================================*/
@@ -210,16 +182,6 @@ export async function handleAction(
   if (action.type === 'issues_updated') {
 
     const newStateFromDb = await updateIssues(gameID, action.payload.issuesUpdated);
-
-    io.to(gameID).emit('UPDATE_CLIENT', {
-      type: 'issues/updateIssuesAction',
-      payload: newStateFromDb.issues,
-    });
-  }
-
-  if (action.type === 'set_issue_status') {
-
-    const newStateFromDb = await setIssueStatus(gameID, action.payload.id, action.payload.status);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'issues/updateIssuesAction',
@@ -308,7 +270,14 @@ export async function handleAction(
 
   if (action.type === 'start_round') {
 
-    const newStateFromDb = await startRound(gameID);
+    const newStateFromDb = await startRound(gameID, action.payload.voteResult);
+
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'members/setMembersAction',
+      payload: {
+        members: newStateFromDb.users,
+      },
+    });
 
     const payloadToClient = {
       roundStatus: newStateFromDb.game.roundStatus,
@@ -324,26 +293,34 @@ export async function handleAction(
 
   if (action.type === 'finish_round') {
 
-    let newStateFromDb = await setAverageValues(gameID);
+    let newStateFromDb = await finishRound(gameID, action.payload.currentIssue);
+
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'issues/updateIssuesAction',
+      payload: newStateFromDb.issues,
+    });
+
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'game/setCurrentIssueAction',
+      payload: newStateFromDb.game.currentIssue,
+    });
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/setAverageValuesAction',
       payload: newStateFromDb.game.averageValues,
     });
 
-    newStateFromDb = await addRoundInStatistics(gameID);
-
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/addRoundInStatisticsAction',
       payload: newStateFromDb.game.statistics,
     });
 
-    newStateFromDb = await finishRound(gameID);
+    newStateFromDb = await resetGame(gameID);
 
     const payloadToClient = {
       roundStatus: newStateFromDb.game.roundStatus,
       currentIssue: newStateFromDb.game.currentIssue,
-      nextIssue: newStateFromDb.game.nextIssue,
+      showRestartControls: newStateFromDb.game.showRestartControls,
       currentTimer: newStateFromDb.game.currentTimer,
     };
     io.to(gameID).emit('UPDATE_CLIENT', {
@@ -357,48 +334,45 @@ export async function handleAction(
     const newStateFromDb = await setCurrentIssue(gameID, action.payload.currentIssue);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'issues/updateIssuesAction',
+      payload: newStateFromDb.issues,
+    });
+
+    io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/setCurrentIssueAction',
       payload: newStateFromDb.game.currentIssue,
     });
   }
 
-  if (action.type === 'set_next_issue') {
+  if (action.type === 'stop_round') {
 
-    const newStateFromDb = await setNextIssue(gameID, action.payload.nextIssue);
+    const newStateFromDb = await stopRound(gameID);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
-      type: 'game/setNextIssueAction',
-      payload: newStateFromDb.game.nextIssue,
+      type: 'game/stopRoundAction',
+      payload: newStateFromDb.game,
     });
   }
 
-  if (action.type === 'add_vote') {
+  if (action.type === 'set_vote') {
 
-    const newStateFromDb = await addVote(gameID, action.payload.memberId, action.payload.value);
+    const newStateFromDb = await setVote(
+      gameID,
+      action.payload.memberId,
+      action.payload.value,
+      action.payload.voteResult
+    );
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/addVoteAction',
       payload: newStateFromDb.game.votes,
     });
-  }
-
-  if (action.type === 'set_average_values') {
-
-    const newStateFromDb = await setAverageValues(gameID);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
-      type: 'game/setAverageValuesAction',
-      payload: newStateFromDb.game.averageValues,
-    });
-  }
-
-  if (action.type === 'add_round_in_statistics') {
-
-    const newStateFromDb = await addRoundInStatistics(gameID);
-
-    io.to(gameID).emit('UPDATE_CLIENT', {
-      type: 'game/addRoundInStatisticsAction',
-      payload: newStateFromDb.game.statistics,
+      type: 'members/setMembersAction',
+      payload: {
+        members: newStateFromDb.users,
+      },
     });
   }
 

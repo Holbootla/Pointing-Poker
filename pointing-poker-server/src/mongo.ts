@@ -123,36 +123,6 @@ export const avatarUpload = async (
   return result as StateDocument
 };
 
-export const setVoteResult = async (
-  gameID: string,
-  userID: string,
-  voteResult: string,
-): Promise<StateDocument> => {
-  const client = await MongoClient.connect(url);
-  const collection = client.db(dbName).collection(collectionName);
-  const state = await collection.findOne({ gameID });
-  const newUsers = state.users.map((user) => (user.id === userID) ? { ...user, voteResult } : user);
-  await collection.updateOne({ gameID }, { $set: { users: newUsers } });
-  const result = await collection.findOne({ gameID });
-  console.log(result);
-  client.close();
-  return result as StateDocument;
-};
-
-export const setAllVoteResults = async (
-  gameID: string,
-  voteResult: string,
-): Promise<StateDocument> => {
-  const client = await MongoClient.connect(url);
-  const collection = client.db(dbName).collection(collectionName);
-  const state = await collection.findOne({ gameID });
-  const newUsers = state.users.map((user) => ({ ...user, voteResult }));
-  await collection.updateOne({ gameID }, { $set: { users: newUsers } });
-  const result = await collection.findOne({ gameID });
-  client.close();
-  return result as StateDocument;
-};
-
 export const changeGameName = async (
   gameID: string,
   gameName: string,
@@ -215,32 +185,6 @@ export const updateIssues = async (
   return result as StateDocument;
 };
 
-export const setIssueStatus = async (
-  gameID: string,
-  currentIssueID: number | string,
-  currentIssueStatus: 'current' | 'resolved' | 'awaiting' | 'next',
-): Promise<StateDocument> => {
-  const client = await MongoClient.connect(url);
-  const collection = client.db(dbName).collection(collectionName);
-  const state = await collection.findOne({ gameID });
-  const newIssues = state.issues.map((issue) => {
-    if (issue.id === currentIssueID) {
-      return { ...issue, status: currentIssueStatus };
-    }
-    if (issue.status === 'current' && currentIssueStatus !== 'next') {
-      return { ...issue, status: 'awaiting' };
-    }
-    if (issue.status === 'next') {
-      return { ...issue, status: 'awaiting' };
-    }
-    return issue;
-  });
-  await collection.updateOne({ gameID }, { $set: { issues: newIssues } });
-  const result = await collection.findOne({ gameID });
-  client.close();
-  return result as StateDocument;
-};
-
 export const changeSettings = async (
   gameID: string,
   gameSettings: IGameSettings,
@@ -274,15 +218,18 @@ export const setCurrentTimer = async (
 
 export const startRound = async (
   gameID: string,
+  voteResult: string,
   roundStatus: 'in progress' | 'awaiting' = 'in progress',
   votes: IVote[] = [],
   averageValues: IAverageValue[] = [],
+  showRestartControls: boolean = false,
 ): Promise<StateDocument> => {
   const client = await MongoClient.connect(url);
   const collection = client.db(dbName).collection(collectionName);
   const state = await collection.findOne({ gameID });
-  const newGame = { ...state.game, roundStatus, votes, averageValues };
-  await collection.updateOne({ gameID }, { $set: { game: newGame } });
+  const newUsers = state.users.map((user) => ({ ...user, voteResult }));
+  const newGame = { ...state.game, roundStatus, votes, averageValues, showRestartControls };
+  await collection.updateOne({ gameID }, { $set: { game: newGame, users: newUsers } });
   const result = await collection.findOne({ gameID });
   client.close();
   return result as StateDocument;
@@ -290,75 +237,16 @@ export const startRound = async (
 
 export const finishRound = async (
   gameID: string,
-  roundStatus: 'in progress' | 'awaiting' = 'awaiting',
-  emptyIssue: IIssue = { id: '', title: '', link: '', priority: 'low', status: 'awaiting' },
-): Promise<StateDocument> => {
-  const client = await MongoClient.connect(url);
-  const collection = client.db(dbName).collection(collectionName);
-  const state = await collection.findOne({ gameID });
-  const nextIssue = state.game.nextIssue;
-  const minutes = Number(state.gameSettings.timerMinutes);
-  const seconds = Number(state.gameSettings.timerSeconds);
-  const currentTimer = { minutes, seconds };
-  const newGame = { ...state.game, roundStatus, currentTimer, currentIssue: nextIssue, nextIssue: emptyIssue };
-  await collection.updateOne({ gameID }, { $set: { game: newGame } });
-  const result = await collection.findOne({ gameID });
-  client.close();
-  return result as StateDocument;
-};
-
-export const setCurrentIssue = async (
-  gameID: string,
   currentIssue: IIssue,
 ): Promise<StateDocument> => {
   const client = await MongoClient.connect(url);
   const collection = client.db(dbName).collection(collectionName);
   const state = await collection.findOne({ gameID });
-  const newGame = { ...state.game, currentIssue };
-  await collection.updateOne({ gameID }, { $set: { game: newGame } });
-  const result = await collection.findOne({ gameID });
-  client.close();
-  return result as StateDocument;
-};
 
-export const setNextIssue = async (
-  gameID: string,
-  nextIssue: IIssue,
-): Promise<StateDocument> => {
-  const client = await MongoClient.connect(url);
-  const collection = client.db(dbName).collection(collectionName);
-  const state = await collection.findOne({ gameID });
-  const newGame = { ...state.game, nextIssue };
-  await collection.updateOne({ gameID }, { $set: { game: newGame } });
-  const result = await collection.findOne({ gameID });
-  client.close();
-  return result as StateDocument;
-};
+  const newIssues = state.issues.map((issue) => (issue.id === currentIssue.id)
+    ? { ...issue, status: currentIssue.status }
+    : issue);
 
-export const addVote = async (
-  gameID: string,
-  memberId: string,
-  value: string,
-): Promise<StateDocument> => {
-  const client = await MongoClient.connect(url);
-  const collection = client.db(dbName).collection(collectionName);
-  const state = await collection.findOne({ gameID });
-  const votes = state.game.votes;
-  const newVotes = (votes.find((vote) => vote.memberId === memberId))
-    ? votes.map((vote) => (vote.memberId === memberId) ? { memberId, value } : vote)
-    : [...votes, { memberId, value }];
-  const newGame = { ...state.game, votes: newVotes };
-  await collection.updateOne({ gameID }, { $set: { game: newGame } });
-  const result = await collection.findOne({ gameID });
-  console.log(result);
-  client.close();
-  return result as StateDocument;
-};
-
-export const setAverageValues = async (gameID: string): Promise<StateDocument> => {
-  const client = await MongoClient.connect(url);
-  const collection = client.db(dbName).collection(collectionName);
-  const state = await collection.findOne({ gameID });
   const totalVotes = state.game.votes.length;
   const votesCounter: { [key: string]: number } = {};
   const votesValues: string[] = [];
@@ -377,28 +265,99 @@ export const setAverageValues = async (gameID: string): Promise<StateDocument> =
       const percents = Math.round((counter / totalVotes) * 10000) / 100;
       averageValues.push({ value: voteValue, percents });
     });
-  const newGame = { ...state.game, averageValues };
+  
+  const statistics = [
+    ...state.game.statistics,
+    {
+      issue: currentIssue,
+      votes: state.game.votes,
+      averageValues: averageValues,
+    },
+  ];
+
+  const newGame = { ...state.game, currentIssue, averageValues, statistics, showRestartControls: false };
+  await collection.updateOne({ gameID }, { $set: { issues: newIssues, game: newGame } });
+  const result = await collection.findOne({ gameID });
+  client.close();
+  return result as StateDocument;
+};
+
+export const resetGame = async (
+  gameID: string,
+  emptyIssue: IIssue = { id: '', title: '', link: '', priority: 'low', status: 'awaiting' },
+): Promise<StateDocument> => {
+  const client = await MongoClient.connect(url);
+  const collection = client.db(dbName).collection(collectionName);
+  const state = await collection.findOne({ gameID });
+  const minutes = Number(state.gameSettings.timerMinutes);
+  const seconds = Number(state.gameSettings.timerSeconds);
+  const currentTimer = { minutes, seconds };
+  const newGame = { ...state.game, currentTimer, currentIssue: emptyIssue, nextIssue: emptyIssue };
   await collection.updateOne({ gameID }, { $set: { game: newGame } });
   const result = await collection.findOne({ gameID });
   client.close();
   return result as StateDocument;
 };
 
-export const addRoundInStatistics = async (gameID: string): Promise<StateDocument> => {
+export const setCurrentIssue = async (
+  gameID: string,
+  currentIssue: IIssue,
+): Promise<StateDocument> => {
   const client = await MongoClient.connect(url);
   const collection = client.db(dbName).collection(collectionName);
   const state = await collection.findOne({ gameID });
-  const statistics = [
-    ...state.game.statistics,
-    {
-      issue: state.game.currentIssue,
-      votes: state.game.votes,
-      averageValues: state.game.averageValues,
-    },
-  ];
-  const newGame = { ...state.game, statistics };
+  const newIssues = state.issues.map((issue) => {
+    if (issue.id === currentIssue.id) {
+      return { ...issue, status: currentIssue.status };
+    }
+    if (issue.status === 'current') {
+      return { ...issue, status: 'awaiting' };
+    }
+    return issue;
+  });
+  const newGame = { ...state.game, currentIssue };
+  await collection.updateOne({ gameID }, { $set: { game: newGame, issues: newIssues } });
+  const result = await collection.findOne({ gameID });
+  client.close();
+  return result as StateDocument;
+};
+
+export const stopRound = async (
+  gameID: string,
+  roundStatus: 'in progress' | 'awaiting' = 'awaiting',
+  showRestartControls: boolean = true,
+): Promise<StateDocument> => {
+  const client = await MongoClient.connect(url);
+  const collection = client.db(dbName).collection(collectionName);
+  const state = await collection.findOne({ gameID });
+  const minutes = Number(state.gameSettings.timerMinutes);
+  const seconds = Number(state.gameSettings.timerSeconds);
+  const currentTimer = { minutes, seconds };
+  const newGame = { ...state.game, roundStatus, currentTimer, showRestartControls };
   await collection.updateOne({ gameID }, { $set: { game: newGame } });
   const result = await collection.findOne({ gameID });
+  client.close();
+  return result as StateDocument;
+};
+
+export const setVote = async (
+  gameID: string,
+  userID: string,
+  value: string,
+  voteResult: string,
+): Promise<StateDocument> => {
+  const client = await MongoClient.connect(url);
+  const collection = client.db(dbName).collection(collectionName);
+  const state = await collection.findOne({ gameID });
+  const votes = state.game.votes;
+  const newVotes = (votes.find((vote) => vote.userID === userID))
+    ? votes.map((vote) => (vote.memberId === userID) ? { userID, value } : vote)
+    : [...votes, { userID, value }];
+  const newGame = { ...state.game, votes: newVotes };
+  const newUsers = state.users.map((user) => (user.id === userID) ? { ...user, voteResult } : user);
+  await collection.updateOne({ gameID }, { $set: { game: newGame, users: newUsers } });
+  const result = await collection.findOne({ gameID });
+  console.log(result);
   client.close();
   return result as StateDocument;
 };

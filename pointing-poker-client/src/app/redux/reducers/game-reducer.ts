@@ -21,7 +21,7 @@ interface Vote {
 
 interface GameState {
   currentIssue: Issue;
-  nextIssue: Issue;
+  showRestartControls: boolean;
   currentTimer: { minutes: number, seconds: number };
   roundStatus: 'in progress' | 'awaiting';
   votes: Vote[];
@@ -31,7 +31,7 @@ interface GameState {
 
 const initialState: GameState = {
   currentIssue: { id: '', title: '', link: '', priority: 'low', status: 'awaiting'},
-  nextIssue: { id: '', title: '', link: '', priority: 'low', status: 'awaiting'},
+  showRestartControls: false,
   currentTimer: { minutes: 0, seconds: 0 },
   roundStatus: 'awaiting',
   votes: [],
@@ -46,8 +46,10 @@ export const gameSlice = createSlice({
     setCurrentIssueAction: (state, action) => {
       state.currentIssue = action.payload;
     },
-    setNextIssueAction: (state, action) => {
-      state.nextIssue = action.payload;
+    stopRoundAction: (state, action) => {
+      state.showRestartControls = action.payload.showRestartControls;
+      state.currentTimer = action.payload.currentTimer;
+      state.roundStatus = action.payload.roundStatus;
     },
 
     startRoundAction: (state, action) => ({ ...state, ...action.payload }),
@@ -73,7 +75,7 @@ export const {
   startRoundAction,
   finishRoundAction,
   setCurrentIssueAction,
-  setNextIssueAction,
+  stopRoundAction,
   setCurrentTimer,
   addVoteAction,
   setAverageValuesAction,

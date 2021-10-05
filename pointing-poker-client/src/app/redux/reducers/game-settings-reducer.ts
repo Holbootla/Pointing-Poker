@@ -3,6 +3,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface GameSettingsState {
   cardChange: boolean;
   timerOn: boolean;
+  allowEnterInGame: boolean;
+  cardsAutoTurn: boolean;
   scoreType: string;
   scoreTypeShort: string;
   timerMinutes: string;
@@ -15,6 +17,8 @@ interface GameSettingsState {
 const initialState: GameSettingsState = {
   cardChange: false,
   timerOn: false,
+  allowEnterInGame: false,
+  cardsAutoTurn: false,
   scoreType: 'FB',
   scoreTypeShort: 'FB',
   timerMinutes: '00',
@@ -49,6 +53,12 @@ export const gameSettingsSlice = createSlice({
     timerOnAction: (state) => {
       state.timerOn = !state.timerOn;
     },
+    allowEnterInGameAction: (state) => {
+      state.allowEnterInGame = !state.allowEnterInGame;
+    },
+    cardsAutoTurnAction: (state) => {
+      state.cardsAutoTurn = !state.cardsAutoTurn;
+    },
     scoreTypeAction: (state, action: PayloadAction<string>) => {
       state.scoreType = action.payload;
       state.scoreTypeShort = action.payload;
@@ -78,6 +88,8 @@ export const gameSettingsSlice = createSlice({
     setGameSettings: (state, action: PayloadAction<GameSettingsState>) => {
       state.cardChange = action.payload.cardChange;
       state.timerOn = action.payload.timerOn;
+      state.allowEnterInGame = action.payload.allowEnterInGame;
+      state.cardsAutoTurn = action.payload.cardsAutoTurn;
       state.scoreType = action.payload.scoreType;
       state.scoreTypeShort = action.payload.scoreTypeShort;
       state.timerMinutes = action.payload.timerMinutes;
@@ -92,6 +104,8 @@ export const gameSettingsSlice = createSlice({
 export const {
   cardChangeAction,
   timerOnAction,
+  allowEnterInGameAction,
+  cardsAutoTurnAction,
   scoreTypeAction,
   scoreTypeShortAction,
   timerMinutesAction,

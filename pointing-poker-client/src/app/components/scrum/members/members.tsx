@@ -21,6 +21,7 @@ function Members(): JSX.Element {
               jobPosition={member.jobPosition}
               avatar={member.avatar}
               isGame={false}
+              role={member.role}
             />
           ))}
         </div>

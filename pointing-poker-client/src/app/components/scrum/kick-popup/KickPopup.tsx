@@ -9,6 +9,7 @@ const KickPopup: FC = () => {
   const dispatch = useAppDispatch();
   const { gameID } = useAppSelector((state) => state.authPopup);
   const { members } = useAppSelector((state) => state.members);
+  const { user } = useAppSelector((state) => state.authPopup);
 
   const { kickPopupVisible, kickedMemberId } = useAppSelector(
     (state) => state.kickPopup
@@ -21,7 +22,14 @@ const KickPopup: FC = () => {
   };
 
   const handelKickMemberClick = () => {
-    sendToServer('user_kicked', { gameID, user: { id: kickedMemberId } });
+    if (user.isAdmin) {
+      sendToServer('user_kicked', { gameID, user: { id: kickedMemberId } });
+      dispatch(closeKickPopupAction());
+    } else
+      sendToServer('increment_user_kicked_counter', {
+        gameID,
+        user: { id: kickedMemberId },
+      });
     dispatch(closeKickPopupAction());
   };
 

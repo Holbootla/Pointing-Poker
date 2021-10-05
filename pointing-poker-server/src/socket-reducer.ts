@@ -21,7 +21,8 @@ import {
   stopRound,
   setVote,
   startRound,
-  updateIssues
+  updateIssues,
+  incrementKickCounter,
 } from './mongo';
 
 export async function handleAction(
@@ -55,18 +56,6 @@ export async function handleAction(
     });
   }
 
-  // if (action.type === 'game_created') {
-  //   socket.join(gameID);
-  //   const newStateFromDb = await createState(gameID, [action.payload.user]);
-  //   }
-  //   io.to(gameID).emit('UPDATE_CLIENT', {
-  //     type: 'members/setMembersAction',
-  //     payload: {
-  //       members: newStateFromDb.users,
-  //     },
-  //   });
-  // }
-
   if (action.type === 'user_connected') {
 
     socket.join(gameID);
@@ -89,34 +78,6 @@ export async function handleAction(
     });
   }
 
-  // if (action.type === 'user_connected') {
-  //   socket.join(gameID);
-  //   const newStateFromDb = await addUser(gameID, action.payload.user);
-  //   io.to(gameID).emit('UPDATE_CLIENT', {
-  //     type: 'members/setMembersAction',
-  //     payload: {
-  //       members: newStateFromDb.users,
-  //     },
-  //   });
-  // }
-
-  // if (action.type === 'user_avatar_uploaded') {
-  //   const newStateFromDb = await avatarUpload(
-  //     gameID,
-  //     action.payload.memberId,
-  //     action.payload.avatar.name,
-  //     action.payload.avatar.data
-  //   );
-
-  //   io.to(gameID).emit('UPDATE_CLIENT', {
-  //     type: 'members/setMembersAction',
-  //     payload: {
-  //       members: newStateFromDb.users,
-  //     },
-  //   });
-  // };
-
-
   if (action.type === 'user_kicked') {
 
     const newStateFromDb = await kickUser(gameID, action.payload.user.id);
@@ -129,7 +90,21 @@ export async function handleAction(
     });
     io.to(action.payload.user.id).emit('leave_room');
     io.to(action.payload.user.id).socketsLeave(gameID);
-  }
+  };
+
+
+  if (action.type === 'increment_user_kicked_counter') {
+    const newStateFromDb = await incrementKickCounter(gameID, action.payload.user.id);
+
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'members/setMembersAction',
+      payload: {
+        members: newStateFromDb.users,
+      },
+    });
+    io.to(action.payload.user.id).emit('leave_room');
+    io.to(action.payload.user.id).socketsLeave(gameID);
+  };
 
   /*=====================================================================*/
   /*                               GAME NAME                             */

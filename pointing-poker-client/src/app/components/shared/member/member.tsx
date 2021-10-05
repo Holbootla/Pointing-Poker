@@ -37,7 +37,8 @@ function Member({
 
   return (
     <Toast onClose={showKickPopup} className="d-inline-block m-1 member">
-      <Toast.Header closeButton={id !== user.id && user.isAdmin}>
+      <Toast.Header closeButton={id !== user.id}>
+        {/* <Toast.Header closeButton={id !== user.id}> */}
         {avatar ? (
           <Image src={avatar} roundedCircle className="avatar me-2" />
         ) : (

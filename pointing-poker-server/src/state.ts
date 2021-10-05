@@ -7,6 +7,7 @@ export interface IUser {
   role: 'observer' | 'player';
   avatar?: string,
   voteResult?: string;
+  kickCounter: number;
 }
 
 export interface IIssue {

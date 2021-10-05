@@ -12,6 +12,7 @@ interface AuthPopupState {
     isAdmin: boolean;
     role: 'observer' | 'player';
     voteResult?: string;
+    kickCounter: number;
   };
 }
 
@@ -27,6 +28,7 @@ const initialState: AuthPopupState = {
     isAdmin: false,
     role: 'player',
     voteResult: '',
+    kickCounter: 0,
   },
 };
 
@@ -48,6 +50,7 @@ export const authPopupSlice = createSlice({
         isAdmin: false,
         role: 'player',
         voteResult: '',
+        kickCounter: 0,
       };
     },
     setGameIDAction: (state, action) => {

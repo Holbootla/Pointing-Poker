@@ -9,6 +9,7 @@ export interface Member {
   isAdmin: boolean;
   role: 'observer' | 'player';
   avatar: string;
+  kickCounter: number;
   voteResult: string;
 }
 

@@ -144,11 +144,13 @@ export async function handleAction(
   }
 
   if (action.type === 'increment_user_kicked_counter') {
-    const newStateFromDb = await incrementKickCounter(
-      gameID,
-      action.payload.user.id
-    );
+    const newStateFromDb = await incrementKickCounter(gameID, action.payload.user.id);
+    const userIsKicked = newStateFromDb.users.some((item) => item.id === action.payload.user.id);
 
+    if (!userIsKicked) {
+      io.to(action.payload.user.id).emit('leave_room');
+      io.to(action.payload.user.id).socketsLeave(gameID);
+    }
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
       payload: {
@@ -156,12 +158,7 @@ export async function handleAction(
         id: action.payload.user.id,
       },
     });
-    io.to(action.payload.user.id).emit('leave_room');
-    io.to(action.payload.user.id).socketsLeave(gameID);
-    io.to(action.payload.user.id).emit('UPDATE_CLIENT', {
-      type: 'authPopup/showAlertKickedAction',
-    });
-  }
+  };
 
   /*=====================================================================*/
   /*                               GAME NAME                             */

@@ -514,23 +514,18 @@ export const incrementKickCounter = async (
   const collection = client.db(dbName).collection(collectionName);
   const state = await collection.findOne({ gameID });
   const user = state.users.find((item) => item.id === userID);
+  let result;
   if (user)
-    if (user.kickCounter >= 2) {
-      await collection.updateOne(
-        { gameID },
-        { $pull: { users: { id: userID } } }
-      );
-    } else if (user.kickCounter <= 1) {
+    if (user.kickCounter >= Math.floor((state.users.length - 1) / 2)) {
+      await collection.updateOne({ gameID }, { $pull: { users: { id: userID } } });
+      result = await collection.findOne({ gameID });
+    } else if (user.kickCounter < Math.floor((state.users.length - 1) / 2)) {
       const newValue = user.kickCounter + 1;
-      const newUsers = state.users.map((user) =>
-        user.id === userID ? { ...user, kickCounter: newValue } : user
-      );
-      await collection.updateOne(
-        { gameID },
-        { $set: { game: gameID, users: newUsers } }
-      );
+      const newUsers = state.users.map((user) => (user.id === userID) ? { ...user, kickCounter: newValue } : user);
+      await collection.updateOne({ gameID }, { $set: { game: gameID, users: newUsers } });
+      result = await collection.findOne({ gameID });
     }
-  const result = await collection.findOne({ gameID });
+  result = await collection.findOne({ gameID });
   client.close();
   return result as StateDocument;
 };

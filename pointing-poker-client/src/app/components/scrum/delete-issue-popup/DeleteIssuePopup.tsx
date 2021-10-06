@@ -38,7 +38,7 @@ const DeleteIssuePopup: FC = () => {
         <Modal.Title>Delete issue?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Are you really want to remove the issue{' '}
+        Do you really want to remove the issue{' '}
         <span className="issue-title-delete">{issueToDelete?.title} </span>from
         spring
       </Modal.Body>

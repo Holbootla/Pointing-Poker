@@ -153,6 +153,7 @@ export async function handleAction(
       type: 'members/setMembersAction',
       payload: {
         members: newStateFromDb.users,
+        id: action.payload.user.id,
       },
     });
     io.to(action.payload.user.id).emit('leave_room');

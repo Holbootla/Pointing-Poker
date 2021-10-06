@@ -4,11 +4,14 @@ import type { RootState } from '../store';
 interface KickPopupState {
   kickPopupVisible: boolean;
   kickedMemberId: string;
+  membersKickedByCurrentUser: string[];
 }
 
 const initialState: KickPopupState = {
   kickPopupVisible: false,
   kickedMemberId: '',
+  membersKickedByCurrentUser: [],
+
 };
 
 export const kickPopupSlice = createSlice({
@@ -18,12 +21,12 @@ export const kickPopupSlice = createSlice({
     showKickPopupAction: (state, action: PayloadAction<string>) => {
       state.kickPopupVisible = true;
       state.kickedMemberId = action.payload;
+      state.membersKickedByCurrentUser.push(action.payload)
     },
     closeKickPopupAction: (state) => {
       state.kickPopupVisible = false;
       state.kickedMemberId = '';
     },
-
   },
 });
 

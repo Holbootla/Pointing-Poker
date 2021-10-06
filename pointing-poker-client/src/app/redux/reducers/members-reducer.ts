@@ -9,16 +9,18 @@ export interface Member {
   isAdmin: boolean;
   role: 'observer' | 'player';
   avatar: string;
-  kickCounter: number;
+  kickCounter?: number;
   voteResult: string;
 }
 
 interface MembersState {
   members: Member[];
+  kickedMembersIds: string[];
 }
 
 const initialState: MembersState = {
   members: [],
+  kickedMembersIds: [],
 };
 
 export const membersSlice = createSlice({
@@ -31,6 +33,8 @@ export const membersSlice = createSlice({
     },
     setMembersAction: (state, action) => {
       state.members = action.payload.members;
+      if (action.payload.id)
+        state.kickedMembersIds.push(action.payload.id)
       console.log(action.payload.members, 'members');
     },
     kickMemberAction: (state, action) => {

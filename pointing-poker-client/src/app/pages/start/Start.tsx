@@ -1,5 +1,6 @@
 import { ChangeEvent, FormEvent, useEffect } from 'react';
 import {
+  Alert,
   Button,
   Col,
   Container,
@@ -11,6 +12,7 @@ import {
 import { useLocation } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
+  closeAlertAction,
   closeAuthPopupAction,
   setGameIDAction,
   setIsAdminAction,
@@ -22,7 +24,9 @@ import { socket } from '../../socket/socket-context';
 import AuthPopup from './AuthPopup';
 
 function Start(): JSX.Element {
-  const { gameID } = useAppSelector((state) => state.authPopup);
+  const { gameID, alertGameExistVisible } = useAppSelector(
+    (state) => state.authPopup
+  );
   const location = useLocation();
   const locationID = location.pathname.split('/').splice(-1, 1);
 
@@ -117,6 +121,15 @@ function Start(): JSX.Element {
         </Col>
       </Row>
       <AuthPopup />
+      <Alert
+        variant="danger"
+        show={alertGameExistVisible}
+        onClose={() => dispatch(closeAlertAction())}
+        dismissible
+      >
+        <Alert.Heading>Game is not exist!</Alert.Heading>
+        <p>Please, enter the correct game ID.</p>
+      </Alert>
     </Container>
   );
 }

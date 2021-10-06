@@ -448,6 +448,28 @@ export const changeVote = async (
   return result as StateDocument;
 };
 
+
+export const incrementKickCounter = async (
+  gameID: string,
+  userID: string,
+): Promise<StateDocument> => {
+  const client = await MongoClient.connect(url);
+  const collection = client.db(dbName).collection(collectionName);
+  const state = await collection.findOne({ gameID });
+  const user = state.users.find((item) => item.id === userID);
+  if (user)
+    if (user.kickCounter >= 2) {
+      await collection.updateOne({ gameID }, { $pull: { users: { id: userID } } });
+    } else if (user.kickCounter <= 1) {
+      const newValue = user.kickCounter + 1;
+      const newUsers = state.users.map((user) => (user.id === userID) ? { ...user, kickCounter: newValue } : user);
+      await collection.updateOne({ gameID }, { $set: { game: gameID, users: newUsers } });
+    }
+  const result = await collection.findOne({ gameID });
+  client.close();
+  return result as StateDocument;
+};
+
 export const setMessages = async (
   gameID: string,
   clientMessage: IChatMessage,

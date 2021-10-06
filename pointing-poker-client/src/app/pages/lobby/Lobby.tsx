@@ -14,6 +14,7 @@ import { setGameSettings } from '../../redux/reducers/game-settings-reducer';
 import Chat from '../../components/shared/chat/chat';
 import OwnCardValuePopup from './SetOwnCardPopup';
 import Member from '../../components/shared/member/member';
+import { closeSpinnerAction } from '../../redux/reducers/spinner-reducer';
 
 const Lobby: FC = () => {
   const dispatch = useAppDispatch();
@@ -39,6 +40,7 @@ const Lobby: FC = () => {
 
     socket.on('leave_room', () => {
       history.push(``);
+      dispatch(closeSpinnerAction());
     });
   }, []);
 
@@ -88,6 +90,7 @@ const Lobby: FC = () => {
               jobPosition={admin.jobPosition}
               avatar={admin.avatar}
               isGame={false}
+              role={admin.role}
             />
           </>
         )}
@@ -159,6 +162,7 @@ const Lobby: FC = () => {
               jobPosition={admin.jobPosition}
               avatar={admin.avatar}
               isGame={false}
+              role={admin.role}
             />
           </>
         )}

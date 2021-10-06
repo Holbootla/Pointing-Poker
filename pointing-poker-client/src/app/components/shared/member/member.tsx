@@ -10,6 +10,7 @@ interface MemberProps {
   jobPosition: string;
   avatar: string;
   isGame: boolean;
+  role: 'player' | 'observer';
   roundStatus?: 'in progress' | 'awaiting';
   voteResult?: string;
 }
@@ -21,6 +22,7 @@ function Member({
   jobPosition,
   avatar,
   isGame,
+  role,
   roundStatus,
   voteResult,
 }: MemberProps): JSX.Element {
@@ -36,8 +38,14 @@ function Member({
   const showKickPopup = () => dispatch(showKickPopupAction(String(id)));
 
   return (
-    <Toast onClose={showKickPopup} className="d-inline-block m-1 member">
-      <Toast.Header closeButton={id !== user.id && user.isAdmin}>
+    <Toast
+      onClose={showKickPopup}
+      className={`d-inline-block m-1 member ${
+        role === 'observer' && 'opacity-50'
+      }`}
+    >
+      <Toast.Header closeButton={id !== user.id}>
+        {/* <Toast.Header closeButton={id !== user.id}> */}
         {avatar ? (
           <Image src={avatar} roundedCircle className="avatar me-2" />
         ) : (
@@ -54,9 +62,16 @@ function Member({
         {isGame ? (
           <div className="d-flex justify-content-between w-100">
             <small className="text-warning">
-              {user.isAdmin && voteResult}
-              {!user.isAdmin && roundStatus === 'in progress' && 'Thinking...'}
-              {!user.isAdmin && roundStatus === 'awaiting' && voteResult}
+              {role === 'observer' && 'Observer'}
+              {user.isAdmin && role === 'player' && voteResult}
+              {!user.isAdmin &&
+                roundStatus === 'in progress' &&
+                role === 'player' &&
+                'Thinking...'}
+              {!user.isAdmin &&
+                roundStatus === 'awaiting' &&
+                role === 'player' &&
+                voteResult}
             </small>
             <small className="text-muted">{jobPosition}</small>
           </div>

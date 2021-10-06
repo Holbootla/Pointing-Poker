@@ -62,7 +62,25 @@ io.on('connection', (socket: Socket) => {
 //   );
 // });
 
-server.listen(3001, () => {
+function normalizePort(val) {
+  const port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+const port = normalizePort(process.env.PORT || '3001');
+
+server.listen(port, () => {
   console.log(`Server started on port 3001`);
 });
 

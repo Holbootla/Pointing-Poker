@@ -58,6 +58,7 @@ function Game(): JSX.Element {
   const { isAdmin, role, id } = useAppSelector((store) => store.authPopup.user);
   const { gameID } = useParams<{ gameID: string }>();
   const [showAlert, setShowAlert] = useState(false);
+  const [chosenCard, setChosenCard] = useState('');
   const thisMemberId = id;
   isVotingFinished = cardsAutoTurn && votes.length === playersQuantity;
 
@@ -119,6 +120,7 @@ function Game(): JSX.Element {
   };
 
   const finishRound = () => {
+    setChosenCard('');
     sendToServer('finish_round', { gameID });
   };
 
@@ -131,6 +133,7 @@ function Game(): JSX.Element {
   };
 
   const cardClickHandler = (cardValue: string): void => {
+    setChosenCard(cardValue);
     if (roundStatus === 'in progress') {
       sendToServer('set_vote', {
         gameID,
@@ -153,12 +156,20 @@ function Game(): JSX.Element {
     issueId: number | string,
     status: IssueStatus
   ): void => {
-    if (roundStatus === 'awaiting' && status === 'awaiting' && isAdmin) {
+    if (roundStatus === 'awaiting' && status === 'awaiting' && isAdmin && !showRestartControls) {
       const newCurrentIssue = issues.find((issue) => issue.id === issueId);
       sendToServer('set_current_issue', {
         gameID,
         currentIssue: { ...newCurrentIssue, status: 'current' },
       });
+    }
+  };
+
+  const leaveGame = () => {
+    if (isAdmin) {
+      sendToServer('game_canceled_admin', { gameID });
+    } else {
+      sendToServer('game_canceled', { gameID, memberId: thisMemberId });
     }
   };
 
@@ -255,6 +266,13 @@ function Game(): JSX.Element {
                   </>
                 )}
                 <Chat size={undefined} />
+                <Button
+                  variant="outline-danger"
+                  className="m-1"
+                  onClick={() => leaveGame()}
+                >
+                  Cancel game
+                </Button>
               </Col>
             </Row>
             <Row className="mb-5">
@@ -350,9 +368,13 @@ function Game(): JSX.Element {
                 onKeyPress={() => cardClickHandler(cardValue)}
               >
                 {cardValue === 'Break' ? (
-                  <CardBreak key="cardBreack" />
+                  <div className={(chosenCard === cardValue) ? 'game__card_chosen' : 'game__card'}>
+                    <CardBreak key="cardBreack" />
+                  </div>
                 ) : (
-                  <CardFace value={cardValue} type={scoreTypeShort} />
+                  <div className={(chosenCard === cardValue) ? 'game__card_chosen' : 'game__card'}>
+                    <CardFace value={cardValue} type={scoreTypeShort} />
+                  </div>
                 )}
               </div>
             </Col>

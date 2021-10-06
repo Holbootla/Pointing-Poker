@@ -362,7 +362,6 @@ export const setVote = async (
   return result as StateDocument;
 };
 
-
 export const incrementKickCounter = async (
   gameID: string,
   userID: string,

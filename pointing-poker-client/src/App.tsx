@@ -11,6 +11,7 @@ import Header from './app/components/shared/header/header';
 import Footer from './app/components/shared/footer/footer';
 import Loader from './app/components/shared/loader/loader';
 import { closeSpinnerAction } from './app/redux/reducers/spinner-reducer';
+import AdmitPopup from './app/components/shared/admit-popup/admit-popup';
 
 function App(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ function App(): JSX.Element {
   return (
     <Router>
       <Loader />
+      <AdmitPopup />
       <Header />
       <Switch>
         <Route path="/lobby">

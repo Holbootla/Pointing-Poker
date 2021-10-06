@@ -61,7 +61,7 @@ const Result = (): JSX.Element => {
               <td>{round.issue.title}</td>
               <td>{round.issue.link}</td>
               <td>
-                {round.averageValues[round.averageValues.length - 1].value}
+                {(round.averageValues.length > 0) && round.averageValues[round.averageValues.length - 1].value}
               </td>
               <td>{scoreTypeShort}</td>
             </tr>

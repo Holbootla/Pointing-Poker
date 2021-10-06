@@ -8,6 +8,7 @@ export interface Issue {
   link: string;
   priority: string;
   status: IssueStatus;
+  score: string;
 }
 
 interface IssueState {
@@ -24,37 +25,9 @@ const initialState: IssueState = {
     link: '',
     priority: 'low',
     status: 'awaiting',
+    score: '-',
   },
-  issues: [
-    // {
-    //   id: 0,
-    //   title: 'Issue Title',
-    //   link: 'issue link',
-    //   priority: 'low',
-    //   status: 'awaiting',
-    // },
-    // {
-    //   id: 1,
-    //   title: 'Issue Title',
-    //   link: 'issue link',
-    //   priority: 'low',
-    //   status: 'awaiting',
-    // },
-    // {
-    //   id: 2,
-    //   title: 'Issue Title',
-    //   link: 'issue link',
-    //   priority: 'low',
-    //   status: 'awaiting',
-    // },
-    // {
-    //   id: 3,
-    //   title: 'Issue Title',
-    //   link: 'issue link',
-    //   priority: 'low',
-    //   status: 'awaiting',
-    // }
-  ],
+  issues: [],
 };
 
 export const issuesSlice = createSlice({
@@ -109,12 +82,29 @@ export const issuesSlice = createSlice({
     updateIssuesAction: (state, action: PayloadAction<Issue[]>) => {
       state.issues = action.payload;
     },
-
+    setScoreAction: (state, action) => {
+      const ind = state.issues.findIndex(
+        (issue) => issue.id === action.payload.id
+      );
+      console.log(ind);
+      state.issues[ind].score = action.payload.score;
+    },
   },
-
 });
 
-export const { showIssuePopupAction, closeIssuePopupAction, addIssueAction, setTitleAction, setLinkAction, setPriorityAction,/* setIssueStatusAction, */ setIdAction, deleteIssueAction, addIssueToEditAction, editIssue, updateIssuesAction } =
-  issuesSlice.actions;
+export const {
+  showIssuePopupAction,
+  closeIssuePopupAction,
+  addIssueAction,
+  setTitleAction,
+  setLinkAction,
+  setPriorityAction,
+  /* setIssueStatusAction, */ setIdAction,
+  deleteIssueAction,
+  addIssueToEditAction,
+  editIssue,
+  updateIssuesAction,
+  setScoreAction,
+} = issuesSlice.actions;
 
 export default issuesSlice.reducer;

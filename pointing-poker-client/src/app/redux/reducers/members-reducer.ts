@@ -33,9 +33,7 @@ export const membersSlice = createSlice({
     },
     setMembersAction: (state, action) => {
       state.members = action.payload.members;
-      if (action.payload.id)
-        state.kickedMembersIds.push(action.payload.id)
-      console.log(action.payload.members, 'members');
+      if (action.payload.id) state.kickedMembersIds.push(action.payload.id);
     },
     kickMemberAction: (state, action) => {
       state.members = state.members.filter(

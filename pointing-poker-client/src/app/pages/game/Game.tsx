@@ -14,10 +14,17 @@ import GameName from '../../components/shared/game-name/game-name';
 import KickPopup from '../../components/scrum/kick-popup/KickPopup';
 import Member from '../../components/shared/member/member';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { addVoteAction, gameState, setCurrentTimer } from '../../redux/reducers/game-reducer';
+import {
+  addVoteAction,
+  gameState,
+  setCurrentTimer,
+} from '../../redux/reducers/game-reducer';
 import { membersState } from '../../redux/reducers/members-reducer';
 import './game.scss';
-import { IssueStatus } from '../../redux/reducers/issues-reducer';
+import {
+  IssueStatus,
+  setScoreAction,
+} from '../../redux/reducers/issues-reducer';
 import { sendToServer, socket } from '../../socket/socket-context';
 import NewIssue from '../../components/scrum/new-issue/new-issue';
 import Chat from '../../components/shared/chat/chat';
@@ -32,7 +39,9 @@ function Game(): JSX.Element {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const { members } = useAppSelector(membersState);
-  const { timerOn, timerMinutes, timerSeconds, cardChange } = useAppSelector((state) => state.gameSettings)
+  const { timerOn, timerMinutes, timerSeconds, cardChange } = useAppSelector(
+    (state) => state.gameSettings
+  );
   const admin = members.find((member) => member.isAdmin === true);
   const { minutes, seconds } = useAppSelector(gameState).currentTimer;
   const { showRestartControls } = useAppSelector(gameState);
@@ -96,7 +105,12 @@ function Game(): JSX.Element {
   const restartRound = (): void => {
     sendToServer('restart_round', { gameID });
     dispatch(addVoteAction({ votes: [] }));
-    dispatch(setCurrentTimer({ minutes: Number(timerMinutes), seconds: Number(timerSeconds) }));
+    dispatch(
+      setCurrentTimer({
+        minutes: Number(timerMinutes),
+        seconds: Number(timerSeconds),
+      })
+    );
     startTimer();
     willRoundStopped = true;
   };
@@ -110,6 +124,7 @@ function Game(): JSX.Element {
       stopRound();
     }
     sendToServer('stop_game', { gameID });
+    sendToServer('issues_updated', { gameID, issuesUpdated: issues });
   };
 
   const cardClickHandler = (cardValue: string): void => {
@@ -186,37 +201,39 @@ function Game(): JSX.Element {
                 )}
               </Col>
               <Col>
-                {timerOn && (<div className="game__timer">
-                  <div className="game__timer-minutes">{minutes}</div>
-                  <div className="game__timer-dividor">:</div>
-                  <div className="game__timer-minutes">
-                    {seconds > 9 ? seconds : `0${seconds}`}
+                {timerOn && (
+                  <div className="game__timer">
+                    <div className="game__timer-minutes">{minutes}</div>
+                    <div className="game__timer-dividor">:</div>
+                    <div className="game__timer-minutes">
+                      {seconds > 9 ? seconds : `0${seconds}`}
+                    </div>
                   </div>
-                </div>)}
+                )}
               </Col>
               {isAdmin && (
                 <Col>
                   <h3>Controls</h3>
-                  {roundStatus === 'awaiting' && !showRestartControls &&(
-                  <Button
-                    variant="success"
-                    className="m-1"
-                    onClick={() => startRound()}
-                  >
-                    Start&nbsp;round
-                  </Button>
+                  {roundStatus === 'awaiting' && !showRestartControls && (
+                    <Button
+                      variant="success"
+                      className="m-1"
+                      onClick={() => startRound()}
+                    >
+                      Start&nbsp;round
+                    </Button>
                   )}
-                  {showRestartControls &&(
-                  <Button
-                    variant="success"
-                    className="m-1"
-                    onClick={() => restartRound()}
-                  >
-                    Restart&nbsp;round
-                  </Button>
+                  {showRestartControls && (
+                    <Button
+                      variant="success"
+                      className="m-1"
+                      onClick={() => restartRound()}
+                    >
+                      Restart&nbsp;round
+                    </Button>
                   )}
-                    <>
-                      {showRestartControls && (
+                  <>
+                    {showRestartControls && (
                       <Button
                         variant="primary"
                         className="m-1"
@@ -224,16 +241,16 @@ function Game(): JSX.Element {
                       >
                         Next&nbsp;issue
                       </Button>
-                      )}
-                      <Button
-                        variant="danger"
-                        className="m-1"
-                        onClick={() => stopGame()}
-                      >
-                        Stop&nbsp;game
-                      </Button>
-                      <Chat size={undefined} />
-                    </>
+                    )}
+                    <Button
+                      variant="danger"
+                      className="m-1"
+                      onClick={() => stopGame()}
+                    >
+                      Stop&nbsp;game
+                    </Button>
+                    <Chat size={undefined} />
+                  </>
                 </Col>
               )}
             </Row>
@@ -242,24 +259,17 @@ function Game(): JSX.Element {
                 <h3>Issues</h3>
                 <ToastContainer>
                   {issues.map((issue) => (
-                    <div
+                    <IssueLobby
                       key={issue.id}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => issueClickHandler(issue.id, issue.status)}
-                      onKeyPress={() =>
-                        issueClickHandler(issue.id, issue.status)
-                      }
-                    >
-                      <IssueLobby
-                        id={issue.id}
-                        mode="game"
-                        title={issue.title}
-                        link={issue.link}
-                        status={issue.status}
-                        priority={issue.priority}
-                      />
-                    </div>
+                      id={issue.id}
+                      mode="game"
+                      title={issue.title}
+                      link={issue.link}
+                      status={issue.status}
+                      priority={issue.priority}
+                      issueClickHandler={issueClickHandler}
+                      score={issue.score}
+                    />
                   ))}
                 </ToastContainer>
                 {isAdmin && <NewIssue />}

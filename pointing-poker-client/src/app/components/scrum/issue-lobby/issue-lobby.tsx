@@ -1,7 +1,11 @@
-import { FC } from 'react';
-import { Toast } from 'react-bootstrap';
+import { ChangeEvent, FC } from 'react';
+import { Button, Form, Toast } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { addIssueToEditAction } from '../../../redux/reducers/issues-reducer';
+import {
+  addIssueToEditAction,
+  IssueStatus,
+  setScoreAction,
+} from '../../../redux/reducers/issues-reducer';
 import {
   saveIdIssueToDeleteAction,
   showDeleteIssuePopupAction,
@@ -16,15 +20,31 @@ interface Props {
   id: number | string;
   title: string;
   link: string;
-  status: string;
+  status: IssueStatus;
   priority: string;
   mode: 'lobby' | 'game' | 'result';
+  issueClickHandler?: (issueId: number | string, status: IssueStatus) => void;
+  score: string;
 }
 
-const IssueLobby: FC<Props> = ({ id, mode, title, link, status, priority }) => {
+const IssueLobby: FC<Props> = ({
+  id,
+  mode,
+  title,
+  link,
+  status,
+  priority,
+  issueClickHandler,
+  score,
+}) => {
   const dispatch = useAppDispatch();
   const { issues } = useAppSelector((state) => state.issues);
+  const { isAdmin } = useAppSelector((state) => state.authPopup.user);
   const currentIssue = issues.find((issue) => issue.id === id);
+
+  const setIssueScore = (e: ChangeEvent<HTMLInputElement>) => {
+    dispatch(setScoreAction({ id, score: e.target.value }));
+  };
 
   const showDeleteIssuePopup = () => {
     dispatch(showDeleteIssuePopupAction());
@@ -108,6 +128,41 @@ const IssueLobby: FC<Props> = ({ id, mode, title, link, status, priority }) => {
             >
               {priority}
             </small>
+
+            {isAdmin && (
+              <>
+                <hr />
+                <div className="d-flex justify-content-between">
+                  <div>
+                    {status === 'awaiting' && (
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() =>
+                          issueClickHandler && issueClickHandler(id, status)
+                        }
+                        onKeyPress={() =>
+                          issueClickHandler && issueClickHandler(id, status)
+                        }
+                      >
+                        Play this
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className="self-align-end">
+                    SCORE:{' '}
+                    <Form.Control
+                      size="sm"
+                      type="text"
+                      placeholder="score"
+                      className="score-width d-inline-block"
+                      onChange={setIssueScore}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           </Toast.Body>
         </Toast>
       );
@@ -127,6 +182,8 @@ const IssueLobby: FC<Props> = ({ id, mode, title, link, status, priority }) => {
               </a>
             </span>
             <small className="align-self-end text-muted">{priority}</small>
+            <hr />
+            <div className="d-flex justify-content-end">SCORE: {score}</div>
           </Toast.Body>
         </Toast>
       );

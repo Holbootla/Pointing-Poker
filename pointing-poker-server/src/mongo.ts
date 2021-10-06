@@ -122,7 +122,7 @@ export const avatarUpload = async (
   });
   writer.write(avatarData);
   writer.end();
-  const avatar = `http://localhost:3001/temp/${fileName}`;
+  const avatar = `https://blooming-dusk-20813.herokuapp.com/temp/${fileName}`;
   const newUsers = state.users.map((user) =>
     user.id === userID ? { ...user, avatar } : user
   );

@@ -54,7 +54,7 @@ const Lobby: FC = () => {
     });
   }, []);
 
-  const path = 'http://localhost:3000/start/';
+  const path = 'https://pointing-poker-88.netlify.app/start/';
   const link = path + gameID;
   const copyGameIdButtonHandler = () => navigator.clipboard.writeText(link);
 

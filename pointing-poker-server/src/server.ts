@@ -16,7 +16,7 @@ const options = {
   path: '/api/',
   maxHttpBufferSize: 10 * 1024 * 1024, // increase message size to 10mb to handle file upload
   cors: {
-    origin: 'http://localhost:3000',
+    origin: 'https://pointing-poker-88.netlify.app',
     methods: ['GET', 'POST'],
   },
 };

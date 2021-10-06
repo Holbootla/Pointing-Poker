@@ -107,6 +107,7 @@ function Game(): JSX.Element {
   };
 
   const restartRound = (): void => {
+    setChosenCard('');
     sendToServer('restart_round', { gameID });
     dispatch(addVoteAction({ votes: [] }));
     dispatch(
@@ -262,7 +263,7 @@ function Game(): JSX.Element {
                         className="m-1"
                         onClick={() => finishRound()}
                       >
-                        Finish&nbsp;Round
+                        next&nbsp;Round
                       </Button>
                     )}
                     <Button
@@ -270,7 +271,7 @@ function Game(): JSX.Element {
                       className="m-1"
                       onClick={() => stopGame()}
                     >
-                      Stop&nbsp;game
+                      Finish&nbsp;game
                     </Button>
                   </>
                 )}

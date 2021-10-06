@@ -23,6 +23,7 @@ function Members(): JSX.Element {
               isAdmin={member.isAdmin}
               isGame={false}
               kickCounter={member.kickCounter}
+              role={member.role}
             />
           ))}
         </div>

@@ -11,6 +11,7 @@ interface MemberProps {
   avatar: string;
   isGame: boolean;
   isAdmin: boolean;
+  role: 'player' | 'observer';
   roundStatus?: 'in progress' | 'awaiting';
   voteResult?: string;
   kickCounter?: number;
@@ -24,6 +25,7 @@ function Member({
   avatar,
   isGame,
   isAdmin,
+  role,
   roundStatus,
   voteResult,
   kickCounter,
@@ -49,7 +51,12 @@ function Member({
   const kickNumberResult = () => Boolean(kickCounter);
 
   return (
-    <Toast onClose={showKickPopup} className="d-inline-block m-1 member">
+    <Toast
+      onClose={showKickPopup}
+      className={`d-inline-block m-1 member ${
+        role === 'observer' && 'opacity-50'
+      }`}
+    >
       <Toast.Header
         closeButton={
           id !== user.id && !isAdmin && kickedMemberByUser() !== true
@@ -71,9 +78,16 @@ function Member({
         {isGame ? (
           <div className="d-flex justify-content-between w-100">
             <small className="text-warning">
-              {user.isAdmin && voteResult}
-              {!user.isAdmin && roundStatus === 'in progress' && 'Thinking...'}
-              {!user.isAdmin && roundStatus === 'awaiting' && voteResult}
+              {role === 'observer' && 'Observer'}
+              {user.isAdmin && role === 'player' && voteResult}
+              {!user.isAdmin &&
+                roundStatus === 'in progress' &&
+                role === 'player' &&
+                'Thinking...'}
+              {!user.isAdmin &&
+                roundStatus === 'awaiting' &&
+                role === 'player' &&
+                voteResult}
             </small>
             <small className="text-muted">{jobPosition}</small>
           </div>

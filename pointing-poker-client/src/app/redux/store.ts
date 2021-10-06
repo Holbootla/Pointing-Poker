@@ -1,5 +1,6 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import { addCardValuesSlice } from './reducers/add-card-reducer';
+import { admitSlice } from './reducers/admit-reducer';
 import { authPopupSlice } from './reducers/auth-reducer';
 import { chatSlice } from './reducers/chat-reducer';
 import { customCoverSlice } from './reducers/custom-cover-reducer';
@@ -30,6 +31,7 @@ export const store = configureStore({
     game: gameSlice.reducer,
     chat: chatSlice.reducer,
     spinner: spinnerSlice.reducer,
+    admit: admitSlice.reducer,
   },
 });
 

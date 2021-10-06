@@ -22,6 +22,8 @@ import {
   timerMinutesAction,
   timerOnAction,
   timerSecondsAction,
+  allowEnterInGameAction,
+  cardsAutoTurnAction,
 } from '../../../redux/reducers/game-settings-reducer';
 import CardBreak from '../../shared/cards/card-break';
 import CardFace from '../../shared/cards/card-face';
@@ -34,6 +36,8 @@ function GameSettings(): JSX.Element {
   const {
     cardChange,
     timerOn,
+    allowEnterInGame,
+    cardsAutoTurn,
     scoreType,
     scoreTypeShort,
     timerMinutes,
@@ -54,6 +58,14 @@ function GameSettings(): JSX.Element {
 
   const timerOnCheckboxHandler = () => {
     dispatch(timerOnAction());
+  };
+
+  const allowEnterInGameHandler = () => {
+    dispatch(allowEnterInGameAction());
+  };
+
+  const cardAutoTurnHandler = () => {
+    dispatch(cardsAutoTurnAction());
   };
 
   function findCardValues(type: string): string[] | null {
@@ -120,6 +132,22 @@ function GameSettings(): JSX.Element {
           label="Timer is needed"
           checked={timerOn}
           onChange={timerOnCheckboxHandler}
+        />
+        <Form.Check
+          id="allowEnterInGame"
+          type="switch"
+          className="settings-label"
+          label="Allow players enter started game without admin approval"
+          checked={allowEnterInGame}
+          onChange={allowEnterInGameHandler}
+        />
+        <Form.Check
+          id="cardAutoTurn"
+          type="switch"
+          className="settings-label"
+          label="The cards are turned over when everyone has voted"
+          checked={cardsAutoTurn}
+          onChange={cardAutoTurnHandler}
         />
         <div className="select-timer-block">
           <Form.Group className="mb-3">

@@ -23,38 +23,39 @@ const Result = (): JSX.Element => {
     <div className="container">
       <GameName />
       <div className="result">
-        {/* {statistics.map((round) => (
-          <div key={round.issue.id}>
-            <IssueLobby
-              mode="result"
-              id={round.issue.id}
-              title={round.issue.title}
-              link={round.issue.link}
-              status={round.issue.status}
-              priority={round.issue.priority}
-            />
-            <div className="result__cards">
-              {round.averageValues.map((averageValue) => (
-                <div className="result__card" key={averageValue.value}>
-                  <CardFace value={averageValue.value} type={scoreTypeShort} />
-                  <div className="result__votes">{averageValue.percents}%</div>
+        {statistics.map((round) => {
+          const issue = issues.find((element) => element.id === round.issue.id);
+          if (issue) {
+            return (
+              <div key={issue.id}>
+                <IssueLobby
+                  mode="result"
+                  id={issue.id}
+                  title={issue.title}
+                  link={issue.link}
+                  status={issue.status}
+                  priority={issue.priority}
+                  score={issue.score}
+                />
+                <div className="result__cards">
+                  {round.averageValues.map((averageValue) => (
+                    <div className="result__card" key={averageValue.value}>
+                      <CardFace
+                        value={averageValue.value}
+                        type={scoreTypeShort}
+                      />
+                      <div className="result__votes">
+                        {averageValue.percents}%
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        ))} */}
-        {issues.map((issue) => (
-          <IssueLobby
-            key={issue.id}
-            mode="result"
-            id={issue.id}
-            title={issue.title}
-            link={issue.link}
-            status={issue.status}
-            priority={issue.priority}
-            score={issue.score}
-          />
-        ))}
+              </div>
+            );
+          }
+          return null;
+        })}
+        <hr />
       </div>
       <Button variant="primary" className="mt-5" onClick={downloadResults}>
         Download results

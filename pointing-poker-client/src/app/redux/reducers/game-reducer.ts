@@ -22,15 +22,21 @@ interface Vote {
 interface GameState {
   currentIssue: Issue;
   showRestartControls: boolean;
-  currentTimer: { minutes: number, seconds: number };
+  currentTimer: { minutes: number; seconds: number };
   roundStatus: 'in progress' | 'awaiting';
   votes: Vote[];
   averageValues: AverageValue[];
-  statistics: { issue: Issue, votes: Vote[], averageValues: AverageValue[] }[];
+  statistics: { issue: Issue; votes: Vote[]; averageValues: AverageValue[] }[];
 }
 
 const initialState: GameState = {
-  currentIssue: { id: '', title: '', link: '', priority: 'low', status: 'awaiting'},
+  currentIssue: {
+    id: '',
+    title: '',
+    link: '',
+    priority: 'low',
+    status: 'awaiting',
+  },
   showRestartControls: false,
   currentTimer: { minutes: 0, seconds: 0 },
   roundStatus: 'awaiting',
@@ -51,7 +57,7 @@ export const gameSlice = createSlice({
     startRoundAction: (state, action) => ({ ...state, ...action.payload }),
 
     finishRoundAction: (state, action) => ({ ...state, ...action.payload }),
-    
+
     setCurrentTimer: (state, action) => {
       state.currentTimer = action.payload;
     },
@@ -67,6 +73,7 @@ export const gameSlice = createSlice({
     addRoundInStatisticsAction: (state, action) => {
       state.statistics = action.payload;
     },
+    setGameAction: (state, action) => ({ ...state, ...action.payload }),
   },
 });
 
@@ -79,9 +86,9 @@ export const {
   addVoteAction,
   setAverageValuesAction,
   addRoundInStatisticsAction,
+  setGameAction,
 } = gameSlice.actions;
 
-export const gameState = (state: RootState): GameState =>
-  state.game;
+export const gameState = (state: RootState): GameState => state.game;
 
 export default gameSlice.reducer;

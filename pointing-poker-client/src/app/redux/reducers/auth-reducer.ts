@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 interface AuthPopupState {
   alertGameExistVisible: boolean;
+  alertKickedVisible: boolean;
   authPopupVisible: boolean;
   gameID: string;
   newGame: boolean;
@@ -19,6 +20,7 @@ interface AuthPopupState {
 
 const initialState: AuthPopupState = {
   alertGameExistVisible: false,
+  alertKickedVisible: false,
   authPopupVisible: false,
   gameID: '',
   newGame: false,
@@ -43,6 +45,12 @@ export const authPopupSlice = createSlice({
     },
     closeAlertAction: (state) => {
       state.alertGameExistVisible = false;
+    },
+    showAlertKickedAction: (state) => {
+      state.alertKickedVisible = true;
+    },
+    closeAlertKickedAction: (state) => {
+      state.alertKickedVisible = false;
     },
     showAuthPopupAction: (state) => {
       state.authPopupVisible = true;
@@ -92,6 +100,8 @@ export const authPopupSlice = createSlice({
 export const {
   showAlertAction,
   closeAlertAction,
+  showAlertKickedAction,
+  closeAlertKickedAction,
   showAuthPopupAction,
   closeAuthPopupAction,
   setGameIDAction,

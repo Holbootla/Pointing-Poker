@@ -218,7 +218,7 @@ export const setCurrentTimer = async (
 
 export const startRound = async (
   gameID: string,
-  voteResult: string,
+  voteResult: string = 'In progress',
   roundStatus: 'in progress' | 'awaiting' = 'in progress',
   votes: IVote[] = [],
   averageValues: IAverageValue[] = [],
@@ -235,48 +235,43 @@ export const startRound = async (
   return result as StateDocument;
 };
 
-export const finishRound = async (
+export const restartRound = async (
   gameID: string,
-  currentIssue: IIssue,
+  voteResult: string = 'In progress',
+  roundStatus: 'in progress' | 'awaiting' = 'in progress',
+  votes: IVote[] = [],
+  averageValues: IAverageValue[] = [],
+  showRestartControls: boolean = false,
 ): Promise<StateDocument> => {
   const client = await MongoClient.connect(url);
   const collection = client.db(dbName).collection(collectionName);
   const state = await collection.findOne({ gameID });
 
+  const currentIssue = { ...state.game.currentIssue, status: 'current' };
+
   const newIssues = state.issues.map((issue) => (issue.id === currentIssue.id)
     ? { ...issue, status: currentIssue.status }
     : issue);
 
-  const totalVotes = state.game.votes.length;
-  const votesCounter: { [key: string]: number } = {};
-  const votesValues: string[] = [];
-  const averageValues: { value: string; percents: number }[] = [];
-  state.game.votes.forEach((vote) => {
-    if (!votesValues.includes(vote.value)) {
-      votesValues.push(vote.value);
-      votesCounter[vote.value] = 1;
-    } else {
-      votesCounter[vote.value] += 1;
-    }
-  });
-  Object.entries(votesCounter)
-    .sort((a, b) => a[1] - b[1])
-    .forEach(([voteValue, counter]) => {
-      const percents = Math.round((counter / totalVotes) * 10000) / 100;
-      averageValues.push({ value: voteValue, percents });
-    });
-  
-  const statistics = [
-    ...state.game.statistics,
-    {
-      issue: currentIssue,
-      votes: state.game.votes,
-      averageValues: averageValues,
-    },
-  ];
+  const newUsers = state.users.map((user) => ({ ...user, voteResult }));
+ 
+  const statistics = state.game.statistics.slice(0, -1);
 
-  const newGame = { ...state.game, currentIssue, averageValues, statistics, showRestartControls: false };
-  await collection.updateOne({ gameID }, { $set: { issues: newIssues, game: newGame } });
+  const minutes = Number(state.gameSettings.timerMinutes);
+  const seconds = Number(state.gameSettings.timerSeconds);
+  const currentTimer = { minutes, seconds };
+
+  const newGame = {
+    ...state.game,
+    currentIssue,
+    roundStatus,
+    votes,
+    averageValues,
+    statistics,
+    showRestartControls,
+    currentTimer,
+  };
+  await collection.updateOne({ gameID }, { $set: { issues: newIssues, game: newGame, users: newUsers } });
   const result = await collection.findOne({ gameID });
   client.close();
   return result as StateDocument;
@@ -284,7 +279,9 @@ export const finishRound = async (
 
 export const resetGame = async (
   gameID: string,
+  voteResult: string = '-',
   emptyIssue: IIssue = { id: '', title: '', link: '', priority: 'low', status: 'awaiting' },
+  showRestartControls: boolean = false,
 ): Promise<StateDocument> => {
   const client = await MongoClient.connect(url);
   const collection = client.db(dbName).collection(collectionName);
@@ -292,8 +289,9 @@ export const resetGame = async (
   const minutes = Number(state.gameSettings.timerMinutes);
   const seconds = Number(state.gameSettings.timerSeconds);
   const currentTimer = { minutes, seconds };
-  const newGame = { ...state.game, currentTimer, currentIssue: emptyIssue, nextIssue: emptyIssue };
-  await collection.updateOne({ gameID }, { $set: { game: newGame } });
+  const newUsers = state.users.map((user) => ({ ...user, voteResult }));
+  const newGame = { ...state.game, currentTimer, currentIssue: emptyIssue, showRestartControls };
+  await collection.updateOne({ gameID }, { $set: { game: newGame, users: newUsers } });
   const result = await collection.findOne({ gameID });
   client.close();
   return result as StateDocument;
@@ -330,11 +328,51 @@ export const stopRound = async (
   const client = await MongoClient.connect(url);
   const collection = client.db(dbName).collection(collectionName);
   const state = await collection.findOne({ gameID });
-  const minutes = Number(state.gameSettings.timerMinutes);
-  const seconds = Number(state.gameSettings.timerSeconds);
-  const currentTimer = { minutes, seconds };
-  const newGame = { ...state.game, roundStatus, currentTimer, showRestartControls };
-  await collection.updateOne({ gameID }, { $set: { game: newGame } });
+
+  const currentIssue = { ...state.game.currentIssue, status: 'resolved' };
+
+  const newIssues = state.issues.map((issue) => (issue.id === currentIssue.id)
+    ? { ...issue, status: currentIssue.status }
+    : issue);
+
+  const averageValues: { value: string; percents: number }[] = [];
+  const totalVotes = state.game.votes.length;
+  const votesCounter: { [key: string]: number } = {};
+  const votesValues: string[] = [];
+  state.game.votes.forEach((vote) => {
+    if (!votesValues.includes(vote.value)) {
+      votesValues.push(vote.value);
+      votesCounter[vote.value] = 1;
+    } else {
+      votesCounter[vote.value] += 1;
+    }
+  });
+  Object.entries(votesCounter)
+    .sort((a, b) => a[1] - b[1])
+    .forEach(([voteValue, counter]) => {
+      const percents = Math.round((counter / totalVotes) * 10000) / 100;
+      averageValues.push({ value: voteValue, percents });
+    });
+  
+  const statistics = [
+    ...state.game.statistics,
+    {
+      issue: currentIssue,
+      votes: state.game.votes,
+      averageValues: averageValues,
+    },
+  ];
+
+  const newGame = {
+    ...state.game,
+    roundStatus,
+    currentIssue,
+    averageValues,
+    statistics,
+    showRestartControls
+  };
+
+  await collection.updateOne({ gameID }, { $set: { issues: newIssues, game: newGame }});
   const result = await collection.findOne({ gameID });
   client.close();
   return result as StateDocument;
@@ -350,14 +388,62 @@ export const setVote = async (
   const collection = client.db(dbName).collection(collectionName);
   const state = await collection.findOne({ gameID });
   const votes = state.game.votes;
-  const newVotes = (votes.find((vote) => vote.userID === userID))
-    ? votes.map((vote) => (vote.memberId === userID) ? { userID, value } : vote)
-    : [...votes, { userID, value }];
+  const newVotes = (votes.find((vote) => vote.memberId === userID))
+    ? votes.map((vote) => (vote.memberId === userID) ? { memberId: userID, value } : vote)
+    : [...votes, { memberId: userID, value }];
   const newGame = { ...state.game, votes: newVotes };
   const newUsers = state.users.map((user) => (user.id === userID) ? { ...user, voteResult } : user);
   await collection.updateOne({ gameID }, { $set: { game: newGame, users: newUsers } });
   const result = await collection.findOne({ gameID });
-  console.log(result);
+  client.close();
+  return result as StateDocument;
+};
+
+export const changeVote = async (
+  gameID: string,
+  userID: string,
+  value: string,
+  voteResult: string,
+): Promise<StateDocument> => {
+  const client = await MongoClient.connect(url);
+  const collection = client.db(dbName).collection(collectionName);
+  const state = await collection.findOne({ gameID });
+  const votes = state.game.votes;
+
+  const newVotes = votes.map((vote) => (vote.memberId === userID) ? { memberId: userID, value } : vote);
+  console.log(newVotes);
+  const averageValues: { value: string; percents: number }[] = [];
+  const totalVotes = newVotes.length;
+  const votesCounter: { [key: string]: number } = {};
+  const votesValues: string[] = [];
+  newVotes.forEach((vote) => {
+    if (!votesValues.includes(vote.value)) {
+      votesValues.push(vote.value);
+      votesCounter[vote.value] = 1;
+    } else {
+      votesCounter[vote.value] += 1;
+    }
+  });
+  Object.entries(votesCounter)
+    .sort((a, b) => a[1] - b[1])
+    .forEach(([voteValue, counter]) => {
+      const percents = Math.round((counter / totalVotes) * 10000) / 100;
+      averageValues.push({ value: voteValue, percents });
+    });
+  
+  const statistics = [
+    ...state.game.statistics.slice(0, -1),
+    {
+      issue: state.game.currentIssue,
+      votes: newVotes,
+      averageValues: averageValues,
+    },
+  ];
+
+  const newGame = { ...state.game, votes: newVotes, averageValues, statistics };
+  const newUsers = state.users.map((user) => (user.id === userID) ? { ...user, voteResult } : user);
+  await collection.updateOne({ gameID }, { $set: { game: newGame, users: newUsers } });
+  const result = await collection.findOne({ gameID });
   client.close();
   return result as StateDocument;
 };

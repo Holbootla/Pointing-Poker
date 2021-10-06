@@ -59,7 +59,9 @@ function Member({
     >
       <Toast.Header
         closeButton={
-          id !== user.id && !isAdmin && kickedMemberByUser() !== true
+          !isGame
+            ? id !== user.id && !isAdmin && kickedMemberByUser() !== true
+            : id !== user.id && user.isAdmin
         }
       >
         {avatar ? (

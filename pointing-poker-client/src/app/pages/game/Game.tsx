@@ -32,8 +32,9 @@ function Game(): JSX.Element {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const { members } = useAppSelector(membersState);
-  const { timerOn, timerMinutes, timerSeconds, cardChange } = useAppSelector((state) => state.gameSettings)
+  const { timerOn, timerMinutes, timerSeconds, cardChange, cardsAutoTurn } = useAppSelector((state) => state.gameSettings)
   const admin = members.find((member) => member.isAdmin === true);
+  const playersQuantity = members.reduce((acc, member) => member.role === 'player' ? acc + 1 : acc, 0);
   const { minutes, seconds } = useAppSelector(gameState).currentTimer;
   const { showRestartControls } = useAppSelector(gameState);
   totalTime = minutes * 60 + seconds;
@@ -47,7 +48,7 @@ function Game(): JSX.Element {
   const { gameID } = useParams<{ gameID: string }>();
   const [showAlert, setShowAlert] = useState(false);
   const thisMemberId = id;
-  isVotingFinished = votes.length === members.length;
+  isVotingFinished = cardsAutoTurn && votes.length === playersQuantity;
 
   useEffect(() => {
     setShowAlert(true);
@@ -194,48 +195,48 @@ function Game(): JSX.Element {
                   </div>
                 </div>)}
               </Col>
-              {isAdmin && (
                 <Col>
-                  <h3>Controls</h3>
-                  {roundStatus === 'awaiting' && !showRestartControls &&(
-                  <Button
-                    variant="success"
-                    className="m-1"
-                    onClick={() => startRound()}
-                  >
-                    Start&nbsp;round
-                  </Button>
-                  )}
-                  {showRestartControls &&(
-                  <Button
-                    variant="success"
-                    className="m-1"
-                    onClick={() => restartRound()}
-                  >
-                    Restart&nbsp;round
-                  </Button>
-                  )}
+                  {isAdmin && (
                     <>
-                      {showRestartControls && (
-                      <Button
-                        variant="primary"
-                        className="m-1"
-                        onClick={() => finishRound()}
-                      >
-                        Next&nbsp;issue
-                      </Button>
+                      <h3>Controls</h3>
+                      {roundStatus === 'awaiting' && !showRestartControls &&(
+                        <Button
+                          variant="success"
+                          className="m-1"
+                          onClick={() => startRound()}
+                        >
+                          Start&nbsp;round
+                        </Button>
                       )}
-                      <Button
-                        variant="danger"
-                        className="m-1"
-                        onClick={() => stopGame()}
-                      >
-                        Stop&nbsp;game
-                      </Button>
-                      <Chat size={undefined} />
+                      {showRestartControls &&(
+                        <Button
+                          variant="success"
+                          className="m-1"
+                          onClick={() => restartRound()}
+                        >
+                          Restart&nbsp;round
+                        </Button>
+                      )}
+                      {showRestartControls && (
+                        <Button
+                          variant="primary"
+                          className="m-1"
+                          onClick={() => finishRound()}
+                        >
+                          Next&nbsp;issue
+                        </Button>
+                      )}
+                        <Button
+                          variant="danger"
+                          className="m-1"
+                          onClick={() => stopGame()}
+                        >
+                          Stop&nbsp;game
+                        </Button>
                     </>
+                  )}
+                  <Chat size={undefined} />
                 </Col>
-              )}
             </Row>
             <Row className="mb-5">
               <Col>
@@ -266,7 +267,10 @@ function Game(): JSX.Element {
               </Col>
               <Col>
                 <h3>
-                  {roundStatus === 'awaiting' ? 'Statistics' : 'Make a choice'}
+                  {isAdmin && !showRestartControls && roundStatus === 'awaiting' && 'Select the current Issue'}
+                  {!isAdmin && !showRestartControls && roundStatus === 'awaiting' && 'Round is prepearing'}
+                  {showRestartControls && 'Statistics'}
+                  {roundStatus === 'in progress' && 'Make a choice'}
                 </h3>
                 {roundStatus === 'awaiting' ? (
                   <Row>

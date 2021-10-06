@@ -13,8 +13,8 @@ import CardBreak from '../../components/shared/cards/card-break';
 import GameName from '../../components/shared/game-name/game-name';
 import KickPopup from '../../components/scrum/kick-popup/KickPopup';
 import Member from '../../components/shared/member/member';
-import { useAppSelector } from '../../redux/hooks';
-import { gameState } from '../../redux/reducers/game-reducer';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { addVoteAction, gameState, setCurrentTimer } from '../../redux/reducers/game-reducer';
 import { membersState } from '../../redux/reducers/members-reducer';
 import './game.scss';
 import { IssueStatus } from '../../redux/reducers/issues-reducer';
@@ -25,11 +25,14 @@ import IssueLobby from '../../components/scrum/issue-lobby/issue-lobby';
 
 let timerId: NodeJS.Timeout;
 let totalTime: number;
-let votesQuantity: number;
+let isVotingFinished = false;
+let willRoundStopped = false;
 
 function Game(): JSX.Element {
   const history = useHistory();
+  const dispatch = useAppDispatch();
   const { members } = useAppSelector(membersState);
+  const { timerOn, timerMinutes, timerSeconds, cardChange } = useAppSelector((state) => state.gameSettings)
   const admin = members.find((member) => member.isAdmin === true);
   const { minutes, seconds } = useAppSelector(gameState).currentTimer;
   const { showRestartControls } = useAppSelector(gameState);
@@ -44,7 +47,7 @@ function Game(): JSX.Element {
   const { gameID } = useParams<{ gameID: string }>();
   const [showAlert, setShowAlert] = useState(false);
   const thisMemberId = id;
-  votesQuantity = votes.length;
+  isVotingFinished = votes.length === members.length;
 
   useEffect(() => {
     setShowAlert(true);
@@ -66,31 +69,40 @@ function Game(): JSX.Element {
   };
 
   const startTimer = (): void => {
-    timerId = setInterval(() => {
-      if (totalTime === 0 || votesQuantity === members.length) {
-        stopRound();
-      } else {
-        const [min, sec] = decreaseTime(totalTime);
-        sendToServer('set_current_timer', {
-          gameID,
-          currentTimer: { minutes: min, seconds: sec },
-        });
-      }
-    }, 1000);
+    if (timerOn) {
+      timerId = setInterval(() => {
+        if (totalTime === 0) {
+          stopRound();
+        } else {
+          const [min, sec] = decreaseTime(totalTime);
+          sendToServer('set_current_timer', {
+            gameID,
+            currentTimer: { minutes: min, seconds: sec },
+          });
+        }
+      }, 1000);
+    }
   };
 
   const startRound = (): void => {
     if (roundStatus === 'awaiting' && currentIssue.id !== '') {
-      sendToServer('start_round', { gameID, voteResult: 'In progress' });
+      dispatch(addVoteAction({ votes: [] }));
+      sendToServer('start_round', { gameID });
       startTimer();
+      willRoundStopped = true;
     }
   };
 
+  const restartRound = (): void => {
+    sendToServer('restart_round', { gameID });
+    dispatch(addVoteAction({ votes: [] }));
+    dispatch(setCurrentTimer({ minutes: Number(timerMinutes), seconds: Number(timerSeconds) }));
+    startTimer();
+    willRoundStopped = true;
+  };
+
   const finishRound = () => {
-    sendToServer('finish_round', {
-      gameID,
-      currentIssue: { ...currentIssue, status: 'resolved' },
-    });
+    sendToServer('finish_round', { gameID });
   };
 
   const stopGame = (): void => {
@@ -103,6 +115,14 @@ function Game(): JSX.Element {
   const cardClickHandler = (cardValue: string): void => {
     if (roundStatus === 'in progress') {
       sendToServer('set_vote', {
+        gameID,
+        memberId: thisMemberId,
+        value: cardValue,
+        voteResult: `${cardValue} ${scoreTypeShort}`,
+      });
+    }
+    if (cardChange && showRestartControls) {
+      sendToServer('change_vote', {
         gameID,
         memberId: thisMemberId,
         value: cardValue,
@@ -123,6 +143,11 @@ function Game(): JSX.Element {
       });
     }
   };
+
+  if (isVotingFinished && willRoundStopped && isAdmin) {
+    willRoundStopped = false;
+    stopRound();
+  }
 
   return (
     <Container>
@@ -160,26 +185,37 @@ function Game(): JSX.Element {
                 )}
               </Col>
               <Col>
-                <div className="game__timer">
+                {timerOn && (<div className="game__timer">
                   <div className="game__timer-minutes">{minutes}</div>
                   <div className="game__timer-dividor">:</div>
                   <div className="game__timer-minutes">
                     {seconds > 9 ? seconds : `0${seconds}`}
                   </div>
-                </div>
+                </div>)}
               </Col>
               {isAdmin && (
                 <Col>
                   <h3>Controls</h3>
+                  {roundStatus === 'awaiting' && !showRestartControls &&(
                   <Button
                     variant="success"
                     className="m-1"
                     onClick={() => startRound()}
                   >
-                    {showRestartControls ? 'Restart round' : 'Start round'}
+                    Start&nbsp;round
                   </Button>
-                  {showRestartControls && (
+                  )}
+                  {showRestartControls &&(
+                  <Button
+                    variant="success"
+                    className="m-1"
+                    onClick={() => restartRound()}
+                  >
+                    Restart&nbsp;round
+                  </Button>
+                  )}
                     <>
+                      {showRestartControls && (
                       <Button
                         variant="primary"
                         className="m-1"
@@ -187,6 +223,7 @@ function Game(): JSX.Element {
                       >
                         Next&nbsp;issue
                       </Button>
+                      )}
                       <Button
                         variant="danger"
                         className="m-1"
@@ -196,7 +233,6 @@ function Game(): JSX.Element {
                       </Button>
                       <Chat size={undefined} />
                     </>
-                  )}
                 </Col>
               )}
             </Row>
@@ -229,7 +265,7 @@ function Game(): JSX.Element {
               </Col>
               <Col>
                 <h3>
-                  {roundStatus === 'awaiting' ? 'Statistics' : 'Playground'}
+                  {roundStatus === 'awaiting' ? 'Statistics' : 'Make a choice'}
                 </h3>
                 {roundStatus === 'awaiting' ? (
                   <Row>

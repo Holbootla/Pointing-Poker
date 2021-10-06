@@ -41,11 +41,8 @@ export const membersSlice = createSlice({
   },
 });
 
-export const {
-  getMembersAction,
-  kickMemberAction,
-  setMembersAction,
-} = membersSlice.actions;
+export const { getMembersAction, kickMemberAction, setMembersAction } =
+  membersSlice.actions;
 
 export const membersState = (state: RootState): MembersState => state.members;
 

@@ -15,7 +15,7 @@ interface AverageValue {
 }
 
 interface Vote {
-  memberId: number;
+  memberId: string;
   value: string;
 }
 
@@ -46,11 +46,7 @@ export const gameSlice = createSlice({
     setCurrentIssueAction: (state, action) => {
       state.currentIssue = action.payload;
     },
-    stopRoundAction: (state, action) => {
-      state.showRestartControls = action.payload.showRestartControls;
-      state.currentTimer = action.payload.currentTimer;
-      state.roundStatus = action.payload.roundStatus;
-    },
+    stopRoundAction: (state, action) => ({ ...state, ...action.payload }),
 
     startRoundAction: (state, action) => ({ ...state, ...action.payload }),
 
@@ -62,6 +58,9 @@ export const gameSlice = createSlice({
     addVoteAction: (state, action) => {
       state.votes = action.payload;
     },
+
+    changeVoteAction: (state, action) => ({ ...state, ...action.payload }),
+
     setAverageValuesAction: (state, action) => {
       state.averageValues = action.payload;
     },

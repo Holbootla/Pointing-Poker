@@ -1,7 +1,10 @@
 import { FC } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { closeKickPopupAction } from '../../../redux/reducers/kick-reducer';
+import {
+  addKickedByUserMemberIdAction,
+  closeKickPopupAction,
+} from '../../../redux/reducers/kick-reducer';
 import { sendToServer } from '../../../socket/socket-context';
 import './kickPopup.scss';
 
@@ -31,6 +34,7 @@ const KickPopup: FC = () => {
         user: { id: kickedMemberId },
       });
     dispatch(closeKickPopupAction());
+    dispatch(addKickedByUserMemberIdAction(kickedMemberId));
   };
 
   return (

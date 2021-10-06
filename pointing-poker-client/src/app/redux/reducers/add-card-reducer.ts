@@ -62,6 +62,9 @@ export const addCardValuesSlice = createSlice({
       state.setOwnCardValuePopupVisible = false;
       state.currCardValue = '';
     },
+    setCardsFromDefaultSettings: (state, action: PayloadAction<Array<string>>) => {
+      state.cardsSelected = action.payload;
+    },
     valueIsInSelectedAction: (state, action: PayloadAction<boolean>) => {
       state.valueIsInSelected = action.payload;
     },
@@ -72,6 +75,6 @@ export const addCardValuesSlice = createSlice({
   }
 });
 
-export const { showAddCardValuePopupAction, closeAddCardValuePopupAction, saveCurrCardValueAction, addNewCardValueAction, cleanCardsSelectedAction, showSetOwnCardPopupAction, closeSetOwnCardValuePopupAction, setOwnCardValueAction, valueIsInSelectedAction } = addCardValuesSlice.actions;
+export const { showAddCardValuePopupAction, closeAddCardValuePopupAction, saveCurrCardValueAction, addNewCardValueAction, cleanCardsSelectedAction, showSetOwnCardPopupAction, closeSetOwnCardValuePopupAction, setOwnCardValueAction, valueIsInSelectedAction, setCardsFromDefaultSettings } = addCardValuesSlice.actions;
 
 export default addCardValuesSlice.reducer;

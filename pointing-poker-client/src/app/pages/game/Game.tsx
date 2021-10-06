@@ -262,7 +262,7 @@ function Game(): JSX.Element {
                         className="m-1"
                         onClick={() => finishRound()}
                       >
-                        Next&nbsp;issue
+                        Finish&nbsp;Round
                       </Button>
                     )}
                     <Button

@@ -27,6 +27,7 @@ interface GameState {
   votes: Vote[];
   averageValues: AverageValue[];
   statistics: { issue: Issue; votes: Vote[]; averageValues: AverageValue[] }[];
+  chosenCard: string;
 }
 
 const initialState: GameState = {
@@ -43,6 +44,7 @@ const initialState: GameState = {
   votes: [],
   averageValues: [],
   statistics: [],
+  chosenCard: '',
 };
 
 export const gameSlice = createSlice({
@@ -74,6 +76,9 @@ export const gameSlice = createSlice({
       state.statistics = action.payload;
     },
     setGameAction: (state, action) => ({ ...state, ...action.payload }),
+    setChosenCard: (state, action) => {
+      state.chosenCard = action.payload;
+    },
   },
 });
 
@@ -87,6 +92,7 @@ export const {
   setAverageValuesAction,
   addRoundInStatisticsAction,
   setGameAction,
+  setChosenCard,
 } = gameSlice.actions;
 
 export const gameState = (state: RootState): GameState => state.game;

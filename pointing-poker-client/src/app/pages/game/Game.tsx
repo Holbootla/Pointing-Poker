@@ -238,6 +238,15 @@ function Game(): JSX.Element {
                         Start&nbsp;round
                       </Button>
                     )}
+                    {roundStatus === 'in progress' && (
+                      <Button
+                        variant="primary"
+                        className="m-1"
+                        onClick={() => stopRound()}
+                      >
+                        Stop&nbsp;round
+                      </Button>
+                    )}
                     {showRestartControls && (
                       <Button
                         variant="success"
@@ -253,7 +262,7 @@ function Game(): JSX.Element {
                         className="m-1"
                         onClick={() => finishRound()}
                       >
-                        Next&nbsp;issue
+                        Finish&nbsp;Round
                       </Button>
                     )}
                     <Button

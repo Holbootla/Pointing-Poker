@@ -9,6 +9,7 @@ import './result.scss';
 
 const Result = (): JSX.Element => {
   const { statistics } = useAppSelector(gameState);
+  const { issues } = useAppSelector((state) => state.issues);
   const { scoreTypeShort } = useAppSelector((store) => store.gameSettings);
   const { gameID } = useAppSelector((state) => state.authPopup);
 
@@ -22,7 +23,7 @@ const Result = (): JSX.Element => {
     <div className="container">
       <GameName />
       <div className="result">
-        {statistics.map((round) => (
+        {/* {statistics.map((round) => (
           <div key={round.issue.id}>
             <IssueLobby
               mode="result"
@@ -41,6 +42,18 @@ const Result = (): JSX.Element => {
               ))}
             </div>
           </div>
+        ))} */}
+        {issues.map((issue) => (
+          <IssueLobby
+            key={issue.id}
+            mode="result"
+            id={issue.id}
+            title={issue.title}
+            link={issue.link}
+            status={issue.status}
+            priority={issue.priority}
+            score={issue.score}
+          />
         ))}
       </div>
       <Button variant="primary" className="mt-5" onClick={downloadResults}>
@@ -56,13 +69,11 @@ const Result = (): JSX.Element => {
           </tr>
         </thead>
         <tbody>
-          {statistics.map((round) => (
-            <tr key={round.issue.id}>
-              <td>{round.issue.title}</td>
-              <td>{round.issue.link}</td>
-              <td>
-                {(round.averageValues.length > 0) && round.averageValues[round.averageValues.length - 1].value}
-              </td>
+          {issues.map((issue) => (
+            <tr key={issue.id}>
+              <td>{issue.title}</td>
+              <td>{issue.link}</td>
+              <td>{issue.score}</td>
               <td>{scoreTypeShort}</td>
             </tr>
           ))}

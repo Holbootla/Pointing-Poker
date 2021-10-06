@@ -16,6 +16,7 @@ export interface IIssue {
   link: string;
   priority: string;
   status: 'current' | 'resolved' | 'awaiting' | 'next';
+  score: string;
 }
 
 export interface IGameSettings {

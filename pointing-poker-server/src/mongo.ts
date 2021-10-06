@@ -280,23 +280,22 @@ export const restartRound = async (
   roundStatus: 'in progress' | 'awaiting' = 'in progress',
   votes: IVote[] = [],
   averageValues: IAverageValue[] = [],
-  showRestartControls: boolean = false,
-
+  showRestartControls: boolean = false
 ): Promise<StateDocument> => {
   const client = await MongoClient.connect(url);
   const collection = client.db(dbName).collection(collectionName);
   const state = await collection.findOne({ gameID });
 
-
   const currentIssue = { ...state.game.currentIssue, status: 'current' };
 
-  const newIssues = state.issues.map((issue) => (issue.id === currentIssue.id)
-    ? { ...issue, status: currentIssue.status }
-    : issue);
-
+  const newIssues = state.issues.map((issue) =>
+    issue.id === currentIssue.id
+      ? { ...issue, status: currentIssue.status }
+      : issue
+  );
 
   const newUsers = state.users.map((user) => ({ ...user, voteResult }));
- 
+
   const statistics = state.game.statistics.slice(0, -1);
 
   const minutes = Number(state.gameSettings.timerMinutes);
@@ -314,7 +313,10 @@ export const restartRound = async (
     showRestartControls,
     currentTimer,
   };
-  await collection.updateOne({ gameID }, { $set: { issues: newIssues, game: newGame, users: newUsers } });
+  await collection.updateOne(
+    { gameID },
+    { $set: { issues: newIssues, game: newGame, users: newUsers } }
+  );
 
   const result = await collection.findOne({ gameID });
   client.close();
@@ -325,9 +327,15 @@ export const resetGame = async (
   gameID: string,
 
   voteResult: string = '-',
-  emptyIssue: IIssue = { id: '', title: '', link: '', priority: 'low', status: 'awaiting' },
-  showRestartControls: boolean = false,
-
+  emptyIssue: IIssue = {
+    id: '',
+    title: '',
+    link: '',
+    priority: 'low',
+    status: 'awaiting',
+    score: '-',
+  },
+  showRestartControls: boolean = false
 ): Promise<StateDocument> => {
   const client = await MongoClient.connect(url);
   const collection = client.db(dbName).collection(collectionName);
@@ -337,8 +345,16 @@ export const resetGame = async (
   const currentTimer = { minutes, seconds };
 
   const newUsers = state.users.map((user) => ({ ...user, voteResult }));
-  const newGame = { ...state.game, currentTimer, currentIssue: emptyIssue, showRestartControls };
-  await collection.updateOne({ gameID }, { $set: { game: newGame, users: newUsers } });
+  const newGame = {
+    ...state.game,
+    currentTimer,
+    currentIssue: emptyIssue,
+    showRestartControls,
+  };
+  await collection.updateOne(
+    { gameID },
+    { $set: { game: newGame, users: newUsers } }
+  );
 
   const result = await collection.findOne({ gameID });
   client.close();
@@ -382,9 +398,11 @@ export const stopRound = async (
 
   const currentIssue = { ...state.game.currentIssue, status: 'resolved' };
 
-  const newIssues = state.issues.map((issue) => (issue.id === currentIssue.id)
-    ? { ...issue, status: currentIssue.status }
-    : issue);
+  const newIssues = state.issues.map((issue) =>
+    issue.id === currentIssue.id
+      ? { ...issue, status: currentIssue.status }
+      : issue
+  );
 
   const averageValues: { value: string; percents: number }[] = [];
   const totalVotes = state.game.votes.length;
@@ -404,7 +422,7 @@ export const stopRound = async (
       const percents = Math.round((counter / totalVotes) * 10000) / 100;
       averageValues.push({ value: voteValue, percents });
     });
-  
+
   const statistics = [
     ...state.game.statistics,
     {
@@ -420,10 +438,13 @@ export const stopRound = async (
     currentIssue,
     averageValues,
     statistics,
-    showRestartControls
+    showRestartControls,
   };
 
-  await collection.updateOne({ gameID }, { $set: { issues: newIssues, game: newGame }});
+  await collection.updateOne(
+    { gameID },
+    { $set: { issues: newIssues, game: newGame } }
+  );
 
   const result = await collection.findOne({ gameID });
   client.close();
@@ -440,8 +461,10 @@ export const setVote = async (
   const collection = client.db(dbName).collection(collectionName);
   const state = await collection.findOne({ gameID });
   const votes = state.game.votes;
-  const newVotes = (votes.find((vote) => vote.memberId === userID))
-    ? votes.map((vote) => (vote.memberId === userID) ? { memberId: userID, value } : vote)
+  const newVotes = votes.find((vote) => vote.memberId === userID)
+    ? votes.map((vote) =>
+        vote.memberId === userID ? { memberId: userID, value } : vote
+      )
     : [...votes, { memberId: userID, value }];
 
   const newGame = { ...state.game, votes: newVotes };
@@ -461,14 +484,16 @@ export const changeVote = async (
   gameID: string,
   userID: string,
   value: string,
-  voteResult: string,
+  voteResult: string
 ): Promise<StateDocument> => {
   const client = await MongoClient.connect(url);
   const collection = client.db(dbName).collection(collectionName);
   const state = await collection.findOne({ gameID });
   const votes = state.game.votes;
 
-  const newVotes = votes.map((vote) => (vote.memberId === userID) ? { memberId: userID, value } : vote);
+  const newVotes = votes.map((vote) =>
+    vote.memberId === userID ? { memberId: userID, value } : vote
+  );
   console.log(newVotes);
   const averageValues: { value: string; percents: number }[] = [];
   const totalVotes = newVotes.length;
@@ -488,7 +513,7 @@ export const changeVote = async (
       const percents = Math.round((counter / totalVotes) * 10000) / 100;
       averageValues.push({ value: voteValue, percents });
     });
-  
+
   const statistics = [
     ...state.game.statistics.slice(0, -1),
     {
@@ -499,8 +524,13 @@ export const changeVote = async (
   ];
 
   const newGame = { ...state.game, votes: newVotes, averageValues, statistics };
-  const newUsers = state.users.map((user) => (user.id === userID) ? { ...user, voteResult } : user);
-  await collection.updateOne({ gameID }, { $set: { game: newGame, users: newUsers } });
+  const newUsers = state.users.map((user) =>
+    user.id === userID ? { ...user, voteResult } : user
+  );
+  await collection.updateOne(
+    { gameID },
+    { $set: { game: newGame, users: newUsers } }
+  );
   const result = await collection.findOne({ gameID });
   client.close();
   return result as StateDocument;
@@ -517,12 +547,20 @@ export const incrementKickCounter = async (
   let result;
   if (user)
     if (user.kickCounter >= Math.floor((state.users.length - 1) / 2)) {
-      await collection.updateOne({ gameID }, { $pull: { users: { id: userID } } });
+      await collection.updateOne(
+        { gameID },
+        { $pull: { users: { id: userID } } }
+      );
       result = await collection.findOne({ gameID });
     } else if (user.kickCounter < Math.floor((state.users.length - 1) / 2)) {
       const newValue = user.kickCounter + 1;
-      const newUsers = state.users.map((user) => (user.id === userID) ? { ...user, kickCounter: newValue } : user);
-      await collection.updateOne({ gameID }, { $set: { game: gameID, users: newUsers } });
+      const newUsers = state.users.map((user) =>
+        user.id === userID ? { ...user, kickCounter: newValue } : user
+      );
+      await collection.updateOne(
+        { gameID },
+        { $set: { game: gameID, users: newUsers } }
+      );
       result = await collection.findOne({ gameID });
     }
   result = await collection.findOne({ gameID });

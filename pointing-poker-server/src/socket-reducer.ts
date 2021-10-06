@@ -461,6 +461,10 @@ export async function handleAction(
       type: 'game/finishRoundAction',
       payload: payloadToClient,
     });
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'game/setChosenCard',
+      payload: '',
+    });
   }
 
   if (action.type === 'set_current_issue') {

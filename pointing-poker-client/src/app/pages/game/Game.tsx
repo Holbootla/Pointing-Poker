@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
   addVoteAction,
   gameState,
+  setChosenCard,
   setCurrentTimer,
 } from '../../redux/reducers/game-reducer';
 import { membersState } from '../../redux/reducers/members-reducer';
@@ -49,7 +50,7 @@ function Game(): JSX.Element {
   const { minutes, seconds } = useAppSelector(gameState).currentTimer;
   const { showRestartControls } = useAppSelector(gameState);
   totalTime = minutes * 60 + seconds;
-  const { roundStatus, currentIssue, votes, averageValues } =
+  const { roundStatus, currentIssue, votes, averageValues, chosenCard } =
     useAppSelector(gameState);
   const { cardValuesFinalSet, scoreTypeShort, cardCover } = useAppSelector(
     (store) => store.gameSettings
@@ -58,7 +59,6 @@ function Game(): JSX.Element {
   const { isAdmin, role, id } = useAppSelector((store) => store.authPopup.user);
   const { gameID } = useParams<{ gameID: string }>();
   const [showAlert, setShowAlert] = useState(false);
-  const [chosenCard, setChosenCard] = useState('');
   const thisMemberId = id;
   isVotingFinished = cardsAutoTurn && votes.length === playersQuantity;
 
@@ -121,7 +121,6 @@ function Game(): JSX.Element {
   };
 
   const finishRound = () => {
-    setChosenCard('');
     sendToServer('finish_round', { gameID });
   };
 
@@ -134,7 +133,7 @@ function Game(): JSX.Element {
   };
 
   const cardClickHandler = (cardValue: string): void => {
-    setChosenCard(cardValue);
+    dispatch(setChosenCard(cardValue));
     if (roundStatus === 'in progress') {
       sendToServer('set_vote', {
         gameID,
@@ -157,7 +156,12 @@ function Game(): JSX.Element {
     issueId: number | string,
     status: IssueStatus
   ): void => {
-    if (roundStatus === 'awaiting' && status === 'awaiting' && isAdmin && !showRestartControls) {
+    if (
+      roundStatus === 'awaiting' &&
+      status === 'awaiting' &&
+      isAdmin &&
+      !showRestartControls
+    ) {
       const newCurrentIssue = issues.find((issue) => issue.id === issueId);
       sendToServer('set_current_issue', {
         gameID,
@@ -378,11 +382,23 @@ function Game(): JSX.Element {
                 onKeyPress={() => cardClickHandler(cardValue)}
               >
                 {cardValue === 'Break' ? (
-                  <div className={(chosenCard === cardValue) ? 'game__card_chosen' : 'game__card'}>
+                  <div
+                    className={
+                      chosenCard === cardValue
+                        ? 'game__card_chosen'
+                        : 'game__card'
+                    }
+                  >
                     <CardBreak key="cardBreack" />
                   </div>
                 ) : (
-                  <div className={(chosenCard === cardValue) ? 'game__card_chosen' : 'game__card'}>
+                  <div
+                    className={
+                      chosenCard === cardValue
+                        ? 'game__card_chosen'
+                        : 'game__card'
+                    }
+                  >
                     <CardFace value={cardValue} type={scoreTypeShort} />
                   </div>
                 )}

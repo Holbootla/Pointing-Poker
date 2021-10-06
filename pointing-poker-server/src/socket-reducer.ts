@@ -83,7 +83,10 @@ export async function handleAction(
         );
       }
 
-      if (gameState.currentPage !== 'lobby') {
+      if (
+        gameState.currentPage !== 'lobby' &&
+        !gameState.gameSettings.allowEnterInGame
+      ) {
         const adminID = gameState.users.find(
           (user) => user.isAdmin === true
         ).id;
@@ -100,11 +103,45 @@ export async function handleAction(
 
         if (gameState.currentPage === 'game') {
           io.to(socket.id).emit('GAME_STARTED');
-          //TODO: SEND ALL STATE
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'chat/setMessagesAction',
+            payload: {
+              chatHistory: newStateFromDb.chatHistory,
+            },
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'gameSettings/setGameSettings',
+            payload: newStateFromDb.gameSettings,
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'issues/updateIssuesAction',
+            payload: newStateFromDb.issues,
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'game/setGameAction',
+            payload: newStateFromDb.game,
+          });
         }
         if (gameState.currentPage === 'result') {
-          io.to(gameID).emit('GAME_STOPPED');
-          //TODO: SEND ALL STATE
+          io.to(socket.id).emit('GAME_STOPPED');
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'chat/setMessagesAction',
+            payload: {
+              chatHistory: newStateFromDb.chatHistory,
+            },
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'gameSettings/setGameSettings',
+            payload: newStateFromDb.gameSettings,
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'issues/updateIssuesAction',
+            payload: newStateFromDb.issues,
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'game/setGameAction',
+            payload: newStateFromDb.game,
+          });
         }
       } else {
         io.to(gameID).emit('UPDATE_CLIENT', {
@@ -113,6 +150,48 @@ export async function handleAction(
             members: newStateFromDb.users,
           },
         });
+        if (gameState.currentPage === 'game') {
+          io.to(socket.id).emit('GAME_STARTED');
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'chat/setMessagesAction',
+            payload: {
+              chatHistory: newStateFromDb.chatHistory,
+            },
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'gameSettings/setGameSettings',
+            payload: newStateFromDb.gameSettings,
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'issues/updateIssuesAction',
+            payload: newStateFromDb.issues,
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'game/setGameAction',
+            payload: newStateFromDb.game,
+          });
+        }
+        if (gameState.currentPage === 'result') {
+          io.to(socket.id).emit('GAME_STOPPED');
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'chat/setMessagesAction',
+            payload: {
+              chatHistory: newStateFromDb.chatHistory,
+            },
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'gameSettings/setGameSettings',
+            payload: newStateFromDb.gameSettings,
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'issues/updateIssuesAction',
+            payload: newStateFromDb.issues,
+          });
+          io.to(socket.id).emit('UPDATE_CLIENT', {
+            type: 'game/setGameAction',
+            payload: newStateFromDb.game,
+          });
+        }
       }
     }
   }
@@ -144,8 +223,13 @@ export async function handleAction(
   }
 
   if (action.type === 'increment_user_kicked_counter') {
-    const newStateFromDb = await incrementKickCounter(gameID, action.payload.user.id);
-    const userIsKicked = newStateFromDb.users.some((item) => item.id === action.payload.user.id);
+    const newStateFromDb = await incrementKickCounter(
+      gameID,
+      action.payload.user.id
+    );
+    const userIsKicked = newStateFromDb.users.some(
+      (item) => item.id === action.payload.user.id
+    );
 
     if (!userIsKicked) {
       io.to(action.payload.user.id).emit('leave_room');
@@ -158,7 +242,7 @@ export async function handleAction(
         id: action.payload.user.id,
       },
     });
-  };
+  }
 
   /*=====================================================================*/
   /*                               GAME NAME                             */
@@ -305,7 +389,6 @@ export async function handleAction(
   }
 
   if (action.type === 'start_round') {
-
     const newStateFromDb = await startRound(gameID);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
@@ -327,9 +410,7 @@ export async function handleAction(
     });
   }
 
-
   if (action.type === 'restart_round') {
-
     const newStateFromDb = await restartRound(gameID);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
@@ -361,7 +442,6 @@ export async function handleAction(
   }
 
   if (action.type === 'finish_round') {
-
     const newStateFromDb = await resetGame(gameID);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
@@ -436,7 +516,6 @@ export async function handleAction(
   }
 
   if (action.type === 'change_vote') {
-
     const newStateFromDb = await changeVote(
       gameID,
       action.payload.memberId,

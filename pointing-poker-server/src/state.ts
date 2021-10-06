@@ -22,6 +22,8 @@ export interface IIssue {
 export interface IGameSettings {
   cardChange: boolean;
   timerOn: boolean;
+  allowEnterInGame: boolean;
+  cardsAutoTurn: boolean;
   scoreType: string;
   scoreTypeShort: string;
   timerMinutes: string;

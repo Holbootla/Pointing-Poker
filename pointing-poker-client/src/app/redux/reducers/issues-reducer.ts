@@ -86,7 +86,6 @@ export const issuesSlice = createSlice({
       const ind = state.issues.findIndex(
         (issue) => issue.id === action.payload.id
       );
-      console.log(ind);
       state.issues[ind].score = action.payload.score;
     },
   },

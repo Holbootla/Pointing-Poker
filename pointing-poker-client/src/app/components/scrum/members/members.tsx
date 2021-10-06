@@ -20,7 +20,9 @@ function Members(): JSX.Element {
               lastName={member.lastName}
               jobPosition={member.jobPosition}
               avatar={member.avatar}
+              isAdmin={member.isAdmin}
               isGame={false}
+              kickCounter={member.kickCounter}
             />
           ))}
         </div>

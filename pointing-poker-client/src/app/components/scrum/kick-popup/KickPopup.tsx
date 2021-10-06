@@ -48,7 +48,7 @@ const KickPopup: FC = () => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="kick-popup__body">
-        {` Are you really want to remove player ${kickedMember?.firstName} 
+        {`Do you really want to remove player ${kickedMember?.firstName} 
         ${kickedMember?.lastName} from game session?`}
       </Modal.Body>
       <Modal.Footer>

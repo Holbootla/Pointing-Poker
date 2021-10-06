@@ -154,6 +154,7 @@ function Game(): JSX.Element {
                       jobPosition={admin.jobPosition}
                       avatar={admin.avatar}
                       isGame={false}
+                      isAdmin={admin.isAdmin}
                     />
                   </>
                 )}
@@ -268,6 +269,7 @@ function Game(): JSX.Element {
                     jobPosition={member.jobPosition}
                     avatar={member.avatar}
                     isGame
+                    isAdmin={member.isAdmin}
                     voteResult={member.voteResult}
                   />
                 </Col>

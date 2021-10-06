@@ -10,8 +10,10 @@ interface MemberProps {
   jobPosition: string;
   avatar: string;
   isGame: boolean;
+  isAdmin: boolean;
   roundStatus?: 'in progress' | 'awaiting';
   voteResult?: string;
+  kickCounter?: number;
 }
 
 function Member({
@@ -21,11 +23,18 @@ function Member({
   jobPosition,
   avatar,
   isGame,
+  isAdmin,
   roundStatus,
   voteResult,
+  kickCounter,
 }: MemberProps): JSX.Element {
   const dispatch = useAppDispatch();
+
   const { user } = useAppSelector((state) => state.authPopup);
+  // const { kickedMembersIds } = useAppSelector((state) => state.members);
+  const { membersKickedByCurrentUser } = useAppSelector(
+    (state) => state.kickPopup
+  );
   const avatarText = () => {
     if (lastName.length < 1) {
       return firstName.slice(0, 1);
@@ -33,12 +42,19 @@ function Member({
     return firstName.slice(0, 1) + lastName.slice(0, 1);
   };
 
+  const kickedMemberByUser = () =>
+    membersKickedByCurrentUser.some((item: string) => item === id);
+
   const showKickPopup = () => dispatch(showKickPopupAction(String(id)));
+  const kickNumberResult = () => Boolean(kickCounter);
 
   return (
     <Toast onClose={showKickPopup} className="d-inline-block m-1 member">
-      <Toast.Header closeButton={id !== user.id}>
-        {/* <Toast.Header closeButton={id !== user.id}> */}
+      <Toast.Header
+        closeButton={
+          id !== user.id && !isAdmin && kickedMemberByUser() !== true
+        }
+      >
         {avatar ? (
           <Image src={avatar} roundedCircle className="avatar me-2" />
         ) : (
@@ -64,6 +80,11 @@ function Member({
         ) : (
           <small className="align-self-end text-muted">{jobPosition}</small>
         )}
+        {kickNumberResult() && !isGame ? (
+          <small className="vote-notification">
+            {kickCounter} player(s) voted to exclude this member
+          </small>
+        ) : null}
       </Toast.Body>
     </Toast>
   );

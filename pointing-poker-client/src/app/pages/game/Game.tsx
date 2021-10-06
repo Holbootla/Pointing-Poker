@@ -314,7 +314,13 @@ function Game(): JSX.Element {
                   {isAdmin &&
                     !showRestartControls &&
                     roundStatus === 'awaiting' &&
+                    currentIssue.title === '' &&
                     'Select the current Issue'}
+                  {isAdmin &&
+                    !showRestartControls &&
+                    roundStatus === 'awaiting' &&
+                    currentIssue.title !== '' &&
+                    'Press start round'}
                   {!isAdmin &&
                     !showRestartControls &&
                     roundStatus === 'awaiting' &&

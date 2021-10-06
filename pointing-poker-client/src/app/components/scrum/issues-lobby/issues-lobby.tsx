@@ -83,12 +83,14 @@ const IssuesLobby: FC = () => {
       </h5>
       {issues.map((issue) => (
         <IssueLobby
+          key={issue.id}
           id={issue.id}
           mode="lobby"
           title={issue.title}
           link={issue.link}
           status={issue.status}
           priority={issue.priority}
+          score={issue.score}
         />
       ))}
       <NewIssue />

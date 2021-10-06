@@ -23,6 +23,7 @@ import {
   startRound,
   updateIssues,
   incrementKickCounter,
+  changeCurrentPage,
 } from './mongo';
 
 export async function handleAction(
@@ -58,9 +59,9 @@ export async function handleAction(
   }
 
   if (action.type === 'user_connected') {
-    const isGameExist = await getState(gameID);
+    const gameState = await getState(gameID);
 
-    if (!isGameExist) {
+    if (!gameState) {
       io.to(socket.id).emit('leave_room');
       io.to(socket.id).emit('UPDATE_CLIENT', {
         type: 'authPopup/showAlertAction',
@@ -80,13 +81,49 @@ export async function handleAction(
           action.payload.avatar.data
         );
       }
-      io.to(gameID).emit('UPDATE_CLIENT', {
-        type: 'members/setMembersAction',
-        payload: {
-          members: newStateFromDb.users,
-        },
-      });
+
+      if (gameState.currentPage !== 'lobby') {
+        const adminID = gameState.users.find(
+          (user) => user.isAdmin === true
+        ).id;
+
+        io.to(adminID).emit('UPDATE_CLIENT', {
+          type: 'admit/showAdmitPopupAction',
+          payload: {
+            id: action.payload.user.id,
+            firstName: action.payload.user.firstName,
+            lastName: action.payload.user.lastName,
+            jobPosition: action.payload.user.jobPosition,
+          },
+        });
+
+        if (gameState.currentPage === 'game') {
+          io.to(socket.id).emit('GAME_STARTED');
+          //TODO: SEND ALL STATE
+        }
+        if (gameState.currentPage === 'result') {
+          io.to(gameID).emit('GAME_STOPPED');
+          //TODO: SEND ALL STATE
+        }
+      } else {
+        io.to(gameID).emit('UPDATE_CLIENT', {
+          type: 'members/setMembersAction',
+          payload: {
+            members: newStateFromDb.users,
+          },
+        });
+      }
     }
+  }
+
+  if (action.type === 'user_admited') {
+    const newStateFromDb = await getState(gameID);
+    io.to(gameID).emit('UPDATE_CLIENT', {
+      type: 'members/setMembersAction',
+      payload: {
+        members: newStateFromDb.users,
+      },
+    });
   }
 
   if (action.type === 'user_kicked') {
@@ -100,6 +137,9 @@ export async function handleAction(
     });
     io.to(action.payload.user.id).emit('leave_room');
     io.to(action.payload.user.id).socketsLeave(gameID);
+    io.to(action.payload.user.id).emit('UPDATE_CLIENT', {
+      type: 'authPopup/showAlertKickedAction',
+    });
   }
 
   if (action.type === 'increment_user_kicked_counter') {
@@ -116,6 +156,9 @@ export async function handleAction(
     });
     io.to(action.payload.user.id).emit('leave_room');
     io.to(action.payload.user.id).socketsLeave(gameID);
+    io.to(action.payload.user.id).emit('UPDATE_CLIENT', {
+      type: 'authPopup/showAlertKickedAction',
+    });
   }
 
   /*=====================================================================*/
@@ -207,6 +250,7 @@ export async function handleAction(
 
   if (action.type === 'game_started') {
     io.to(gameID).emit('GAME_STARTED');
+    changeCurrentPage(gameID, 'game');
   }
 
   /*=====================================================================*/
@@ -369,6 +413,7 @@ export async function handleAction(
 
   if (action.type === 'stop_game') {
     io.to(gameID).emit('GAME_STOPPED');
+    changeCurrentPage(gameID, 'result');
   }
 
   /*=====================================================================*/

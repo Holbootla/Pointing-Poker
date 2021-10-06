@@ -13,6 +13,7 @@ import { useLocation } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import {
   closeAlertAction,
+  closeAlertKickedAction,
   closeAuthPopupAction,
   setGameIDAction,
   setIsAdminAction,
@@ -24,7 +25,7 @@ import { socket } from '../../socket/socket-context';
 import AuthPopup from './AuthPopup';
 
 function Start(): JSX.Element {
-  const { gameID, alertGameExistVisible } = useAppSelector(
+  const { gameID, alertGameExistVisible, alertKickedVisible } = useAppSelector(
     (state) => state.authPopup
   );
   const location = useLocation();
@@ -129,6 +130,15 @@ function Start(): JSX.Element {
       >
         <Alert.Heading>Game is not exist!</Alert.Heading>
         <p>Please, enter the correct game ID.</p>
+      </Alert>
+      <Alert
+        variant="danger"
+        show={alertKickedVisible}
+        onClose={() => dispatch(closeAlertKickedAction())}
+        dismissible
+      >
+        <Alert.Heading>You were kicked!</Alert.Heading>
+        <p>Please, choose another game.</p>
       </Alert>
     </Container>
   );

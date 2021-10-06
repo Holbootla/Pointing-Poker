@@ -5,7 +5,7 @@ export interface IUser {
   jobPosition: string;
   isAdmin: boolean;
   role: 'observer' | 'player';
-  avatar?: string,
+  avatar?: string;
   voteResult?: string;
   kickCounter: number;
 }
@@ -63,6 +63,7 @@ export interface IChatMessage {
 
 export interface IServerState {
   gameID: string;
+  currentPage: 'lobby' | 'game' | 'result';
   users: IUser[];
   gameName?: string;
   issues?: IIssue[];

@@ -15,6 +15,7 @@ import Chat from '../../components/shared/chat/chat';
 import OwnCardValuePopup from './SetOwnCardPopup';
 import Member from '../../components/shared/member/member';
 import { closeSpinnerAction } from '../../redux/reducers/spinner-reducer';
+import { setCardsFromDefaultSettings } from '../../redux/reducers/add-card-reducer';
 
 const Lobby: FC = () => {
   const dispatch = useAppDispatch();
@@ -32,6 +33,11 @@ const Lobby: FC = () => {
 
     if (defaultLocalSettings) {
       dispatch(setGameSettings(JSON.parse(defaultLocalSettings)));
+      dispatch(
+        setCardsFromDefaultSettings(
+          JSON.parse(defaultLocalSettings).cardValuesFinalSet
+        )
+      );
     }
 
     socket.on('GAME_STARTED', () => {

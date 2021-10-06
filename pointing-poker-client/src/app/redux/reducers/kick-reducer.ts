@@ -21,16 +21,18 @@ export const kickPopupSlice = createSlice({
     showKickPopupAction: (state, action: PayloadAction<string>) => {
       state.kickPopupVisible = true;
       state.kickedMemberId = action.payload;
-      state.membersKickedByCurrentUser.push(action.payload)
     },
     closeKickPopupAction: (state) => {
       state.kickPopupVisible = false;
       state.kickedMemberId = '';
     },
+    addKickedByUserMemberIdAction: (state, action: PayloadAction<string>) => {
+      state.membersKickedByCurrentUser.push(action.payload)
+    },
   },
 });
 
-export const { showKickPopupAction, closeKickPopupAction } =
+export const { showKickPopupAction, closeKickPopupAction, addKickedByUserMemberIdAction } =
   kickPopupSlice.actions;
 
 export const kickPopupVisible = (state: RootState): boolean =>

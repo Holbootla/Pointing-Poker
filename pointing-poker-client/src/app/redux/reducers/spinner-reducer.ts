@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-interface AuthPopupState {
+interface SpinerState {
   isLoading: boolean;
 }
 
-const initialState: AuthPopupState = {
+const initialState: SpinerState = {
   isLoading: false,
 };
 

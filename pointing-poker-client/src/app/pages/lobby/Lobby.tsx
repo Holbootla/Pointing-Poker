@@ -38,6 +38,10 @@ const Lobby: FC = () => {
       history.push(`/game/${gameID}`);
     });
 
+    socket.on('GAME_STOPPED', () => {
+      history.push(`/result/${gameID}`);
+    });
+
     socket.on('leave_room', () => {
       history.push(``);
       dispatch(closeSpinnerAction());

@@ -1,6 +1,5 @@
 import { Socket } from 'socket.io';
 import { io } from './server';
-
 import {
   addIssue,
   addUser,
@@ -29,7 +28,8 @@ import {
 
 export async function handleAction(
   socket: Socket,
-  action: { type: string; payload: any }
+  action: { type: string; payload: any },
+  collection: unknown,
 ) {
   const gameID = action.payload.gameID.toString();
 
@@ -39,12 +39,13 @@ export async function handleAction(
 
   if (action.type === 'game_created') {
     socket.join(gameID);
-    let newStateFromDb = await createState(gameID, [action.payload.user]);
+    let newStateFromDb = await createState(collection, gameID, [action.payload.user]);
     if (
       newStateFromDb.users[0].id === action.payload.user.id &&
       action.payload.avatar
     ) {
       newStateFromDb = await avatarUpload(
+        collection,
         gameID,
         action.payload.user.id,
         action.payload.avatar.name,
@@ -60,7 +61,7 @@ export async function handleAction(
   }
 
   if (action.type === 'user_connected') {
-    const gameState = await getState(gameID);
+    const gameState = await getState(collection, gameID);
 
     if (!gameState) {
       io.to(socket.id).emit('leave_room');
@@ -70,12 +71,13 @@ export async function handleAction(
     } else {
       socket.join(gameID);
 
-      let newStateFromDb = await addUser(gameID, action.payload.user);
+      let newStateFromDb = await addUser(collection, gameID, action.payload.user);
       const newUser = newStateFromDb.users.map(
         (user) => user.id === action.payload.user.id
       );
       if (newUser && action.payload.avatar) {
         newStateFromDb = await avatarUpload(
+          collection,
           gameID,
           action.payload.user.id,
           action.payload.avatar.name,
@@ -197,7 +199,7 @@ export async function handleAction(
   }
 
   if (action.type === 'user_admited') {
-    const newStateFromDb = await getState(gameID);
+    const newStateFromDb = await getState(collection, gameID);
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
       payload: {
@@ -207,7 +209,7 @@ export async function handleAction(
   }
 
   if (action.type === 'user_kicked') {
-    const newStateFromDb = await kickUser(gameID, action.payload.user.id);
+    const newStateFromDb = await kickUser(collection, gameID, action.payload.user.id);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
@@ -224,6 +226,7 @@ export async function handleAction(
 
   if (action.type === 'increment_user_kicked_counter') {
     const newStateFromDb = await incrementKickCounter(
+      collection,
       gameID,
       action.payload.user.id
     );
@@ -250,6 +253,7 @@ export async function handleAction(
 
   if (action.type === 'game_name_changed') {
     const newStateFromDb = await changeGameName(
+      collection,
       gameID,
       action.payload.gameName
     );
@@ -265,7 +269,7 @@ export async function handleAction(
   /*=====================================================================*/
 
   if (action.type === 'issue_created') {
-    const newStateFromDb = await addIssue(gameID, action.payload.issue);
+    const newStateFromDb = await addIssue(collection, gameID, action.payload.issue);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'issues/updateIssuesAction',
@@ -275,6 +279,7 @@ export async function handleAction(
 
   if (action.type === 'issue_deleted') {
     const newStateFromDb = await deleteIssue(
+      collection,
       gameID,
       action.payload.idIssueToDelete
     );
@@ -286,7 +291,7 @@ export async function handleAction(
   }
 
   if (action.type === 'issue_edited') {
-    const newStateFromDb = await editIssue(gameID, action.payload.issue);
+    const newStateFromDb = await editIssue(collection, gameID, action.payload.issue);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'issues/updateIssuesAction',
@@ -296,6 +301,7 @@ export async function handleAction(
 
   if (action.type === 'issues_updated') {
     const newStateFromDb = await updateIssues(
+      collection,
       gameID,
       action.payload.issuesUpdated
     );
@@ -312,6 +318,7 @@ export async function handleAction(
 
   if (action.type === 'settings_changed') {
     const newStateFromDb = await changeSettings(
+      collection,
       gameID,
       action.payload.gameSettings
     );
@@ -333,7 +340,7 @@ export async function handleAction(
 
   if (action.type === 'game_started') {
     io.to(gameID).emit('GAME_STARTED');
-    changeCurrentPage(gameID, 'game');
+    changeCurrentPage(collection, gameID, 'game');
   }
 
   /*=====================================================================*/
@@ -343,7 +350,7 @@ export async function handleAction(
   if (action.type === 'game_canceled_admin') {
     io.to(gameID).emit('leave_room');
 
-    removeSTate(gameID);
+    removeSTate(collection, gameID);
 
     io.to(gameID).socketsLeave(gameID);
   }
@@ -351,7 +358,7 @@ export async function handleAction(
   if (action.type === 'game_canceled') {
     io.to(socket.id).emit('leave_room');
 
-    const newStateFromDb = await kickUser(gameID, action.payload.memberId);
+    const newStateFromDb = await kickUser(collection, gameID, action.payload.memberId);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
@@ -368,7 +375,7 @@ export async function handleAction(
   /*=====================================================================*/
 
   if (action.type === 'get_current_timer') {
-    const newStateFromDb = await getState(gameID);
+    const newStateFromDb = await getState(collection, gameID);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'game/setCurrentTimer',
@@ -378,6 +385,7 @@ export async function handleAction(
 
   if (action.type === 'set_current_timer') {
     const newStateFromDb = await setCurrentTimer(
+      collection,
       gameID,
       action.payload.currentTimer
     );
@@ -389,7 +397,7 @@ export async function handleAction(
   }
 
   if (action.type === 'start_round') {
-    const newStateFromDb = await startRound(gameID);
+    const newStateFromDb = await startRound(collection, gameID);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
@@ -411,7 +419,7 @@ export async function handleAction(
   }
 
   if (action.type === 'restart_round') {
-    const newStateFromDb = await restartRound(gameID);
+    const newStateFromDb = await restartRound(collection, gameID);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
@@ -442,7 +450,7 @@ export async function handleAction(
   }
 
   if (action.type === 'finish_round') {
-    const newStateFromDb = await resetGame(gameID);
+    const newStateFromDb = await resetGame(collection, gameID);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'members/setMembersAction',
@@ -469,6 +477,7 @@ export async function handleAction(
 
   if (action.type === 'set_current_issue') {
     const newStateFromDb = await setCurrentIssue(
+      collection,
       gameID,
       action.payload.currentIssue
     );
@@ -485,7 +494,7 @@ export async function handleAction(
   }
 
   if (action.type === 'stop_round') {
-    const newStateFromDb = await stopRound(gameID);
+    const newStateFromDb = await stopRound(collection, gameID);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'issues/updateIssuesAction',
@@ -500,6 +509,7 @@ export async function handleAction(
 
   if (action.type === 'set_vote') {
     const newStateFromDb = await setVote(
+      collection,
       gameID,
       action.payload.memberId,
       action.payload.value,
@@ -521,6 +531,7 @@ export async function handleAction(
 
   if (action.type === 'change_vote') {
     const newStateFromDb = await changeVote(
+      collection,
       gameID,
       action.payload.memberId,
       action.payload.value,
@@ -548,7 +559,7 @@ export async function handleAction(
 
   if (action.type === 'stop_game') {
     io.to(gameID).emit('GAME_STOPPED');
-    changeCurrentPage(gameID, 'result');
+    changeCurrentPage(collection, gameID, 'result');
   }
 
   /*=====================================================================*/
@@ -556,7 +567,7 @@ export async function handleAction(
   /*=====================================================================*/
 
   if (action.type === 'chat_message') {
-    const newStateFromDb = await setMessages(gameID, action.payload.message);
+    const newStateFromDb = await setMessages(collection, gameID, action.payload.message);
 
     io.to(gameID).emit('UPDATE_CLIENT', {
       type: 'chat/setMessagesAction',

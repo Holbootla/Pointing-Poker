@@ -1,5 +1,6 @@
 import express from 'express';
 import * as http from 'http';
+import { Collection, MongoClient } from 'mongodb';
 import path from 'path';
 // import * as WebSocket from 'ws';
 import { Server, Socket } from 'socket.io';
@@ -22,13 +23,33 @@ const options = {
 };
 export const io = new Server(server, options);
 
-io.on('connection', (socket: Socket) => {
+const url =
+  'mongodb+srv://admin:admin@cluster0.vosdp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+const dbName = 'efk';
+const collectionName = 'states';
+
+let collection: Collection<Document>;
+console.time('get MongoDB collection at start server');
+MongoClient.connect(url).then((res) => {
+  collection = res.db(dbName).collection(collectionName)
+});
+console.timeEnd('get MongoDB collection at start server');
+
+io.on('connection', async (socket: Socket) => {
   console.log(socket.id);
-  socket.on('UPDATE_SERVER', (action) => {
+  console.log(collection);
+  if(!collection) {
+    console.time('get MongoDB collection at ws connection');
+    const client = await MongoClient.connect(url);
+    collection = client.db(dbName).collection(collectionName);
+    console.timeEnd('get MongoDB collection at ws connection');
+  }
+  
+  socket.on('UPDATE_SERVER', async (action) => {
     console.log('');
     console.log('action from client');
     console.log(action);
-    handleAction(socket, action);
+    await handleAction(socket, action, collection);
   });
 });
 
@@ -81,7 +102,7 @@ function normalizePort(val) {
 const port = normalizePort(process.env.PORT || '3001');
 
 server.listen(port, () => {
-  console.log(`Server started on port 3001`);
+  console.log(`Server started on port ${port}`);
 });
 
 // catch 404 and forward to error handler
